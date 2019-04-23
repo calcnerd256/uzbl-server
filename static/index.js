@@ -9,23 +9,9 @@ function setupEvalBox(){
     );
 }
 
-function setupDebugOut(){
-    if(!($("#debugOutput").length))
-	$("#evalButton").after(
-	    (
-		function(){
-		    var result = document.createElement("pre");
-		    result.id = "debugOutput";
-		    return result;
-		}
-	    )()
-	);
-}
-
 $(
     function(){
 	setupEvalBox();
-	setupDebugOut();
     }
 );
 

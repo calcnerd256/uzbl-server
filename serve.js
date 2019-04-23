@@ -316,6 +316,13 @@ function respondHome(browser, response){
 			    ],
 			    []
 			),
+			new HtmlTag(
+			    "pre",
+			    [
+				["id", "debugOutput"]
+			    ],
+			    []
+			),
 			inForm,
 			browserEventsAnchor,
 			br,
