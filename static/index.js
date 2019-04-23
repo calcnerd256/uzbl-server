@@ -141,10 +141,9 @@ ToggleUl.prototype.toggleVisibility = function(){
 };
 
 var Uzbl = (
-    function(){
-	function Uzbl(){
-	}
-	Uzbl.prototype.toJSON = function(){
+    function(constructor){
+	var _prot = constructor.prototype;
+	_prot.toJSON = function(){
 	    var keys = Object.keys(this);
 	    var result = {};
 	    var that = this;
@@ -174,23 +173,23 @@ var Uzbl = (
 	    );
 	    return result;
 	};
-	Uzbl.prototype.makeDom = function(){
+	_prot.makeDom = function(){
 	    this.dom = document.createElement("div");
 	    $("#evalBox").before(this.dom);
 	    return this.dom;
 	};
-	Uzbl.prototype.ensureDom = function(){
+	_prot.ensureDom = function(){
 	    if(!("dom" in this)) return this.makeDom();
 	    return this.dom;
 	};
-	Uzbl.prototype.appendChild = function(elem){
+	_prot.appendChild = function(elem){
 	    return this.ensureDom().appendChild(elem);
 	};
 
-	Uzbl.prototype.EventList = function(){
+	function EventList(){
 	    this.events = [];
-	};
-	Uzbl.prototype.EventList.prototype.makeDom = function(){
+	}
+	EventList.prototype.makeDom = function(){
 	    this.dom = document.createElement("span");
 	    this.summary = document.createElement("span");
 	    $(this.summary).text("events");
@@ -201,11 +200,11 @@ var Uzbl = (
 	    this.dom.appendChild(this.ul.ensureDom());
 	    return this.dom;
 	};
-	Uzbl.prototype.EventList.prototype.ensureDom = function(){
+	EventList.prototype.ensureDom = function(){
 	    if("dom" in this) return this.dom;
 	    return this.makeDom();
 	};
-	Uzbl.prototype.EventList.prototype.makeLiNumber = function(n){
+	EventList.prototype.makeLiNumber = function(n){
 	    var li = document.createElement("li");
 	    var anchor = document.createElement("a");
 	    var pre = document.createElement("pre");
@@ -231,12 +230,12 @@ var Uzbl = (
 	    li.appendChild(pre);
 	    return [li, pre];
 	};
-	Uzbl.prototype.EventList.prototype.makeLi = function(event){
+	EventList.prototype.makeLi = function(event){
 	    var lp = this.makeLiNumber(event["event ID"]);
 	    $(lp[1]).text(event["event type"]);
 	    return lp[0];
 	};
-	Uzbl.prototype.EventList.prototype.appendEvent = function(event){
+	EventList.prototype.appendEvent = function(event){
 	    this.events.push(event["event ID"]);
 	    this.ensureDom();
 	    this.ul.ensureDom();
@@ -246,13 +245,13 @@ var Uzbl = (
 	    $(this.summary).text(len + " event" + (1 == len ? "" : "s"));
 	    return li;
 	};
-	Uzbl.prototype.EventList.prototype.hide = function(){
+	EventList.prototype.hide = function(){
 	    this.ensureDom();
 	    var ul = this.ul;
 	    $(ul.ul).hide("slow", function(){return $(ul.ul).html("");});
 	    $(ul.anchor).text("show");
 	};
-	Uzbl.prototype.EventList.prototype.populateUl = function(){
+	EventList.prototype.populateUl = function(){
 	    this.ensureDom();
 	    return $(this.ul.ul).html(
 		this.events.map(
@@ -260,21 +259,22 @@ var Uzbl = (
 		).map(pluck(0))
 	    );
 	};
-	Uzbl.prototype.EventList.prototype.show = function(){
+	EventList.prototype.show = function(){
 	    this.populateUl();
 	    $(this.ul.ul).show("slow");
 	    $(this.ul.anchor).text("hide");
 	};
-	Uzbl.prototype.EventList.prototype.toggle = function(){
+	EventList.prototype.toggle = function(){
 	    this.visible = !(this.visible);
 	    return this[this.visible ? "show" : "hide"]();
 	};
-	Uzbl.prototype.EventList.prototype.visible = false;
+	EventList.prototype.visible = false;
+	_prot.EventList = EventList;
 
-	Uzbl.prototype.OtherEvents = function(browser){
+	function OtherEvents(browser){
 	    this.browser = browser;
 	};
-	Uzbl.prototype.OtherEvents.prototype.toJSON = function(){
+	OtherEvents.prototype.toJSON = function(){
 	    var keys = Object.keys(this);
 	    var result = {};
 	    var that = this;
@@ -289,38 +289,39 @@ var Uzbl = (
 		result.browser = browser;
 	    return result;
 	};
-	Uzbl.prototype.OtherEvents.prototype.makeDom = function(){
+	OtherEvents.prototype.makeDom = function(){
 	    this.events = new (this.browser.EventList)();
 	    this.dom = this.events.ensureDom();
 	    this.ul = this.events.ul;
 	    this.browser.appendChild(this.dom);
 	    return this.dom;
 	};
-	Uzbl.prototype.OtherEvents.prototype.ensureDom = function(){
+	OtherEvents.prototype.ensureDom = function(){
 	    if("dom" in this) return this.dom;
 	    return this.makeDom();
 	};
-	Uzbl.prototype.OtherEvents.prototype.displayEvent = function(e){
+	OtherEvents.prototype.displayEvent = function(e){
 	    this.ensureDom();
 	    return this.events.appendEvent(e);
 	};
-	Uzbl.prototype.makeOtherEvents = function(){
+	_prot.OtherEvents = OtherEvents;
+	_prot.makeOtherEvents = function(){
 	    this.otherEvents = new (this.OtherEvents)(this);
 	    return this.otherEvents;
 	};
-	Uzbl.prototype.ensureOtherEvents = function(){
+	_prot.ensureOtherEvents = function(){
 	    if("otherEvents" in this) return this.otherEvents;
 	    return this.makeOtherEvents();
 	};
-	Uzbl.prototype.displayEvent = function(e){
+	_prot.displayEvent = function(e){
 	    return this.ensureOtherEvents().displayEvent(e);
 	};
 
-	Uzbl.prototype["Instance ID"] = function(browser){
+	function InstanceId(browser){
 	    this.browser = browser;
 	    this.events = [];
 	};
-	Uzbl.prototype["Instance ID"].prototype.toJSON = function(){
+	InstanceId.prototype.toJSON = function(){
 	    var keys = Object.keys(this);
 	    var result = {};
 	    var that = this;
@@ -335,7 +336,7 @@ var Uzbl = (
 		result.browser = browser;
 	    return result;
 	};
-	Uzbl.prototype["Instance ID"].prototype.makeDom = function(){
+	InstanceId.prototype.makeDom = function(){
 	    this.dom = document.createElement("span");
 	    var div = document.createElement("div");
 	    div.appendChild(this.dom);
@@ -347,40 +348,39 @@ var Uzbl = (
 	    $(this.dom).text("unknown instance");
 	    return this.dom;
 	};
-	Uzbl.prototype["Instance ID"].prototype.ensureDom = function(){
+	InstanceId.prototype.ensureDom = function(){
 	    if("dom" in this) return this.dom;
 	    return this.makeDom();
 	};
-	Uzbl.prototype["Instance ID"].prototype.assignValue = function(value){
+	InstanceId.prototype.assignValue = function(value){
 	    this.value = value;
 	    $(this.ensureDom()).text("instance " + value);
 	};
-	Uzbl.prototype[
-	    "Instance ID"
-	].prototype.handleInstanceStartEvent = function(e){
+	InstanceId.prototype.handleInstanceStartEvent = function(e){
 	    this.ensureDom();
 	    this.events.appendEvent(e);
 	    return this.assignValue(e.event["instance ID"]);
 	};
-	Uzbl.prototype["Instance ID"].prototype.handleEvent = function(e){
+	InstanceId.prototype.handleEvent = function(e){
 	    this.events.push(e);
 	    if("INSTANCE_START" == e["event type"])
 		return this.handleInstanceStartEvent(e);
 	};
-	Uzbl.prototype.makeInstanceId = function(){
+	_prot["Instance ID"] = InstanceId;
+	_prot.makeInstanceId = function(){
 	    var result = new (this["Instance ID"])(this);
 	    this["instance ID"] = result;
 	    return result;
 	};
-	Uzbl.prototype.ensureInstanceId = function(){
+	_prot.ensureInstanceId = function(){
 	    if("instance ID" in this) return this["instance ID"];
 	    return this.makeInstanceId();
 	};
 
-	Uzbl.prototype.Builtins = function(browser){
+	function Builtins(browser){
 	    this.browser = browser;
 	};
-	Uzbl.prototype.Builtins.prototype.makeDom = function(){
+	Builtins.prototype.makeDom = function(){
 	    this.dom = document.createElement("div");
 	    $(this.dom).text("builtins: ");
 	    var ul = new ToggleUl();
@@ -393,48 +393,49 @@ var Uzbl = (
 	    this.browser.appendChild(this.dom);
 	    return this.dom;
 	};
-	Uzbl.prototype.Builtins.prototype.ensureDom = function(){
+	Builtins.prototype.ensureDom = function(){
 	    if("dom" in this) return this.dom;
 	    return this.makeDom();
 	};
-	Uzbl.prototype.Builtins.prototype.ensureUl = function(){
+	Builtins.prototype.ensureUl = function(){
 	    this.ensureDom();
 	    return this.ul;
 	};
-	Uzbl.prototype.Builtins.prototype.makeLi = function(name){
+	Builtins.prototype.makeLi = function(name){
 	    var li = document.createElement("li");
 	    $(li).text(name);
 	    return li;
 	};
-	Uzbl.prototype.Builtins.prototype.assignValue = function(builtins){
+	Builtins.prototype.assignValue = function(builtins){
 	    this.value = builtins;
 	    $(this.ensureUl()).html(
 		builtins.map(bindFrom(this, "makeLi"))
 	    );
 	    return this.value;
 	};
-	Uzbl.prototype.Builtins.prototype.handleBuiltinsEvent = function(e){
+	Builtins.prototype.handleBuiltinsEvent = function(e){
 	    return this.assignValue(e.event.names);
 	};
-	Uzbl.prototype.Builtins.prototype.handleEvent = function(e){
+	Builtins.prototype.handleEvent = function(e){
 	    this.ensureDom();
 	    this.events.appendEvent(e);
 	    if("BUILTINS" == e["event type"])
 		return this.handleBuiltinsEvent(e);
 	};
-	Uzbl.prototype.makeBuiltins = function(){
+	_prot.Builtins = Builtins;
+	_prot.makeBuiltins = function(){
 	    return this.builtins = new (this.Builtins)(this);
 	};
-	Uzbl.prototype.ensureBuiltins = function(){
+	_prot.ensureBuiltins = function(){
 	    if("builtins" in this) return this.builtins;
 	    return this.makeBuiltins();
 	};
 
-	Uzbl.prototype.Variables = function(browser){
+	function Variables(browser){
 	    this.browser = browser;
 	    this.variables = {};
 	};
-	Uzbl.prototype.Variables.prototype.makeDom = function(){
+	Variables.prototype.makeDom = function(){
 	    this.dom = document.createElement("div");
 	    $(this.dom).text("variables: ");
 	    this.ul = new ToggleUl();
@@ -446,11 +447,11 @@ var Uzbl = (
 	    this.browser.appendChild(this.dom);
 	    return this.dom;
 	};
-	Uzbl.prototype.Variables.prototype.ensureDom = function(){
+	Variables.prototype.ensureDom = function(){
 	    if("dom" in this) return this.dom;
 	    return this.makeDom();
 	};
-	Uzbl.prototype.Variables.prototype.makeVariable = function(name){
+	Variables.prototype.makeVariable = function(name){
 	    this.ensureDom();
 	    var li = document.createElement("li");
 	    var result = {
@@ -473,11 +474,11 @@ var Uzbl = (
 	    this.ul.ul.appendChild(li);
 	    return result;
 	};
-	Uzbl.prototype.Variables.prototype.ensureVariable = function(name){
+	Variables.prototype.ensureVariable = function(name){
 	    if(name in this.variables) return this.variables[name];
 	    return this.makeVariable(name);
 	};
-	Uzbl.prototype.Variables.prototype.setVariable = function(
+	Variables.prototype.setVariable = function(
 	    name,
 	    varType,
 	    value
@@ -489,7 +490,7 @@ var Uzbl = (
 	    $(v.pre).text("");
 	    v.pre.appendChild(document.createTextNode(""+value));
 	};
-	Uzbl.prototype.Variables.prototype.handleVariableSetEvent = function(
+	Variables.prototype.handleVariableSetEvent = function(
 	    event
 	){
 	    var evt = event.event;
@@ -500,25 +501,26 @@ var Uzbl = (
 	    this.ensureVariable(name).events.appendEvent(event);
 	    return this.setVariable(name, valueType, value);
 	};
-	Uzbl.prototype.Variables.prototype.handleEvent = function(event){
+	Variables.prototype.handleEvent = function(event){
 	    this.ensureDom();
 	    this.events.appendEvent(event);
 	    if("VARIABLE_SET" == event["event type"])
 		return this.handleVariableSetEvent(event);
 	};
-	Uzbl.prototype.makeVariables = function(){
+	_prot.Variables = Variables;
+	_prot.makeVariables = function(){
 	    return this.variables = new (this.Variables)(this);
 	};
-	Uzbl.prototype.ensureVariables = function(){
+	_prot.ensureVariables = function(){
 	    if("variables" in this) return this.variables;
 	    return this.makeVariables();
 	};
 
-	Uzbl.prototype.Geometry = function(browser){
+	function Geometry(browser){
 	    this.browser = browser;
 	    this.knownViewport = [1, 1];
 	};
-	Uzbl.prototype.Geometry.prototype.makeDom = function(){
+	Geometry.prototype.makeDom = function(){
 	    this.dom = document.createElement("div");
 	    $(this.dom).text("geometry: ");
 	    this.text = document.createElement("span");
@@ -535,11 +537,11 @@ var Uzbl = (
 	    this.browser.appendChild(this.dom);
 	    return this.dom;
 	};
-	Uzbl.prototype.Geometry.prototype.ensureDom = function(){
+	Geometry.prototype.ensureDom = function(){
 	    if("dom" in this) return this.dom;
 	    return this.makeDom();
 	};
-	Uzbl.prototype.Geometry.prototype.assignValue = function(size, offset){
+	Geometry.prototype.assignValue = function(size, offset){
 	    this.size = size;
 	    this.offset = offset;
 	    var right = +(size[0]) + (+(offset[0]));
@@ -565,30 +567,31 @@ var Uzbl = (
 		)
 	    );
 	};
-	Uzbl.prototype.Geometry.prototype.handleGeometryChangedEvent = function(
+	Geometry.prototype.handleGeometryChangedEvent = function(
 	    event
 	){
 	    this.ensureDom();
 	    this.events.appendEvent(event);
 	    this.assignValue(event.event.size, event.event.offset);
 	};
-	Uzbl.prototype.Geometry.prototype.handleEvent = function(event){
+	Geometry.prototype.handleEvent = function(event){
 	    if("GEOMETRY_CHANGED" == event["event type"])
 		return this.handleGeometryChangedEvent(event);
 	};
-	Uzbl.prototype.makeGeometry = function(){
+	_prot.Geometry = Geometry;
+	_prot.makeGeometry = function(){
 	    return this.geometry = new (this.Geometry)(this);
 	}
-	Uzbl.prototype.ensureGeometry = function(){
+	_prot.ensureGeometry = function(){
 	    if("geometry" in this) return this.geometry;
 	    return this.makeGeometry();
 	};
 
-	Uzbl.prototype.Cookies = function(browser){
+	function Cookies(browser){
 	    this.browser = browser;
 	    this.cookies = {};
 	};
-	Uzbl.prototype.Cookies.prototype.makeDom = function(){
+	Cookies.prototype.makeDom = function(){
 	    this.dom = document.createElement("div");
 	    $(this.dom).text("cookie jar: ");
 	    this.ul = new ToggleUl();
@@ -600,32 +603,33 @@ var Uzbl = (
 	    this.browser.appendChild(this.dom);
 	    return this.dom;
 	};
-	Uzbl.prototype.Cookies.prototype.ensureDom = function(){
+	Cookies.prototype.ensureDom = function(){
 	    if("dom" in this) return this.dom;
 	    return this.makeDom();
 	};
-	Uzbl.prototype.Cookies.prototype.handleAddCookieEvent = function(event){
+	Cookies.prototype.handleAddCookieEvent = function(event){
 	    // TODO
 	}
-	Uzbl.prototype.Cookies.prototype.handleEvent = function(event){
+	Cookies.prototype.handleEvent = function(event){
 	    this.ensureDom();
 	    this.events.appendEvent(event);
 	    if("ADD_COOKIE" == event["event type"])
 		return this.handleAddCookieEvent()
 	};
-	Uzbl.prototype.makeCookies = function(){
+	_prot.Cookies = Cookies;
+	_prot.makeCookies = function(){
 	    return this.cookies = new (this.Cookies)(this);
 	};
-	Uzbl.prototype.ensureCookies = function(){
+	_prot.ensureCookies = function(){
 	    if("cookies" in this) return this.cookies;
 	    return this.makeCookies();
 	};
 
-	Uzbl.prototype.Pages = function(browser){
+	function Pages(browser){
 	    this.browser = browser;
 	    this.newPage();
 	};
-	Uzbl.prototype.Pages.prototype.makeDom = function(){
+	Pages.prototype.makeDom = function(){
 	    this.dom = document.createElement("div");
 	    $(this.dom).text("pages: ");
 	    this.ul = new ToggleUl();
@@ -633,11 +637,11 @@ var Uzbl = (
 	    this.browser.appendChild(this.dom);
 	    return this.dom;
 	};
-	Uzbl.prototype.Pages.prototype.ensureDom = function(){
+	Pages.prototype.ensureDom = function(){
 	    if("dom" in this) return this.dom;
 	    return this.makeDom();
 	};
-	Uzbl.prototype.Pages.prototype.newPage = function(){
+	Pages.prototype.newPage = function(){
 	    var vars = this.browser.ensureVariables().variables;
 	    var keys = Object.keys(vars);
 	    var variables = {};
@@ -663,7 +667,7 @@ var Uzbl = (
 	    this.ul.ul.appendChild(this.currentPage.dom);
 	    return this.currentPage;
 	};
-	Uzbl.prototype.Pages.prototype.handleScrollHorizEvent = function(event){
+	Pages.prototype.handleScrollHorizEvent = function(event){
 	    var evt = event.event;
 	    this.currentPage.scrollHoriz = {
 		"bounds": evt.bounds,
@@ -672,7 +676,7 @@ var Uzbl = (
 	    };
 	    return this.currentPage.scrollHoriz;
 	};
-	Uzbl.prototype.Pages.prototype.handleScrollVertEvent = function(event){
+	Pages.prototype.handleScrollVertEvent = function(event){
 	    var evt = event.event;
 	    this.currentPage.scrollVert = {
 		"bounds": evt.bounds,
@@ -681,7 +685,7 @@ var Uzbl = (
 	    };
 	    return this.currentPage.scrollVert;
 	};
-	Uzbl.prototype.Pages.prototype.handleEvent = function(event){
+	Pages.prototype.handleEvent = function(event){
 	    if("load" == event["event type"])
 		if("start" == event.event.loadType)
 		    this.newPage();
@@ -691,46 +695,47 @@ var Uzbl = (
 	    if("SCROLL_VERT" == event["event type"])
 		return this.handleScrollVertEvent(event);
 	};
-	Uzbl.prototype.makePages = function(){
+	_prot.Pages = Pages;
+	_prot.makePages = function(){
 	    return this.pages = new (this.Pages)(this);
 	};
-	Uzbl.prototype.ensurePages = function(){
+	_prot.ensurePages = function(){
 	    if("pages" in this) return this.pages;
 	    return this.makePages();
 	};
 
-	Uzbl.prototype.handleInstanceStartEvent = function(e){
+	_prot.handleInstanceStartEvent = function(e){
 	    return this.ensureInstanceId().handleEvent(e);
 	};
-	Uzbl.prototype.handleBuiltinsEvent = function(e){
+	_prot.handleBuiltinsEvent = function(e){
 	    return this.ensureBuiltins().handleEvent(e);
 	};
-	Uzbl.prototype.forwardEventToPages = function(event){
+	_prot.forwardEventToPages = function(event){
 	    return this.ensurePages().handleEvent(event);
 	};
-	Uzbl.prototype.handleVariableSetEvent = function(event){
+	_prot.handleVariableSetEvent = function(event){
 	    var vars = this.ensureVariables();
 	    vars.ensureDom();
 	    this.forwardEventToPages(event);
 	    return vars.handleEvent(event);
 	};
-	Uzbl.prototype.handleScrollHorizEvent = function(event){
+	_prot.handleScrollHorizEvent = function(event){
 	    // TODO
 	    return this.forwardEventToPages(event);
 	};
-	Uzbl.prototype.handleScrollVertEvent = function(event){
+	_prot.handleScrollVertEvent = function(event){
 	    // TODO
 	    return this.forwardEventToPages(event);
 	};
-	Uzbl.prototype.handleGeometryChangedEvent = function(event){
+	_prot.handleGeometryChangedEvent = function(event){
 	    this.forwardEventToPages(event);
 	    return this.ensureGeometry().handleEvent(event);
 	};
-	Uzbl.prototype.forwardEventToCookies = function(event){
+	_prot.forwardEventToCookies = function(event){
 	    this.forwardEventToPages(event);
 	    return this.ensureCookies().handleEvent(event);
 	};
-	Uzbl.prototype.handleEvent = function(e){
+	_prot.handleEvent = function(e){
 	    var methods = {
 		INSTANCE_START: "handleInstanceStartEvent",
 		BUILTINS: "handleBuiltinsEvent",
@@ -773,8 +778,7 @@ var Uzbl = (
 	    );
 	};
 
-
-	Uzbl.prototype.handleNextEvent = function(){
+	_prot.handleNextEvent = function(){
 	    if("currentEvent" in this)
 		return Promise.reject(this.keepGoing = true);
 	    this.currentEvent = nextEventId;
@@ -801,7 +805,7 @@ var Uzbl = (
 		}
 	    );
 	};
-	Uzbl.prototype.checkEventsForever = function(
+	_prot.checkEventsForever = function(
 	    idleDelayMilliseconds,
 	    whiffs
 	){
@@ -829,9 +833,12 @@ var Uzbl = (
 	    );
 	};
 
-	return Uzbl;
+	return constructor;
     }
-)();
+)(
+    function Uzbl(){
+    }
+);
 
 
 var browser = new Uzbl();
