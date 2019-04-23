@@ -235,11 +235,9 @@ function EventLoadFinish(uri){
 EventLoadFinish.prototype = new UzblEvent("LOAD_FINISH");
 EventLoadFinish.prototype.loadType = "finish";
 EventLoadFinish.fromString = function(s){
-    var tokens = s.split(" ");
-    var evtType = tokens.shift();
-    if(1 != tokens.length) return new EventUnknown([evtType, tokens]);
-    var uri = parseSingleQuotedStringWithoutSpaces(tokens[0]);
-    if(null == uri) return new EventUnknown([evtType, tokens[0]]);
+    var q = suffix(s, this.prototype["type"] + " ");
+    var uri = parseSingleQuotedString(q);
+    if(null == uri) return new EventUnknown([this.prototype["type"], q]);
     return new this(uri);
 }
 
@@ -250,13 +248,10 @@ function EventGeometryChanged(size, offset){
 }
 EventGeometryChanged.prototype = new UzblEvent("GEOMETRY_CHANGED");
 EventGeometryChanged.fromString = function(s){
-    var tokens = s.split(" ");
-    var evtType = tokens.shift();
-    if(1 != tokens.length) return new EventUnknown([evtType, tokens]);
-    var q = tokens.shift();
-    var geom = parseSingleQuotedStringWithoutSpaces(q);
-    if(null == geom) return new EventUnknown([evtType, q]);
-    tokens = geom.split("+");
+    var q = suffix(s, this.prototype["type"] + " ");
+    var geom = parseSingleQuotedString(q);
+    if(null == geom) return new EventUnknown([this.prototype["type"], q]);
+    var tokens = geom.split("+");
     var size = tokens.shift().split("x");
     return new this(size, tokens);
 }
@@ -266,12 +261,9 @@ function EventRequestStarting(uri){
 }
 EventRequestStarting.prototype = new UzblEvent("REQUEST_STARTING");
 EventRequestStarting.fromString = function(s){
-    var tokens = s.split(" ");
-    var evtType = tokens.shift();
-    if(1 != tokens.length) return new EventUnknown([evtType, tokens]);
-    var q = tokens.shift();
-    var uri = parseSingleQuotedStringWithoutSpaces(q);
-    if(null == uri) return new EventUnknown([evtType, q]);
+    var q = suffix(s, this.prototype["type"] + " ");
+    var uri = parseSingleQuotedString(q);
+    if(null == uri) return new EventUnknown([this.prototype["type"], q]);
     return new this(uri);
 }
 
