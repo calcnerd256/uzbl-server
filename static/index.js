@@ -355,7 +355,9 @@ var Uzbl = (
 	    this.value = value;
 	    $(this.ensureDom()).text("instance " + value);
 	};
-	Uzbl.prototype["Instance ID"].prototype.handleInstanceStartEvent = function(e){
+	Uzbl.prototype[
+	    "Instance ID"
+	].prototype.handleInstanceStartEvent = function(e){
 	    this.ensureDom();
 	    this.events.appendEvent(e);
 	    return this.assignValue(e.event["instance ID"]);
@@ -475,7 +477,11 @@ var Uzbl = (
 	    if(name in this.variables) return this.variables[name];
 	    return this.makeVariable(name);
 	};
-	Uzbl.prototype.Variables.prototype.setVariable = function(name, varType, value){
+	Uzbl.prototype.Variables.prototype.setVariable = function(
+	    name,
+	    varType,
+	    value
+	){
 	    var v = this.ensureVariable(name);
 	    v.value = [varType, value];
 	    $(v.name).text(name);
@@ -483,7 +489,9 @@ var Uzbl = (
 	    $(v.pre).text("");
 	    v.pre.appendChild(document.createTextNode(""+value));
 	};
-	Uzbl.prototype.Variables.prototype.handleVariableSetEvent = function(event){
+	Uzbl.prototype.Variables.prototype.handleVariableSetEvent = function(
+	    event
+	){
 	    var evt = event.event;
 	    var name = evt.name;
 	    var val = evt.value;
@@ -557,7 +565,9 @@ var Uzbl = (
 		)
 	    );
 	};
-	Uzbl.prototype.Geometry.prototype.handleGeometryChangedEvent = function(event){
+	Uzbl.prototype.Geometry.prototype.handleGeometryChangedEvent = function(
+	    event
+	){
 	    this.ensureDom();
 	    this.events.appendEvent(event);
 	    this.assignValue(event.event.size, event.event.offset);
@@ -647,7 +657,9 @@ var Uzbl = (
 		variables: variables,
 		geometry: geometry
 	    };
-	    this.currentPage.dom.appendChild(this.currentPage.events.ensureDom());
+	    this.currentPage.dom.appendChild(
+		this.currentPage.events.ensureDom()
+	    );
 	    this.ul.ul.appendChild(this.currentPage.dom);
 	    return this.currentPage;
 	};
@@ -763,7 +775,8 @@ var Uzbl = (
 
 
 	Uzbl.prototype.handleNextEvent = function(){
-	    if("currentEvent" in this) return Promise.reject(this.keepGoing = true);
+	    if("currentEvent" in this)
+		return Promise.reject(this.keepGoing = true);
 	    this.currentEvent = nextEventId;
 	    var that = this;
 	    return getEvent(nextEventId).then(
@@ -788,7 +801,10 @@ var Uzbl = (
 		}
 	    );
 	};
-	Uzbl.prototype.checkEventsForever = function(idleDelayMilliseconds, whiffs){
+	Uzbl.prototype.checkEventsForever = function(
+	    idleDelayMilliseconds,
+	    whiffs
+	){
 	    return this.handleNextEvent().then(
 		function(){
 		    whiffs = 1;
@@ -805,7 +821,11 @@ var Uzbl = (
 		    )
 		}
 	    ).then(K()).then(
-		this.checkEventsForever.bind(this, idleDelayMilliseconds, whiffs)
+		this.checkEventsForever.bind(
+		    this,
+		    idleDelayMilliseconds,
+		    whiffs
+		)
 	    );
 	};
 
