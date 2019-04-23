@@ -9,12 +9,6 @@ function setupEvalBox(){
     );
 }
 
-$(
-    function(){
-	setupEvalBox();
-    }
-);
-
 function promiseHttpGet(url, data, dataType){
     return new Promise(
 	function(res, rej){
@@ -818,3 +812,11 @@ var browser = new Uzbl();
 function browserLive(){
     return browser.checkEventsForever(100, 1);
 }
+
+
+$(
+    function(){
+	setupEvalBox();
+	browserLive();
+    }
+);
