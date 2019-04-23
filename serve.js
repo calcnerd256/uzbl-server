@@ -159,107 +159,175 @@ function respondLinesHtml(lines, response){
 	].join(crlf)
     );
 }
+function HtmlTag(name, attributes, children, singletonp){
+    this.name = name;
+    if(attributes)
+	this.attributes = attributes;
+    if(children)
+	this.children = children;
+    else this.children = [];
+    this.singletonp = !!singletonp;
+}
+HtmlTag.prototype.toString = function(){
+    var singleton = this.singletonp;
+    if(this.children)
+	if(this.children.length)
+	    singleton = false;
+    var attrs = this.attributes;
+    var openTag = "<";
+    openTag += this.name;
+    var attrsString = "";
+    if(attrs)
+	if(attrs.length)
+	    attrs.map(
+		function(kv){
+		    var k = kv[0];
+		    var v = kv[1];
+		    attrsString += " ";
+		    attrsString += k;
+		    attrsString += "=\"";
+		    var escaped = v.split("&").join(
+			"&amp;"
+		    ).split("\"").join(
+			"&quot;"
+		    ).split(">").join("&gt;").split("<").join("&lt;");
+		    attrsString += escaped;
+		    attrsString += "\"";
+		}
+	    );
+    openTag += attrsString;
+    if(singleton) openTag += " /";
+    openTag += ">";
+    if(singleton) return openTag;
+    var closeTag = "</" + this.name + ">";
+    var crlf = "\r\n";
+    var oneLine = false;
+    if(!this.children) oneLine = true;
+    else if(!this.children.length) oneLine = true;
+    else if(1 == this.children.length)
+	if(!(this.children[0] instanceof HtmlTag))
+	    if((openTag + this.children[0] + closeTag).length < 80)
+		oneLine = true;
+    if(oneLine)
+	return openTag + this.children.join("") + closeTag;
+    var contents = this.children.join(crlf).split(crlf).map(
+	function(line){
+	    return "\t" + line;
+	}
+    ).join(crlf);
+    return openTag + crlf + contents + crlf + closeTag;
+};
 function respondHome(browser, response){
     response.setHeader("Content-Type", "text/html");
-    var homeAnchor = "<a href=\"/\">home</a>";
+    var homeAnchor = new HtmlTag("a", [["href", "/"]], ["home"]);
     var iframeName = "portal";
     var outputUrl = "/output.html";
-    var outIframe = "<iframe" +
-	" src=\"" + outputUrl + "\"" +
-	" name=\"" + iframeName + "\"" +
-	">" +
-	"</iframe>";
-    var outputAnchor = "<a" +
-	" href=\"" + outputUrl + "\"" +
-	" target=\"" + iframeName + "\"" +
-	">" +
-	"output lines" +
-	"</a>";
-    var browserEventsAnchor = "<a" +
-	" href=\"/browser/events/\"" +
-	" target=\"" + iframeName + "\"" +
-	">" +
-	"browser events" +
-	"</a>";
-    var controllerEventsAnchor = "<a" +
-	" href=\"/controller/events/\"" +
-	" target=\"" + iframeName + "\"" +
-	">" +
-	"controller events" +
-	"</a>";
-    var inFormLines = [
-	"<form method=\"POST\" action=\"/send-line\">",
-	"\t<input name=\"line\"></input>",
-	"\t<input type=\"submit\" value=\"send\"></input>",
-	"</form>"
-    ];
-    var controllerFormLines = [
-	"<form method=\"POST\" action=\"/start-controller\">",
-	"\t<input type=\"submit\" value=\"controller\"></input>",
-	"</form>"
-    ];
-    var br = "<br />";
+    var outIframe = new HtmlTag(
+	"iframe",
+	[["src", outputUrl], ["name", iframeName]],
+	[]
+    );
+    var outputAnchor = new HtmlTag(
+	"a",
+	[["href", outputUrl], ["target", iframeName]],
+	["output lines"]
+    );
+    var browserEventsAnchor = new HtmlTag(
+	"a",
+	[["href", "/browser/events/"], ["target", iframeName]],
+	["browser events"]
+    );
+    var controllerEventsAnchor = new HtmlTag(
+	"a",
+	[["href", "/controller/events/"], ["target", iframeName]],
+	["controller events"]
+    );
+    var inForm = new HtmlTag(
+	"form",
+	[["method", "POST"], ["action", "/send-line"]],
+	[
+	    new HtmlTag("input", [["name", "line"]], []),
+	    new HtmlTag("input", [["type", "submit"], ["value", "send"]], [])
+	]
+    );
     var crlf = "\r\n";
+    var controllerForm = new HtmlTag(
+	"form",
+	[["method", "POST"], ["action", "/start-controller"]],
+	[
+	    new HtmlTag(
+		"input",
+		[["type", "submit"], ["value", "controller"]],
+		[]
+	    )
+	]
+    );
+    var br = new HtmlTag("br", [], [], true);
     var uriVar = browser.uri
     var uriString = "";
     if(uriVar != null)
 	uriString = uriVar;
-    var uriEscaped = uriString.split("&").join("&amp").split("\"").join(
-	"&quot;"
-    ).split(">").join("&gt;").split("<").join("&lt;");
-    var uriFormLines = [
-	"<form method=\"POST\" action=\"/visit\">",
-	"\t<input name=\"uri\" value=\"" + uriEscaped + "\"></input>",
-	"\t<input type=\"submit\" value=\"Go\"></input>",
-	"</form>"
-    ];
-    var evalFormLines = [
-	"<textarea id=\"evalBox\"></textarea>",
-	"<input type=\"button\" id=\"evalButton\" value=\"eval\"></input>"
-    ];
-    response.end(
+    var uriForm = new HtmlTag(
+	"form",
+	[["method", "POST"], ["action", "/visit"]],
 	[
-	    "<html>",
-	    "\t<head>",
-	    "\t\t<title>Uzbl control server</title>",
-	    "\t\t<script src=\"./jQuery.js\"></script>",
-	    "\t\t<script src=\"./index.js\"></script>",
-	    "\t</head>",
-	    "\t<style>",
-	    "\t\tiframe{width: 100%; height: 50%; font-family: monospace;}",
-	    "</style>",
-	    "\t<body>",
-	    "\t\t" + homeAnchor,
-	    "\t\t" + br,
-	    evalFormLines.map(
-		function(line){
-		    return "\t\t" + line;
-		}
-	    ).join(crlf),
-	    inFormLines.map(
-		function(line){
-		    return "\t\t" + line;
-		}
-	    ).join(crlf),
-	    "\t\t" + browserEventsAnchor,
-	    "\t\t" + br,
-	    "\t\t" + controllerEventsAnchor,
-	    controllerFormLines.map(
-		function(line){
-		    return "\t\t" + line;
-		}
-	    ).join(crlf),
-	    uriFormLines.map(
-		function(line){
-		    return "\t\t" + line;
-		}
-	    ).join(crlf),
-	    "\t\t" + outputAnchor,
-	    "\t\t" + outIframe,
-	    "\t</body>",
-	    "</html>",
-	    ""
-	].join(crlf)
+	    new HtmlTag("input", [["name", "uri"], ["value", uriString]], []),
+	    new HtmlTag("input", [["type", "submit"], ["value", "Go"]], [])
+	]
+    );
+    response.end(
+	"" + new HtmlTag(
+	    "html",
+	    [],
+	    [
+		new HtmlTag(
+		    "head",
+		    [],
+		    [
+			new HtmlTag("title", [], ["Uzbl control server"]),
+			new HtmlTag("script", [["src", "./jQuery.js"]], []),
+			new HtmlTag("script", [["src", "./index.js"]], []),
+			new HtmlTag(
+			    "style",
+			    [],
+			    [
+				"iframe{",
+				"\twidth: 100%;",
+				"\theight: 50%;",
+				"\tfont-family: monospace;",
+				"}"
+			    ]
+			)
+		    ]
+		),
+		new HtmlTag(
+		    "body",
+		    [],
+		    [
+			homeAnchor,
+			br,
+			new HtmlTag("textarea", [["id", "evalBox"]], []),
+			new HtmlTag(
+			    "input",
+			    [
+				["type", "button"],
+				["id", "evalButton"],
+				["value", "eval"]
+			    ],
+			    []
+			),
+			inForm,
+			browserEventsAnchor,
+			br,
+			controllerEventsAnchor,
+			controllerForm,
+			uriForm,
+			outputAnchor,
+			outIframe
+		    ]
+		)
+	    ]
+	) + crlf
     );
 }
 function handleWriteLine(browser, req, callback){

@@ -1,10 +1,11 @@
+function evalFromBox(){
+    var evalBox = $("#evalBox")[0];
+    var src = evalBox.value;
+    return eval(src);
+}
 function setupEvalBox(){
     return $("#evalButton").click(
-	function(){
-	    return eval(
-		$("#evalBox")[0].value
-	    );
-	}
+	evalFromBox
     );
 }
 
