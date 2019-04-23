@@ -643,68 +643,70 @@ var Uzbl = (
 
 	_prot.EventList = EventList;
 	_prot.OtherEvents = OtherEvents;
+	_prot["Instance ID"] = InstanceId;
+	_prot.Builtins = Builtins;
+	_prot.Variables = Variables;
+	_prot.Geometry = Geometry;
+	_prot.Cookies = Cookies;
+	_prot.Pages = Pages;
+
 	_prot.makeOtherEvents = function(){
 	    this.otherEvents = new (this.OtherEvents)(this);
 	    return this.otherEvents;
 	};
-	_prot.ensureOtherEvents = function(){
-	    if("otherEvents" in this) return this.otherEvents;
-	    return this.makeOtherEvents();
-	};
-	_prot.displayEvent = function(e){
-	    return this.ensureOtherEvents().displayEvent(e);
-	};
-	_prot["Instance ID"] = InstanceId;
 	_prot.makeInstanceId = function(){
 	    var result = new (this["Instance ID"])(this);
 	    this["instance ID"] = result;
 	    return result;
 	};
+	_prot.makeBuiltins = function(){
+	    return this.builtins = new (this.Builtins)(this);
+	};
+	_prot.makeVariables = function(){
+	    return this.variables = new (this.Variables)(this);
+	};
+	_prot.makeGeometry = function(){
+	    return this.geometry = new (this.Geometry)(this);
+	}
+	_prot.makeCookies = function(){
+	    return this.cookies = new (this.Cookies)(this);
+	};
+	_prot.makePages = function(){
+	    return this.pages = new (this.Pages)(this);
+	};
+
+	_prot.ensureOtherEvents = function(){
+	    if("otherEvents" in this) return this.otherEvents;
+	    return this.makeOtherEvents();
+	};
 	_prot.ensureInstanceId = function(){
 	    if("instance ID" in this) return this["instance ID"];
 	    return this.makeInstanceId();
-	};
-	_prot.Builtins = Builtins;
-	_prot.makeBuiltins = function(){
-	    return this.builtins = new (this.Builtins)(this);
 	};
 	_prot.ensureBuiltins = function(){
 	    if("builtins" in this) return this.builtins;
 	    return this.makeBuiltins();
 	};
-	_prot.Variables = Variables;
-	_prot.makeVariables = function(){
-	    return this.variables = new (this.Variables)(this);
-	};
 	_prot.ensureVariables = function(){
 	    if("variables" in this) return this.variables;
 	    return this.makeVariables();
 	};
-	_prot.Geometry = Geometry;
-	_prot.makeGeometry = function(){
-	    return this.geometry = new (this.Geometry)(this);
-	}
 	_prot.ensureGeometry = function(){
 	    if("geometry" in this) return this.geometry;
 	    return this.makeGeometry();
 	};
-	_prot.Cookies = Cookies;
-	_prot.makeCookies = function(){
-	    return this.cookies = new (this.Cookies)(this);
-	};
 	_prot.ensureCookies = function(){
 	    if("cookies" in this) return this.cookies;
 	    return this.makeCookies();
-	};
-	_prot.Pages = Pages;
-	_prot.makePages = function(){
-	    return this.pages = new (this.Pages)(this);
 	};
 	_prot.ensurePages = function(){
 	    if("pages" in this) return this.pages;
 	    return this.makePages();
 	};
 
+	_prot.displayEvent = function(e){
+	    return this.ensureOtherEvents().displayEvent(e);
+	};
 	_prot.handleInstanceStartEvent = function(e){
 	    return this.ensureInstanceId().handleEvent(e);
 	};
