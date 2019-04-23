@@ -269,7 +269,6 @@ var Uzbl = (
 	    return this[this.visible ? "show" : "hide"]();
 	};
 	EventList.prototype.visible = false;
-	_prot.EventList = EventList;
 
 	function OtherEvents(browser){
 	    this.browser = browser;
@@ -303,18 +302,6 @@ var Uzbl = (
 	OtherEvents.prototype.displayEvent = function(e){
 	    this.ensureDom();
 	    return this.events.appendEvent(e);
-	};
-	_prot.OtherEvents = OtherEvents;
-	_prot.makeOtherEvents = function(){
-	    this.otherEvents = new (this.OtherEvents)(this);
-	    return this.otherEvents;
-	};
-	_prot.ensureOtherEvents = function(){
-	    if("otherEvents" in this) return this.otherEvents;
-	    return this.makeOtherEvents();
-	};
-	_prot.displayEvent = function(e){
-	    return this.ensureOtherEvents().displayEvent(e);
 	};
 
 	function InstanceId(browser){
@@ -366,16 +353,6 @@ var Uzbl = (
 	    if("INSTANCE_START" == e["event type"])
 		return this.handleInstanceStartEvent(e);
 	};
-	_prot["Instance ID"] = InstanceId;
-	_prot.makeInstanceId = function(){
-	    var result = new (this["Instance ID"])(this);
-	    this["instance ID"] = result;
-	    return result;
-	};
-	_prot.ensureInstanceId = function(){
-	    if("instance ID" in this) return this["instance ID"];
-	    return this.makeInstanceId();
-	};
 
 	function Builtins(browser){
 	    this.browser = browser;
@@ -421,14 +398,6 @@ var Uzbl = (
 	    this.events.appendEvent(e);
 	    if("BUILTINS" == e["event type"])
 		return this.handleBuiltinsEvent(e);
-	};
-	_prot.Builtins = Builtins;
-	_prot.makeBuiltins = function(){
-	    return this.builtins = new (this.Builtins)(this);
-	};
-	_prot.ensureBuiltins = function(){
-	    if("builtins" in this) return this.builtins;
-	    return this.makeBuiltins();
 	};
 
 	function Variables(browser){
@@ -507,14 +476,6 @@ var Uzbl = (
 	    if("VARIABLE_SET" == event["event type"])
 		return this.handleVariableSetEvent(event);
 	};
-	_prot.Variables = Variables;
-	_prot.makeVariables = function(){
-	    return this.variables = new (this.Variables)(this);
-	};
-	_prot.ensureVariables = function(){
-	    if("variables" in this) return this.variables;
-	    return this.makeVariables();
-	};
 
 	function Geometry(browser){
 	    this.browser = browser;
@@ -578,14 +539,6 @@ var Uzbl = (
 	    if("GEOMETRY_CHANGED" == event["event type"])
 		return this.handleGeometryChangedEvent(event);
 	};
-	_prot.Geometry = Geometry;
-	_prot.makeGeometry = function(){
-	    return this.geometry = new (this.Geometry)(this);
-	}
-	_prot.ensureGeometry = function(){
-	    if("geometry" in this) return this.geometry;
-	    return this.makeGeometry();
-	};
 
 	function Cookies(browser){
 	    this.browser = browser;
@@ -615,14 +568,6 @@ var Uzbl = (
 	    this.events.appendEvent(event);
 	    if("ADD_COOKIE" == event["event type"])
 		return this.handleAddCookieEvent()
-	};
-	_prot.Cookies = Cookies;
-	_prot.makeCookies = function(){
-	    return this.cookies = new (this.Cookies)(this);
-	};
-	_prot.ensureCookies = function(){
-	    if("cookies" in this) return this.cookies;
-	    return this.makeCookies();
 	};
 
 	function Pages(browser){
@@ -694,6 +639,62 @@ var Uzbl = (
 		return this.handleScrollHorizEvent(event);
 	    if("SCROLL_VERT" == event["event type"])
 		return this.handleScrollVertEvent(event);
+	};
+
+	_prot.EventList = EventList;
+	_prot.OtherEvents = OtherEvents;
+	_prot.makeOtherEvents = function(){
+	    this.otherEvents = new (this.OtherEvents)(this);
+	    return this.otherEvents;
+	};
+	_prot.ensureOtherEvents = function(){
+	    if("otherEvents" in this) return this.otherEvents;
+	    return this.makeOtherEvents();
+	};
+	_prot.displayEvent = function(e){
+	    return this.ensureOtherEvents().displayEvent(e);
+	};
+	_prot["Instance ID"] = InstanceId;
+	_prot.makeInstanceId = function(){
+	    var result = new (this["Instance ID"])(this);
+	    this["instance ID"] = result;
+	    return result;
+	};
+	_prot.ensureInstanceId = function(){
+	    if("instance ID" in this) return this["instance ID"];
+	    return this.makeInstanceId();
+	};
+	_prot.Builtins = Builtins;
+	_prot.makeBuiltins = function(){
+	    return this.builtins = new (this.Builtins)(this);
+	};
+	_prot.ensureBuiltins = function(){
+	    if("builtins" in this) return this.builtins;
+	    return this.makeBuiltins();
+	};
+	_prot.Variables = Variables;
+	_prot.makeVariables = function(){
+	    return this.variables = new (this.Variables)(this);
+	};
+	_prot.ensureVariables = function(){
+	    if("variables" in this) return this.variables;
+	    return this.makeVariables();
+	};
+	_prot.Geometry = Geometry;
+	_prot.makeGeometry = function(){
+	    return this.geometry = new (this.Geometry)(this);
+	}
+	_prot.ensureGeometry = function(){
+	    if("geometry" in this) return this.geometry;
+	    return this.makeGeometry();
+	};
+	_prot.Cookies = Cookies;
+	_prot.makeCookies = function(){
+	    return this.cookies = new (this.Cookies)(this);
+	};
+	_prot.ensureCookies = function(){
+	    if("cookies" in this) return this.cookies;
+	    return this.makeCookies();
 	};
 	_prot.Pages = Pages;
 	_prot.makePages = function(){
