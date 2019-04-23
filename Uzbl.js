@@ -19,6 +19,16 @@ function parseSingleQuotedString(s){
     if(-1 != result.indexOf("'")) return null;
     return result;
 }
+function parseSingleQuotedStringWithoutSpaces(spaceless){
+    if(-1 != spaceless.indexOf(" ")) return null;
+    return parseSingleQuotedString(spaceless);
+}
+function parseSpaceSeparatedListOfSingleQuotedStrings(s){
+    var tokens = s.split(" ").map(parseSingleQuotedStringWithoutSpaces);
+    if(tokens.filter(function(token){return null == token;}).length)
+	return null;
+    return tokens;
+};
 function suffix(s, prefix){
     return s.substring(prefix.length);
 }
@@ -190,11 +200,10 @@ function EventLoadCommit(uri){
 EventLoadCommit.prototype = new UzblEvent("LOAD_COMMIT");
 EventLoadCommit.prototype.loadType = "commit";
 EventLoadCommit.fromString = function(s){
-    var tokens = s.split(" ");
-    var evtType = tokens.shift();
-    if(1 != tokens.length) return new EventUnknown([evtType, tokens]);
-    var uri = parseSingleQuotedString(tokens[0]);
-    if(null == uri) return new EventUnknown([evtType, tokens[0]]);
+    var q = suffix(s, this.prototype["type"] + " ");
+    var uri = parseSingleQuotedString(q);
+    if(null == uri)
+	return new EventUnknown([this.prototype["type"], q]);
     return new this(uri);
 }
 
@@ -229,7 +238,7 @@ EventLoadFinish.fromString = function(s){
     var tokens = s.split(" ");
     var evtType = tokens.shift();
     if(1 != tokens.length) return new EventUnknown([evtType, tokens]);
-    var uri = parseSingleQuotedString(tokens[0]);
+    var uri = parseSingleQuotedStringWithoutSpaces(tokens[0]);
     if(null == uri) return new EventUnknown([evtType, tokens[0]]);
     return new this(uri);
 }
@@ -245,7 +254,7 @@ EventGeometryChanged.fromString = function(s){
     var evtType = tokens.shift();
     if(1 != tokens.length) return new EventUnknown([evtType, tokens]);
     var q = tokens.shift();
-    var geom = parseSingleQuotedString(q);
+    var geom = parseSingleQuotedStringWithoutSpaces(q);
     if(null == geom) return new EventUnknown([evtType, q]);
     tokens = geom.split("+");
     var size = tokens.shift().split("x");
@@ -261,7 +270,7 @@ EventRequestStarting.fromString = function(s){
     var evtType = tokens.shift();
     if(1 != tokens.length) return new EventUnknown([evtType, tokens]);
     var q = tokens.shift();
-    var uri = parseSingleQuotedString(q);
+    var uri = parseSingleQuotedStringWithoutSpaces(q);
     if(null == uri) return new EventUnknown([evtType, q]);
     return new this(uri);
 }
@@ -345,7 +354,7 @@ EventKeyPress.fromString = function(s){
 	return new EventUnknown([this.prototype["type"]].concat(tokens));
     var q = tokens.shift();
     var key = tokens.shift();
-    var mod = parseSingleQuotedString(q);
+    var mod = parseSingleQuotedStringWithoutSpaces(q);
     if(mod == null) return new EventUnknown([this.prototype["type"], q, key]);
     return new this(mod, key);
 };
@@ -378,13 +387,12 @@ function EventAddCookie(domain, path, name, value, scheme, expiration){
 }
 EventAddCookie.prototype = new UzblEvent("ADD_COOKIE");
 EventAddCookie.fromString = function(s){
-    var tokens = s.split(" ");
-    if(tokens.shift() != this.prototype["type"]) return new EventUnknown([s]);
-    if(6 != tokens.length)
-	return new EventUnknown([this.prototype["type"]].concat(tokens));
-    var strings = tokens.map(parseSingleQuotedString);
-    if(strings.filter(function(s){return null == s;}).length)
-	return new EventUnknown([this.prototype["type"]].concat(tokens));
+    var strings = parseSpaceSeparatedListOfSingleQuotedStrings(
+	suffix(s, this.prototype["type"] + " ")
+    );
+    if(null == strings) return new EventUnknown([s]);
+    if(6 != strings.length)
+	return new EventUnknown([this.prototype["type"]].concat(strings));
     var domain = strings.shift();
     var path = strings.shift();
     var name = strings.shift();
