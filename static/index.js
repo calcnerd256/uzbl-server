@@ -492,14 +492,15 @@ var Uzbl = (
 	    }
 	);
 
+	var Geometry = buildDomClass(
 	function Geometry(browser){
 	    this.construct(browser);
-	};
-	Geometry.prototype.construct = function(browser){
+	},
+	    function(browser){
 	    this.browser = browser;
 	    this.knownViewport = [1, 1];
-	};
-	Geometry.prototype.makeDom = function(){
+	    },
+	    function(){
 	    var result = document.createElement("div");
 	    $(result).text("geometry: ");
 	    this.text = document.createElement("span");
@@ -515,9 +516,9 @@ var Uzbl = (
 	    result.appendChild(document.createTextNode(")"));
 	    this.browser.appendChild(result);
 	    return result;
-	};
-	Geometry.prototype.ensureDom = ensureDom;
-	Geometry.prototype.assignValue = function(size, offset){
+	    },
+	    {
+		assignValue: function(size, offset){
 	    this.size = size;
 	    this.offset = offset;
 	    var right = +(size[0]) + (+(offset[0]));
@@ -542,25 +543,28 @@ var Uzbl = (
 		    }
 		)
 	    );
-	};
-	Geometry.prototype.handleGeometryChangedEvent = function(event){
+		},
+		handleGeometryChangedEvent: function(event){
 	    this.ensureDom();
 	    this.events.appendEvent(event);
 	    this.assignValue(event.event.size, event.event.offset);
-	};
-	Geometry.prototype.handleEvent = function(event){
+		},
+		handleEvent: function(event){
 	    if("GEOMETRY_CHANGED" == event["event type"])
 		return this.handleGeometryChangedEvent(event);
-	};
+		}
+	    }
+	);
 
+	var Cookies = buildDomClass(
 	function Cookies(browser){
 	    this.construct(browser);
-	};
-	Cookies.prototype.construct = function(browser){
+	},
+	    function(browser){
 	    this.browser = browser;
 	    this.cookies = {};
-	};
-	Cookies.prototype.makeDom = function(){
+	    },
+	    function(){
 	    var result = document.createElement("div");
 	    $(result).text("cookie jar: ");
 	    this.ul = new ToggleUl();
@@ -571,35 +575,38 @@ var Uzbl = (
 	    result.appendChild(document.createTextNode(")"));
 	    this.browser.appendChild(result);
 	    return result;
-	};
-	Cookies.prototype.ensureDom = ensureDom;
-	Cookies.prototype.handleAddCookieEvent = function(event){
+	    },
+	    {
+		handleAddCookieEvent: function(event){
 	    // TODO
-	}
-	Cookies.prototype.handleEvent = function(event){
+		},
+		handleEvent: function(event){
 	    this.ensureDom();
 	    this.events.appendEvent(event);
 	    if("ADD_COOKIE" == event["event type"])
 		return this.handleAddCookieEvent()
-	};
+		}
+	    }
+	);
 
+	var Pages = buildDomClass(
 	function Pages(browser){
 	    this.construct(browser);
-	};
-	Pages.prototype.construct = function(browser){
+	},
+	    function(browser){
 	    this.browser = browser;
 	    this.newPage();
-	};
-	Pages.prototype.makeDom = function(){
+	    },
+	    function(){
 	    var result = document.createElement("div");
 	    $(result).text("pages: ");
 	    this.ul = new ToggleUl();
 	    result.appendChild(this.ul.ensureDom());
 	    this.browser.appendChild(result);
 	    return result;
-	};
-	Pages.prototype.ensureDom = ensureDom;
-	Pages.prototype.newPage = function(){
+	    },
+	    {
+		newPage: function(){
 	    var vars = this.browser.ensureVariables().variables;
 	    var keys = Object.keys(vars);
 	    var variables = {};
@@ -624,8 +631,8 @@ var Uzbl = (
 	    );
 	    this.ul.ul.appendChild(this.currentPage.dom);
 	    return this.currentPage;
-	};
-	Pages.prototype.handleScrollHorizEvent = function(event){
+		},
+		handleScrollHorizEvent: function(event){
 	    var evt = event.event;
 	    this.currentPage.scrollHoriz = {
 		"bounds": evt.bounds,
@@ -633,8 +640,8 @@ var Uzbl = (
 		"scrollbar": evt.value
 	    };
 	    return this.currentPage.scrollHoriz;
-	};
-	Pages.prototype.handleScrollVertEvent = function(event){
+		},
+		handleScrollVertEvent: function(event){
 	    var evt = event.event;
 	    this.currentPage.scrollVert = {
 		"bounds": evt.bounds,
@@ -642,8 +649,8 @@ var Uzbl = (
 		"scrollbar": evt.value
 	    };
 	    return this.currentPage.scrollVert;
-	};
-	Pages.prototype.handleEvent = function(event){
+		},
+		handleEvent: function(event){
 	    if("load" == event["event type"])
 		if("start" == event.event.loadType)
 		    this.newPage();
@@ -652,7 +659,9 @@ var Uzbl = (
 		return this.handleScrollHorizEvent(event);
 	    if("SCROLL_VERT" == event["event type"])
 		return this.handleScrollVertEvent(event);
-	};
+		}
+	    }
+	);
 
 	var _prot = cls.prototype;
 	_prot.EventList = EventList;
