@@ -142,10 +142,7 @@ var Uzbl = (
 	    $(this.ul).hide();
 	    return result;
 	};
-	ToggleUl.prototype.ensureDom = function(){
-	    if("dom" in this) return this.dom;
-	    return this.dom = this.makeDom();
-	};
+	ToggleUl.prototype.ensureDom = ensureDom;
 	ToggleUl.prototype.toggleVisibility = function(){
 	    this.ensureDom();
 	    $(this.ul).toggle("slow");
@@ -188,10 +185,7 @@ var Uzbl = (
 	    $("#evalBox").before(result);
 	    return result;
 	};
-	_prot.ensureDom = function(){
-	    if(!("dom" in this)) return this.dom = this.makeDom();
-	    return this.dom;
-	};
+	_prot.ensureDom = ensureDom;
 	_prot.appendChild = function(elem){
 	    return this.ensureDom().appendChild(elem);
 	};
@@ -376,10 +370,6 @@ var Uzbl = (
 			result.browser = browser;
 		    return result;
 		},
-		ensureDom: function(){
-		    if("dom" in this) return this.dom;
-		    return this.dom = this.makeDom();
-		},
 		assignValue: function(value){
 		    this.value = value;
 		    $(this.ensureDom()).text("instance " + value);
@@ -416,10 +406,7 @@ var Uzbl = (
 	    this.browser.appendChild(result);
 	    return result;
 	};
-	Builtins.prototype.ensureDom = function(){
-	    if("dom" in this) return this.dom;
-	    return this.dom = this.makeDom();
-	};
+	Builtins.prototype.ensureDom = ensureDom;
 	Builtins.prototype.ensureUl = function(){
 	    this.ensureDom();
 	    return this.ul;
@@ -465,10 +452,7 @@ var Uzbl = (
 	    this.browser.appendChild(result);
 	    return result;
 	};
-	Variables.prototype.ensureDom = function(){
-	    if("dom" in this) return this.dom;
-	    return this.dom = this.makeDom();
-	};
+	Variables.prototype.ensureDom = ensureDom;
 	Variables.prototype.makeVariable = function(name){
 	    this.ensureDom();
 	    var li = document.createElement("li");
@@ -544,10 +528,7 @@ var Uzbl = (
 	    this.browser.appendChild(result);
 	    return result;
 	};
-	Geometry.prototype.ensureDom = function(){
-	    if("dom" in this) return this.dom;
-	    return this.dom = this.makeDom();
-	};
+	Geometry.prototype.ensureDom = ensureDom;
 	Geometry.prototype.assignValue = function(size, offset){
 	    this.size = size;
 	    this.offset = offset;
@@ -603,10 +584,7 @@ var Uzbl = (
 	    this.browser.appendChild(result);
 	    return result;
 	};
-	Cookies.prototype.ensureDom = function(){
-	    if("dom" in this) return this.dom;
-	    return this.dom = this.makeDom();
-	};
+	Cookies.prototype.ensureDom = ensureDom;
 	Cookies.prototype.handleAddCookieEvent = function(event){
 	    // TODO
 	}
@@ -632,10 +610,7 @@ var Uzbl = (
 	    this.browser.appendChild(result);
 	    return result;
 	};
-	Pages.prototype.ensureDom = function(){
-	    if("dom" in this) return this.dom;
-	    return this.dom = this.makeDom();
-	};
+	Pages.prototype.ensureDom = ensureDom;
 	Pages.prototype.newPage = function(){
 	    var vars = this.browser.ensureVariables().variables;
 	    var keys = Object.keys(vars);
