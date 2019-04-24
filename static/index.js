@@ -166,43 +166,43 @@ var Uzbl = (
 	    constructor,
 	    NOP,
 	    function(){
-	    var result = document.createElement("div");
-	    $("#evalBox").before(result);
-	    return result;
+		var result = document.createElement("div");
+		$("#evalBox").before(result);
+		return result;
 	    },
 	    {
 		toJSON: function(){
-	    var keys = Object.keys(this);
-	    var result = {};
-	    var that = this;
-	    keys.map(
-		function(k){
-		    var val = that[k];
-		    result[k] = val;
-		    if("object" == typeof val)
-			if("browser" in val)
-			    if(val.browser == that){
-				var keys = Object.keys(val);
-				var v = {};
-				keys.map(function(k){v[k] = val[k]});
-				delete v.browser;
+		    var keys = Object.keys(this);
+		    var result = {};
+		    var that = this;
+		    keys.map(
+			function(k){
+			    var val = that[k];
+			    result[k] = val;
+			    if("object" == typeof val)
+				if("browser" in val)
+				    if(val.browser == that){
+					var keys = Object.keys(val);
+					var v = {};
+					keys.map(function(k){v[k] = val[k]});
+					delete v.browser;
+				    }
+			    try{
+				result[k] = JSON.parse(
+				    JSON.stringify(
+					v
+				    )
+				);
 			    }
-		    try{
-			result[k] = JSON.parse(
-			    JSON.stringify(
-				v
-			    )
-			);
-		    }
-		    catch(e){
-			delete result[k];
-		    }
-		}
-	    );
-	    return result;
+			    catch(e){
+				delete result[k];
+			    }
+			}
+		    );
+		    return result;
 		},
 		appendChild: function(elem){
-	    return this.ensureDom().appendChild(elem);
+		    return this.ensureDom().appendChild(elem);
 		}
 	    }
 	);
