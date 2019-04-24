@@ -317,6 +317,13 @@ var Uzbl = (
 		[storeBrowser].concat(named)
 	    );
 	}
+	function initEvents(container){
+	    var result = new (this.browser.EventList)();
+	    container.appendChild(document.createTextNode(" ("));
+	    container.appendChild(result.ensureDom());
+	    container.appendChild(document.createTextNode(")"));
+	    return result;
+	}
 	var OtherEvents = buildWidgetClass(
 	    function OtherEvents(browser){
 		this.construct(browser);
@@ -330,6 +337,7 @@ var Uzbl = (
 		return result;
 	    },
 	    [
+		initEvents,
 		function toJSON(){
 		    var keys = Object.keys(this);
 		    var result = {};
@@ -351,13 +359,6 @@ var Uzbl = (
 		}
 	    ]
 	);
-	function initEvents(container){
-	    var result = new (this.browser.EventList)();
-	    container.appendChild(document.createTextNode(" ("));
-	    container.appendChild(result.ensureDom());
-	    container.appendChild(document.createTextNode(")"));
-	    return result;
-	}
 	var InstanceId = buildWidgetClass(
 	    function InstanceId(browser){
 		this.construct(browser);
@@ -415,14 +416,12 @@ var Uzbl = (
 		var ul = new ToggleUl();
 		result.appendChild(ul.ensureDom());
 		this.ul = ul.ul;
-		this.events = new (this.browser.EventList)();
-		result.appendChild(document.createTextNode(" ("));
-		result.appendChild(this.events.ensureDom());
-		result.appendChild(document.createTextNode(")"));
+		this.events = this.initEvents(result);
 		this.browser.appendChild(result);
 		return result;
 	    },
 	    [
+		initEvents,
 		function ensureUl(){
 		    this.ensureDom();
 		    return this.ul;
@@ -462,14 +461,12 @@ var Uzbl = (
 		$(result).text("variables: ");
 		this.ul = new ToggleUl();
 		result.appendChild(this.ul.ensureDom());
-		this.events = new (this.browser.EventList)();
-		result.appendChild(document.createTextNode(" ("));
-		result.appendChild(this.events.ensureDom());
-		result.appendChild(document.createTextNode(")"));
+		this.events = this.initEvents(result);
 		this.browser.appendChild(result);
 		return result;
 	    },
 	    [
+		initEvents,
 		function makeVariable(name){
 		    this.ensureDom();
 		    var li = document.createElement("li");
@@ -541,14 +538,12 @@ var Uzbl = (
 		    document.createTextNode("[broken widget]")
 		);
 		result.appendChild(this.canv);
-		this.events = new (this.browser.EventList)();
-		result.appendChild(document.createTextNode(" ("));
-		result.appendChild(this.events.ensureDom());
-		result.appendChild(document.createTextNode(")"));
+		this.events = this.initEvents(result);
 		this.browser.appendChild(result);
 		return result;
 	    },
 	    [
+		initEvents,
 		function assignValue(size, offset){
 		    this.size = size;
 		    this.offset = offset;
@@ -605,14 +600,12 @@ var Uzbl = (
 		$(result).text("cookie jar: ");
 		this.ul = new ToggleUl();
 		result.appendChild(this.ul.ensureDom());
-		this.events = new (this.browser.EventList)();
-		result.appendChild(document.createTextNode(" ("));
-		result.appendChild(this.events.ensureDom());
-		result.appendChild(document.createTextNode(")"));
+		this.events = this.initEvents(result);
 		this.browser.appendChild(result);
 		return result;
 	    },
 	    [
+		initEvents,
 		function handleAddCookieEvent(event){
 		    // TODO
 		},
@@ -640,6 +633,7 @@ var Uzbl = (
 		return result;
 	    },
 	    [
+		initEvents,
 		function newPage(){
 		    var vars = this.browser.ensureVariables().variables;
 		    var keys = Object.keys(vars);
