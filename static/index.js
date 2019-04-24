@@ -101,13 +101,18 @@ var Uzbl = (
 		this.dom = this.makeDom();
 	    return this.dom;
 	}
-	function buildDomClass(cls, construct, makeDom, members){
+	function buildDomClass(cls, construct, makeDom, members, named){
 	    cls.prototype.construct = construct;
 	    cls.prototype.makeDom = makeDom;
 	    cls.prototype.ensureDom = ensureDom;
 	    Object.keys(members).map(
 		function(k){
 		    cls.prototype[k] = members[k];
+		}
+	    );
+	    named.map(
+		function(x){
+		    cls.prototype[x.name] = x;
 		}
 	    );
 	    return cls;
@@ -137,11 +142,13 @@ var Uzbl = (
 		return result;
 	    },
 	    {
-		toggleVisibility: function(){
+		toggleVisibility: function toggleVisibility(){
 		    this.ensureDom();
 		    $(this.ul).toggle("slow");
 		}
-	    }
+	    },
+	    [
+	    ]
 	);
 	cls = buildDomClass(
 	    constructor,
@@ -152,7 +159,7 @@ var Uzbl = (
 		return result;
 	    },
 	    {
-		toJSON: function(){
+		toJSON: function toJSON(){
 		    var keys = Object.keys(this);
 		    var result = {};
 		    var that = this;
@@ -182,10 +189,12 @@ var Uzbl = (
 		    );
 		    return result;
 		},
-		appendChild: function(elem){
+		appendChild: function appendChild(elem){
 		    return this.ensureDom().appendChild(elem);
 		}
-	    }
+	    },
+	    [
+	    ]
 	);
 	var EventList = buildDomClass(
 	    function EventList(){
@@ -208,7 +217,7 @@ var Uzbl = (
 		return result;
 	    },
 	    {
-		makeLiNumber: function(n){
+		makeLiNumber: function makeLiNumber(n){
 		    var li = document.createElement("li");
 		    var anchor = document.createElement("a");
 		    var pre = document.createElement("pre");
@@ -234,12 +243,12 @@ var Uzbl = (
 		    li.appendChild(pre);
 		    return [li, pre];
 		},
-		makeLi: function(event){
+		makeLi: function makeLi(event){
 		    var lp = this.makeLiNumber(event["event ID"]);
 		    $(lp[1]).text(event["event type"]);
 		    return lp[0];
 		},
-		appendEvent: function(event){
+		appendEvent: function appendEvent(event){
 		    this.events.push(event["event ID"]);
 		    this.ensureDom();
 		    this.ul.ensureDom();
@@ -251,7 +260,7 @@ var Uzbl = (
 		    );
 		    return li;
 		},
-		hide: function(){
+		hide: function hide(){
 		    this.ensureDom();
 		    var ul = this.ul;
 		    $(ul.ul).hide(
@@ -262,7 +271,7 @@ var Uzbl = (
 		    );
 		    $(ul.anchor).text("show");
 		},
-		populateUl: function(){
+		populateUl: function populateUl(){
 		    this.ensureDom();
 		    return $(this.ul.ul).html(
 			this.events.map(
@@ -270,17 +279,19 @@ var Uzbl = (
 			).map(pluck(0))
 		    );
 		},
-		show: function(){
+		show: function show(){
 		    this.populateUl();
 		    $(this.ul.ul).show("slow");
 		    $(this.ul.anchor).text("hide");
 		},
-		toggle: function(){
+		toggle: function toggle(){
 		    this.visible = !(this.visible);
 		    return this[this.visible ? "show" : "hide"]();
 		},
 		visible: false
-	    }
+	    },
+	    [
+	    ]
 	);
 	var OtherEvents = buildDomClass(
 	    function OtherEvents(browser){
@@ -297,7 +308,7 @@ var Uzbl = (
 		return result;
 	    },
 	    {
-		toJSON: function(){
+		toJSON: function toJSON(){
 		    var keys = Object.keys(this);
 		    var result = {};
 		    var that = this;
@@ -312,11 +323,13 @@ var Uzbl = (
 			result.browser = browser;
 		    return result;
 		},
-		displayEvent: function(e){
+		displayEvent: function displayEvent(e){
 		    this.ensureDom();
 		    return this.events.appendEvent(e);
 		}
-	    }
+	    },
+	    [
+	    ]
 	);
 	var InstanceId = buildDomClass(
 	    function InstanceId(browser){
@@ -339,7 +352,7 @@ var Uzbl = (
 		return result;
 	    },
 	    {
-		toJSON: function(){
+		toJSON: function toJSON(){
 		    var keys = Object.keys(this);
 		    var result = {};
 		    var that = this;
@@ -354,21 +367,23 @@ var Uzbl = (
 			result.browser = browser;
 		    return result;
 		},
-		assignValue: function(value){
+		assignValue: function assignValue(value){
 		    this.value = value;
 		    $(this.ensureDom()).text("instance " + value);
 		},
-		handleInstanceStartEvent: function(e){
+		handleInstanceStartEvent: function handleInstanceStartEvent(e){
 		    this.ensureDom();
 		    this.events.appendEvent(e);
 		    return this.assignValue(e.event["instance ID"]);
 		},
-		handleEvent: function(e){
+		handleEvent: function handleEvent(e){
 		    this.events.push(e);
 		    if("INSTANCE_START" == e["event type"])
 			return this.handleInstanceStartEvent(e);
 		}
-	    }
+	    },
+	    [
+	    ]
 	);
 	var Builtins = buildDomClass(
 	    function Builtins(browser){
@@ -391,32 +406,34 @@ var Uzbl = (
 		return result;
 	    },
 	    {
-		ensureUl: function(){
+		ensureUl: function ensureUl(){
 		    this.ensureDom();
 		    return this.ul;
 		},
-		makeLi: function(name){
+		makeLi: function makeLi(name){
 		    var li = document.createElement("li");
 		    $(li).text(name);
 		    return li;
 		},
-		assignValue: function(builtins){
+		assignValue: function assignValue(builtins){
 		    this.value = builtins;
 		    $(this.ensureUl()).html(
 			builtins.map(bindFrom(this, "makeLi"))
 		    );
 		    return this.value;
 		},
-		handleBuiltinsEvent: function(e){
+		handleBuiltinsEvent: function handleBuiltinsEvent(e){
 		    return this.assignValue(e.event.names);
 		},
-		handleEvent: function(e){
+		handleEvent: function handleEvent(e){
 		    this.ensureDom();
 		    this.events.appendEvent(e);
 		    if("BUILTINS" == e["event type"])
 			return this.handleBuiltinsEvent(e);
 		}
-	    }
+	    },
+	    [
+	    ]
 	);
 	var Variables = buildDomClass(
 	    function Variables(browser){
@@ -439,7 +456,7 @@ var Uzbl = (
 		return result;
 	    },
 	    {
-		makeVariable: function(name){
+		makeVariable: function makeVariable(name){
 		    this.ensureDom();
 		    var li = document.createElement("li");
 		    var result = {
@@ -462,11 +479,11 @@ var Uzbl = (
 		    this.ul.ul.appendChild(li);
 		    return result;
 		},
-		ensureVariable: function(name){
+		ensureVariable: function ensureVariable(name){
 		    if(name in this.variables) return this.variables[name];
 		    return this.makeVariable(name);
 		},
-		setVariable: function(name, varType, value){
+		setVariable: function setVariable(name, varType, value){
 		    var v = this.ensureVariable(name);
 		    v.value = [varType, value];
 		    $(v.name).text(name);
@@ -474,7 +491,7 @@ var Uzbl = (
 		    $(v.pre).text("");
 		    v.pre.appendChild(document.createTextNode(""+value));
 		},
-		handleVariableSetEvent: function(event){
+		handleVariableSetEvent: function handleVariableSetEvent(event){
 		    var evt = event.event;
 		    var name = evt.name;
 		    var val = evt.value;
@@ -483,13 +500,15 @@ var Uzbl = (
 		    this.ensureVariable(name).events.appendEvent(event);
 		    return this.setVariable(name, valueType, value);
 		},
-		handleEvent: function(event){
+		handleEvent: function handleEvent(event){
 		    this.ensureDom();
 		    this.events.appendEvent(event);
 		    if("VARIABLE_SET" == event["event type"])
 			return this.handleVariableSetEvent(event);
 		}
-	    }
+	    },
+	    [
+	    ]
 	);
 	var Geometry = buildDomClass(
 	    function Geometry(browser){
@@ -519,7 +538,7 @@ var Uzbl = (
 		return result;
 	    },
 	    {
-		assignValue: function(size, offset){
+		assignValue: function assignValue(size, offset){
 		    this.size = size;
 		    this.offset = offset;
 		    var right = +(size[0]) + (+(offset[0]));
@@ -552,16 +571,20 @@ var Uzbl = (
 			)
 		    );
 		},
-		handleGeometryChangedEvent: function(event){
+		handleGeometryChangedEvent: function handleGeometryChangedEvent(
+		    event
+		){
 		    this.ensureDom();
 		    this.events.appendEvent(event);
 		    this.assignValue(event.event.size, event.event.offset);
 		},
-		handleEvent: function(event){
+		handleEvent: function handleEvent(event){
 		    if("GEOMETRY_CHANGED" == event["event type"])
 			return this.handleGeometryChangedEvent(event);
 		}
-	    }
+	    },
+	    [
+	    ]
 	);
 	var Cookies = buildDomClass(
 	    function Cookies(browser){
@@ -584,16 +607,18 @@ var Uzbl = (
 		return result;
 	    },
 	    {
-		handleAddCookieEvent: function(event){
+		handleAddCookieEvent: function handleAddCookieEvent(event){
 		    // TODO
 		},
-		handleEvent: function(event){
+		handleEvent: function handleEvent(event){
 		    this.ensureDom();
 		    this.events.appendEvent(event);
 		    if("ADD_COOKIE" == event["event type"])
 			return this.handleAddCookieEvent()
 		}
-	    }
+	    },
+	    [
+	    ]
 	);
 	var Pages = buildDomClass(
 	    function Pages(browser){
@@ -612,7 +637,7 @@ var Uzbl = (
 		return result;
 	    },
 	    {
-		newPage: function(){
+		newPage: function newPage(){
 		    var vars = this.browser.ensureVariables().variables;
 		    var keys = Object.keys(vars);
 		    var variables = {};
@@ -638,7 +663,7 @@ var Uzbl = (
 		    this.ul.ul.appendChild(this.currentPage.dom);
 		    return this.currentPage;
 		},
-		handleScrollHorizEvent: function(event){
+		handleScrollHorizEvent: function handleScrollHorizEvent(event){
 		    var evt = event.event;
 		    this.currentPage.scrollHoriz = {
 			"bounds": evt.bounds,
@@ -647,7 +672,7 @@ var Uzbl = (
 		    };
 		    return this.currentPage.scrollHoriz;
 		},
-		handleScrollVertEvent: function(event){
+		handleScrollVertEvent: function handleScrollVertEvent(event){
 		    var evt = event.event;
 		    this.currentPage.scrollVert = {
 			"bounds": evt.bounds,
@@ -656,7 +681,7 @@ var Uzbl = (
 		    };
 		    return this.currentPage.scrollVert;
 		},
-		handleEvent: function(event){
+		handleEvent: function handleEvent(event){
 		    if("load" == event["event type"])
 			if("start" == event.event.loadType)
 			    this.newPage();
@@ -666,7 +691,9 @@ var Uzbl = (
 		    if("SCROLL_VERT" == event["event type"])
 			return this.handleScrollVertEvent(event);
 		}
-	    }
+	    },
+	    [
+	    ]
 	);
 
 	var _prot = cls.prototype;
