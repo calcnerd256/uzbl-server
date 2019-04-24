@@ -344,54 +344,54 @@ var Uzbl = (
 		this.construct(browser);
 	    },
 	    function(browser){
-	    this.browser = browser;
-	    this.events = [];
+		this.browser = browser;
+		this.events = [];
 	    },
 	    function(){
-	    var result = document.createElement("span");
-	    var div = document.createElement("div");
-	    div.appendChild(result);
-	    this.events = new (this.browser.EventList)();
-	    div.appendChild(document.createTextNode(" ("));
-	    div.appendChild(this.events.ensureDom());
-	    div.appendChild(document.createTextNode(")"));
-	    this.browser.appendChild(div);
-	    $(result).text("unknown instance");
-	    return result;
+		var result = document.createElement("span");
+		var div = document.createElement("div");
+		div.appendChild(result);
+		this.events = new (this.browser.EventList)();
+		div.appendChild(document.createTextNode(" ("));
+		div.appendChild(this.events.ensureDom());
+		div.appendChild(document.createTextNode(")"));
+		this.browser.appendChild(div);
+		$(result).text("unknown instance");
+		return result;
 	    },
 	    {
 		toJSON: function(){
-	    var keys = Object.keys(this);
-	    var result = {};
-	    var that = this;
-	    keys.map(function(k){result[k] = that[k];})
-	    var browserKeys = []
-	    if("browser" in this)
-		browserKeys = Object.keys(this.browser);
-	    var browser = {};
-	    browserKeys.map(function(k){browser[k] = that.browser[k];});
-	    delete browser["instance ID"];
-	    if("browser" in result)
-		result.browser = browser;
-	    return result;
+		    var keys = Object.keys(this);
+		    var result = {};
+		    var that = this;
+		    keys.map(function(k){result[k] = that[k];})
+		    var browserKeys = []
+		    if("browser" in this)
+			browserKeys = Object.keys(this.browser);
+		    var browser = {};
+		    browserKeys.map(function(k){browser[k] = that.browser[k];});
+		    delete browser["instance ID"];
+		    if("browser" in result)
+			result.browser = browser;
+		    return result;
 		},
 		ensureDom: function(){
-	    if("dom" in this) return this.dom;
-	    return this.dom = this.makeDom();
+		    if("dom" in this) return this.dom;
+		    return this.dom = this.makeDom();
 		},
 		assignValue: function(value){
 		    this.value = value;
 		    $(this.ensureDom()).text("instance " + value);
 		},
 		handleInstanceStartEvent: function(e){
-	    this.ensureDom();
-	    this.events.appendEvent(e);
-	    return this.assignValue(e.event["instance ID"]);
+		    this.ensureDom();
+		    this.events.appendEvent(e);
+		    return this.assignValue(e.event["instance ID"]);
 		},
 		handleEvent: function(e){
-	    this.events.push(e);
-	    if("INSTANCE_START" == e["event type"])
-		return this.handleInstanceStartEvent(e);
+		    this.events.push(e);
+		    if("INSTANCE_START" == e["event type"])
+			return this.handleInstanceStartEvent(e);
 		}
 	    }
 	);
