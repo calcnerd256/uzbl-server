@@ -191,19 +191,18 @@ var Uzbl = (
 		this.dom = this.makeDom();
 	    return this.dom;
 	}
-	var EventList = (
-	    function(cls, construct, makeDom, members){
-		cls.prototype.construct = construct;
-		cls.prototype.makeDom = makeDom;
-		cls.prototype.ensureDom = ensureDom;
-		Object.keys(members).map(
-		    function(k){
-			cls.prototype[k] = members[k];
-		    }
-		);
-		return cls;
-	    }
-	)(
+	function buildDomClass(cls, construct, makeDom, members){
+	    cls.prototype.construct = construct;
+	    cls.prototype.makeDom = makeDom;
+	    cls.prototype.ensureDom = ensureDom;
+	    Object.keys(members).map(
+		function(k){
+		    cls.prototype[k] = members[k];
+		}
+	    );
+	    return cls;
+	}
+	var EventList = buildDomClass(
 	    function EventList(){
 		this.construct();
 	    },
@@ -300,8 +299,11 @@ var Uzbl = (
 	);
 
 	function OtherEvents(browser){
-	    this.browser = browser;
+	    this.construct(browser);
 	};
+	OtherEvents.prototype.construct = function(browser){
+	    this.browser = browser;
+	}
 	OtherEvents.prototype.toJSON = function(){
 	    var keys = Object.keys(this);
 	    var result = {};
@@ -319,14 +321,15 @@ var Uzbl = (
 	};
 	OtherEvents.prototype.makeDom = function(){
 	    this.events = new (this.browser.EventList)();
-	    this.dom = this.events.ensureDom();
+	    var result = this.events.ensureDom();
+	    this.dom = result;
 	    this.ul = this.events.ul;
-	    this.browser.appendChild(this.dom);
-	    return this.dom;
+	    this.browser.appendChild(result);
+	    return result;
 	};
 	OtherEvents.prototype.ensureDom = function(){
 	    if("dom" in this) return this.dom;
-	    return this.makeDom();
+	    return this.dom = this.makeDom();
 	};
 	OtherEvents.prototype.displayEvent = function(e){
 	    this.ensureDom();
