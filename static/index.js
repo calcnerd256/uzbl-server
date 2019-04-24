@@ -418,77 +418,76 @@ var Uzbl = (
 		}
 	    }
 	);
-
 	var Variables = buildDomClass(
-	function Variables(browser){
-	    this.construct(browser);
-	},
+	    function Variables(browser){
+		this.construct(browser);
+	    },
 	    function(browser){
-	    this.browser = browser;
-	    this.variables = {};
+		this.browser = browser;
+		this.variables = {};
 	    },
 	    function(){
-	    var result = document.createElement("div");
-	    $(result).text("variables: ");
-	    this.ul = new ToggleUl();
-	    result.appendChild(this.ul.ensureDom());
-	    this.events = new (this.browser.EventList)();
-	    result.appendChild(document.createTextNode(" ("));
-	    result.appendChild(this.events.ensureDom());
-	    result.appendChild(document.createTextNode(")"));
-	    this.browser.appendChild(result);
-	    return result;
+		var result = document.createElement("div");
+		$(result).text("variables: ");
+		this.ul = new ToggleUl();
+		result.appendChild(this.ul.ensureDom());
+		this.events = new (this.browser.EventList)();
+		result.appendChild(document.createTextNode(" ("));
+		result.appendChild(this.events.ensureDom());
+		result.appendChild(document.createTextNode(")"));
+		this.browser.appendChild(result);
+		return result;
 	    },
 	    {
 		makeVariable: function(name){
-	    this.ensureDom();
-	    var li = document.createElement("li");
-	    var result = {
-		li: li,
-		name: document.createElement("span"),
-		valueType: document.createElement("span"),
-		pre: document.createElement("pre"),
-		events: new (this.browser.EventList)()
-	    };
-	    this.variables[name] = result;
-	    $(result.name).text(name);
-	    li.appendChild(result.name);
-	    li.appendChild(document.createTextNode(" : "));
-	    li.appendChild(result.valueType);
-	    $(result.valueType).text("unknown");
-	    li.appendChild(result.pre);
-	    li.appendChild(document.createTextNode(" ("));
-	    li.appendChild(result.events.ensureDom());
-	    li.appendChild(document.createTextNode(")"));
-	    this.ul.ul.appendChild(li);
-	    return result;
+		    this.ensureDom();
+		    var li = document.createElement("li");
+		    var result = {
+			li: li,
+			name: document.createElement("span"),
+			valueType: document.createElement("span"),
+			pre: document.createElement("pre"),
+			events: new (this.browser.EventList)()
+		    };
+		    this.variables[name] = result;
+		    $(result.name).text(name);
+		    li.appendChild(result.name);
+		    li.appendChild(document.createTextNode(" : "));
+		    li.appendChild(result.valueType);
+		    $(result.valueType).text("unknown");
+		    li.appendChild(result.pre);
+		    li.appendChild(document.createTextNode(" ("));
+		    li.appendChild(result.events.ensureDom());
+		    li.appendChild(document.createTextNode(")"));
+		    this.ul.ul.appendChild(li);
+		    return result;
 		},
 		ensureVariable: function(name){
-	    if(name in this.variables) return this.variables[name];
-	    return this.makeVariable(name);
+		    if(name in this.variables) return this.variables[name];
+		    return this.makeVariable(name);
 		},
 		setVariable: function(name, varType, value){
-	    var v = this.ensureVariable(name);
-	    v.value = [varType, value];
-	    $(v.name).text(name);
-	    $(v.valueType).text(varType);
-	    $(v.pre).text("");
-	    v.pre.appendChild(document.createTextNode(""+value));
+		    var v = this.ensureVariable(name);
+		    v.value = [varType, value];
+		    $(v.name).text(name);
+		    $(v.valueType).text(varType);
+		    $(v.pre).text("");
+		    v.pre.appendChild(document.createTextNode(""+value));
 		},
 		handleVariableSetEvent: function(event){
-	    var evt = event.event;
-	    var name = evt.name;
-	    var val = evt.value;
-	    var valueType = val[0];
-	    var value = val[1];
-	    this.ensureVariable(name).events.appendEvent(event);
-	    return this.setVariable(name, valueType, value);
+		    var evt = event.event;
+		    var name = evt.name;
+		    var val = evt.value;
+		    var valueType = val[0];
+		    var value = val[1];
+		    this.ensureVariable(name).events.appendEvent(event);
+		    return this.setVariable(name, valueType, value);
 		},
 		handleEvent: function(event){
-	    this.ensureDom();
-	    this.events.appendEvent(event);
-	    if("VARIABLE_SET" == event["event type"])
-		return this.handleVariableSetEvent(event);
+		    this.ensureDom();
+		    this.events.appendEvent(event);
+		    if("VARIABLE_SET" == event["event type"])
+			return this.handleVariableSetEvent(event);
 		}
 	    }
 	);
