@@ -112,6 +112,8 @@ function bindFrom(object, method){
     return object[method].bind(object);
 }
 
+var Uzbl = (
+    function(constructor){
 function ToggleUl(){
     this.construct();
 }
@@ -143,8 +145,6 @@ ToggleUl.prototype.toggleVisibility = function(){
     $(this.ul).toggle("slow");
 };
 
-var Uzbl = (
-    function(constructor){
 	var _prot = constructor.prototype;
 	_prot.construct = NOP;
 	_prot.toJSON = function(){
