@@ -308,6 +308,7 @@ var Uzbl = (
 	}
 	function buildWidgetClass(
 	    name,
+	    fieldName,
 	    constructor,
 	    init,
 	    makeDom,
@@ -323,6 +324,9 @@ var Uzbl = (
 			renamed[k] = members[k];
 		    }
 		);
+	    cls.prototype["make" + constructor.name] = function(){
+		return this[fieldName] = new (this[name])(this, arguments);
+	    };
 	    return cls.prototype[name] = buildDomClass(
 		constructor,
 		deferInit,
@@ -336,6 +340,7 @@ var Uzbl = (
 	}
 	var OtherEvents = buildWidgetClass(
 	    "OtherEvents",
+	    "otherEvents",
 	    function OtherEvents(browser){
 		this.construct(browser);
 	    },
@@ -371,6 +376,7 @@ var Uzbl = (
 	);
 	var InstanceId = buildWidgetClass(
 	    "Instance ID",
+	    "instance ID",
 	    function InstanceId(browser){
 		this.construct(browser);
 	    },
@@ -417,6 +423,7 @@ var Uzbl = (
 	);
 	var Builtins = buildWidgetClass(
 	    "Builtins",
+	    "builtins",
 	    function Builtins(browser){
 		this.construct(browser);
 	    },
@@ -461,6 +468,7 @@ var Uzbl = (
 	);
 	var Variables = buildWidgetClass(
 	    "Variables",
+	    "variables",
 	    function Variables(browser){
 		this.construct(browser);
 	    },
@@ -531,6 +539,7 @@ var Uzbl = (
 	);
 	var Geometry = buildWidgetClass(
 	    "Geometry",
+	    "geometry",
 	    function Geometry(browser){
 		this.construct(browser);
 	    },
@@ -600,6 +609,7 @@ var Uzbl = (
 	);
 	var Cookies = buildWidgetClass(
 	    "Cookies",
+	    "cookies",
 	    function Cookies(browser){
 		this.construct(browser);
 	    },
@@ -629,6 +639,7 @@ var Uzbl = (
 	);
 	var Pages = buildWidgetClass(
 	    "Pages",
+	    "pages",
 	    function Pages(browser){
 		this.construct(browser);
 	    },
@@ -703,28 +714,6 @@ var Uzbl = (
 
 	var _prot = cls.prototype;
 	_prot.EventList = EventList;
-
-	_prot.makeOtherEvents = function(){
-	    return this.otherEvents = new (this.OtherEvents)(this);
-	};
-	_prot.makeInstanceId = function(){
-	    return this["instance ID"] = new (this["Instance ID"])(this);
-	};
-	_prot.makeBuiltins = function(){
-	    return this.builtins = new (this.Builtins)(this);
-	};
-	_prot.makeVariables = function(){
-	    return this.variables = new (this.Variables)(this);
-	};
-	_prot.makeGeometry = function(){
-	    return this.geometry = new (this.Geometry)(this);
-	}
-	_prot.makeCookies = function(){
-	    return this.cookies = new (this.Cookies)(this);
-	};
-	_prot.makePages = function(){
-	    return this.pages = new (this.Pages)(this);
-	};
 
 	_prot.ensureOtherEvents = function(){
 	    if("otherEvents" in this) return this.otherEvents;
