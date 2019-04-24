@@ -339,14 +339,28 @@ var Uzbl = (
 	    }
 	);
 
-	function InstanceId(browser){
-	    this.construct(browser);
-	};
-	InstanceId.prototype.construct = function(browser){
+	var InstanceId = buildDomClass(
+	    function InstanceId(browser){
+		this.construct(browser);
+	    },
+	    function(browser){
 	    this.browser = browser;
 	    this.events = [];
-	};
-	InstanceId.prototype.toJSON = function(){
+	    },
+	    function(){
+	    var result = document.createElement("span");
+	    var div = document.createElement("div");
+	    div.appendChild(result);
+	    this.events = new (this.browser.EventList)();
+	    div.appendChild(document.createTextNode(" ("));
+	    div.appendChild(this.events.ensureDom());
+	    div.appendChild(document.createTextNode(")"));
+	    this.browser.appendChild(div);
+	    $(result).text("unknown instance");
+	    return result;
+	    },
+	    {
+		toJSON: function(){
 	    var keys = Object.keys(this);
 	    var result = {};
 	    var that = this;
@@ -360,37 +374,27 @@ var Uzbl = (
 	    if("browser" in result)
 		result.browser = browser;
 	    return result;
-	};
-	InstanceId.prototype.makeDom = function(){
-	    var result = document.createElement("span");
-	    var div = document.createElement("div");
-	    div.appendChild(result);
-	    this.events = new (this.browser.EventList)();
-	    div.appendChild(document.createTextNode(" ("));
-	    div.appendChild(this.events.ensureDom());
-	    div.appendChild(document.createTextNode(")"));
-	    this.browser.appendChild(div);
-	    $(result).text("unknown instance");
-	    return result;
-	};
-	InstanceId.prototype.ensureDom = function(){
+		},
+		ensureDom: function(){
 	    if("dom" in this) return this.dom;
 	    return this.dom = this.makeDom();
-	};
-	InstanceId.prototype.assignValue = function(value){
-	    this.value = value;
-	    $(this.ensureDom()).text("instance " + value);
-	};
-	InstanceId.prototype.handleInstanceStartEvent = function(e){
+		},
+		assignValue: function(value){
+		    this.value = value;
+		    $(this.ensureDom()).text("instance " + value);
+		},
+		handleInstanceStartEvent: function(e){
 	    this.ensureDom();
 	    this.events.appendEvent(e);
 	    return this.assignValue(e.event["instance ID"]);
-	};
-	InstanceId.prototype.handleEvent = function(e){
+		},
+		handleEvent: function(e){
 	    this.events.push(e);
 	    if("INSTANCE_START" == e["event type"])
 		return this.handleInstanceStartEvent(e);
-	};
+		}
+	    }
+	);
 
 	function Builtins(browser){
 	    this.construct(browser);
