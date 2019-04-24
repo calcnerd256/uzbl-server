@@ -225,68 +225,75 @@ var Uzbl = (
 	    },
 	    {
 		makeLiNumber: function(n){
-	    var li = document.createElement("li");
-	    var anchor = document.createElement("a");
-	    var pre = document.createElement("pre");
-	    anchor.href = "/browser/events/" + (+n);
-	    $(anchor).text(n);
-	    li.appendChild(anchor);
-	    $(anchor).click(
-		function(){
-		    getEvent(n).then(
-			function(e){
-			    return $(pre).text(
-				JSON.stringify(
-				    e,
-				    null,
-				    "\t"
-				)
+		    var li = document.createElement("li");
+		    var anchor = document.createElement("a");
+		    var pre = document.createElement("pre");
+		    anchor.href = "/browser/events/" + (+n);
+		    $(anchor).text(n);
+		    li.appendChild(anchor);
+		    $(anchor).click(
+			function(){
+			    getEvent(n).then(
+				function(e){
+				    return $(pre).text(
+					JSON.stringify(
+					    e,
+					    null,
+					    "\t"
+					)
+				    );
+				}
 			    );
+			    return false;
 			}
 		    );
-		    return false;
-		}
-	    );
-	    li.appendChild(pre);
-	    return [li, pre];
+		    li.appendChild(pre);
+		    return [li, pre];
 		},
 		makeLi: function(event){
-	    var lp = this.makeLiNumber(event["event ID"]);
-	    $(lp[1]).text(event["event type"]);
-	    return lp[0];
+		    var lp = this.makeLiNumber(event["event ID"]);
+		    $(lp[1]).text(event["event type"]);
+		    return lp[0];
 		},
 		appendEvent: function(event){
-	    this.events.push(event["event ID"]);
-	    this.ensureDom();
-	    this.ul.ensureDom();
-	    var li = this.makeLi(event);
-	    this.ul.ul.appendChild(li);
-	    var len = this.events.length;
-	    $(this.summary).text(len + " event" + (1 == len ? "" : "s"));
-	    return li;
+		    this.events.push(event["event ID"]);
+		    this.ensureDom();
+		    this.ul.ensureDom();
+		    var li = this.makeLi(event);
+		    this.ul.ul.appendChild(li);
+		    var len = this.events.length;
+		    $(this.summary).text(
+			len + " event" + (1 == len ? "" : "s")
+		    );
+		    return li;
 		},
 		hide: function(){
-	    this.ensureDom();
-	    var ul = this.ul;
-	    $(ul.ul).hide("slow", function(){return $(ul.ul).html("");});
-	    $(ul.anchor).text("show");
+		    this.ensureDom();
+		    var ul = this.ul;
+		    $(ul.ul).hide(
+			"slow",
+			function(){
+			    return $(ul.ul).html("");
+			}
+		    );
+		    $(ul.anchor).text("show");
 		},
 		populateUl: function(){
-	    this.ensureDom();
-	    return $(this.ul.ul).html(
-		this.events.map(
-		    bindFrom(this, "makeLiNumber")
-		).map(pluck(0))
-	    );
+		    this.ensureDom();
+		    return $(this.ul.ul).html(
+			this.events.map(
+			    bindFrom(this, "makeLiNumber")
+			).map(pluck(0))
+		    );
 		},
 		show: function(){
-	    this.populateUl();
-	    $(this.ul.ul).show("slow");
-	    $(this.ul.anchor).text("hide");
+		    this.populateUl();
+		    $(this.ul.ul).show("slow");
+		    $(this.ul.anchor).text("hide");
 		},
 		toggle: function(){
-	    this.visible = !(this.visible);
-	    return this[this.visible ? "show" : "hide"]();
+		    this.visible = !(this.visible);
+		    return this[this.visible ? "show" : "hide"]();
 		},
 		visible: false
 	    }
