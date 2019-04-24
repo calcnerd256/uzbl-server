@@ -119,6 +119,17 @@ var Uzbl = (
 		this.dom = this.makeDom();
 	    return this.dom;
 	}
+	function buildDomClass(cls, construct, makeDom, members){
+	    cls.prototype.construct = construct;
+	    cls.prototype.makeDom = makeDom;
+	    cls.prototype.ensureDom = ensureDom;
+	    Object.keys(members).map(
+		function(k){
+		    cls.prototype[k] = members[k];
+		}
+	    );
+	    return cls;
+	}
 
 	function ToggleUl(){
 	    this.construct();
@@ -190,17 +201,6 @@ var Uzbl = (
 	    return this.ensureDom().appendChild(elem);
 	};
 
-	function buildDomClass(cls, construct, makeDom, members){
-	    cls.prototype.construct = construct;
-	    cls.prototype.makeDom = makeDom;
-	    cls.prototype.ensureDom = ensureDom;
-	    Object.keys(members).map(
-		function(k){
-		    cls.prototype[k] = members[k];
-		}
-	    );
-	    return cls;
-	}
 	var EventList = buildDomClass(
 	    function EventList(){
 		this.construct();
