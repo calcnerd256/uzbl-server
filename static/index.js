@@ -80,6 +80,7 @@ function K(x){
 	return x;
     };
 }
+var NOP = K();
 function echoJson(ob){
     echo(
 	JSON.stringify(
@@ -112,9 +113,11 @@ function bindFrom(object, method){
 }
 
 function ToggleUl(){
+    this.construct();
 }
+ToggleUl.prototype.construct = NOP;
 ToggleUl.prototype.makeDom = function(){
-    this.dom = document.createElement("span");
+    var result = document.createElement("span");
     this.anchor = document.createElement("a");
     this.anchor.href = "#";
     var that = this;
@@ -125,15 +128,15 @@ ToggleUl.prototype.makeDom = function(){
 	    return false;
 	}
     );
-    this.dom.appendChild(this.anchor);
+    result.appendChild(this.anchor);
     this.ul = document.createElement("ul");
-    this.dom.appendChild(this.ul);
+    result.appendChild(this.ul);
     $(this.ul).hide();
-    return this.dom;
+    return result;
 };
 ToggleUl.prototype.ensureDom = function(){
     if("dom" in this) return this.dom;
-    return this.makeDom();
+    return this.dom = this.makeDom();
 };
 ToggleUl.prototype.toggleVisibility = function(){
     this.ensureDom();
@@ -143,6 +146,7 @@ ToggleUl.prototype.toggleVisibility = function(){
 var Uzbl = (
     function(constructor){
 	var _prot = constructor.prototype;
+	_prot.construct = NOP;
 	_prot.toJSON = function(){
 	    var keys = Object.keys(this);
 	    var result = {};
@@ -174,12 +178,12 @@ var Uzbl = (
 	    return result;
 	};
 	_prot.makeDom = function(){
-	    this.dom = document.createElement("div");
-	    $("#evalBox").before(this.dom);
-	    return this.dom;
+	    var result = document.createElement("div");
+	    $("#evalBox").before(result);
+	    return result;
 	};
 	_prot.ensureDom = function(){
-	    if(!("dom" in this)) return this.makeDom();
+	    if(!("dom" in this)) return this.dom = this.makeDom();
 	    return this.dom;
 	};
 	_prot.appendChild = function(elem){
@@ -336,6 +340,9 @@ var Uzbl = (
 	);
 
 	function InstanceId(browser){
+	    this.construct(browser);
+	};
+	InstanceId.prototype.construct = function(browser){
 	    this.browser = browser;
 	    this.events = [];
 	};
@@ -355,20 +362,20 @@ var Uzbl = (
 	    return result;
 	};
 	InstanceId.prototype.makeDom = function(){
-	    this.dom = document.createElement("span");
+	    var result = document.createElement("span");
 	    var div = document.createElement("div");
-	    div.appendChild(this.dom);
+	    div.appendChild(result);
 	    this.events = new (this.browser.EventList)();
 	    div.appendChild(document.createTextNode(" ("));
 	    div.appendChild(this.events.ensureDom());
 	    div.appendChild(document.createTextNode(")"));
 	    this.browser.appendChild(div);
-	    $(this.dom).text("unknown instance");
-	    return this.dom;
+	    $(result).text("unknown instance");
+	    return result;
 	};
 	InstanceId.prototype.ensureDom = function(){
 	    if("dom" in this) return this.dom;
-	    return this.makeDom();
+	    return this.dom = this.makeDom();
 	};
 	InstanceId.prototype.assignValue = function(value){
 	    this.value = value;
@@ -386,24 +393,27 @@ var Uzbl = (
 	};
 
 	function Builtins(browser){
+	    this.construct(browser);
+	};
+	Builtins.prototype.construct = function(browser){
 	    this.browser = browser;
 	};
 	Builtins.prototype.makeDom = function(){
-	    this.dom = document.createElement("div");
-	    $(this.dom).text("builtins: ");
+	    var result = document.createElement("div");
+	    $(result).text("builtins: ");
 	    var ul = new ToggleUl();
-	    this.dom.appendChild(ul.ensureDom());
+	    result.appendChild(ul.ensureDom());
 	    this.ul = ul.ul;
 	    this.events = new (this.browser.EventList)();
-	    this.dom.appendChild(document.createTextNode(" ("));
-	    this.dom.appendChild(this.events.ensureDom());
-	    this.dom.appendChild(document.createTextNode(")"));
-	    this.browser.appendChild(this.dom);
-	    return this.dom;
+	    result.appendChild(document.createTextNode(" ("));
+	    result.appendChild(this.events.ensureDom());
+	    result.appendChild(document.createTextNode(")"));
+	    this.browser.appendChild(result);
+	    return result;
 	};
 	Builtins.prototype.ensureDom = function(){
 	    if("dom" in this) return this.dom;
-	    return this.makeDom();
+	    return this.dom = this.makeDom();
 	};
 	Builtins.prototype.ensureUl = function(){
 	    this.ensureDom();
@@ -432,24 +442,27 @@ var Uzbl = (
 	};
 
 	function Variables(browser){
+	    this.construct(browser);
+	};
+	Variables.prototype.construct = function(browser){
 	    this.browser = browser;
 	    this.variables = {};
 	};
 	Variables.prototype.makeDom = function(){
-	    this.dom = document.createElement("div");
-	    $(this.dom).text("variables: ");
+	    var result = document.createElement("div");
+	    $(result).text("variables: ");
 	    this.ul = new ToggleUl();
-	    this.dom.appendChild(this.ul.ensureDom());
+	    result.appendChild(this.ul.ensureDom());
 	    this.events = new (this.browser.EventList)();
-	    this.dom.appendChild(document.createTextNode(" ("));
-	    this.dom.appendChild(this.events.ensureDom());
-	    this.dom.appendChild(document.createTextNode(")"));
-	    this.browser.appendChild(this.dom);
-	    return this.dom;
+	    result.appendChild(document.createTextNode(" ("));
+	    result.appendChild(this.events.ensureDom());
+	    result.appendChild(document.createTextNode(")"));
+	    this.browser.appendChild(result);
+	    return result;
 	};
 	Variables.prototype.ensureDom = function(){
 	    if("dom" in this) return this.dom;
-	    return this.makeDom();
+	    return this.dom = this.makeDom();
 	};
 	Variables.prototype.makeVariable = function(name){
 	    this.ensureDom();
@@ -478,11 +491,7 @@ var Uzbl = (
 	    if(name in this.variables) return this.variables[name];
 	    return this.makeVariable(name);
 	};
-	Variables.prototype.setVariable = function(
-	    name,
-	    varType,
-	    value
-	){
+	Variables.prototype.setVariable = function(name, varType, value){
 	    var v = this.ensureVariable(name);
 	    v.value = [varType, value];
 	    $(v.name).text(name);
@@ -490,9 +499,7 @@ var Uzbl = (
 	    $(v.pre).text("");
 	    v.pre.appendChild(document.createTextNode(""+value));
 	};
-	Variables.prototype.handleVariableSetEvent = function(
-	    event
-	){
+	Variables.prototype.handleVariableSetEvent = function(event){
 	    var evt = event.event;
 	    var name = evt.name;
 	    var val = evt.value;
@@ -509,29 +516,32 @@ var Uzbl = (
 	};
 
 	function Geometry(browser){
+	    this.construct(browser);
+	};
+	Geometry.prototype.construct = function(browser){
 	    this.browser = browser;
 	    this.knownViewport = [1, 1];
 	};
 	Geometry.prototype.makeDom = function(){
-	    this.dom = document.createElement("div");
-	    $(this.dom).text("geometry: ");
+	    var result = document.createElement("div");
+	    $(result).text("geometry: ");
 	    this.text = document.createElement("span");
-	    this.dom.appendChild(this.text);
+	    result.appendChild(this.text);
 	    this.canv = document.createElement("canvas");
 	    this.canv.width = 64;
 	    this.canv.height = 64;
 	    this.canv.appendChild(document.createTextNode("[broken widget]"));
-	    this.dom.appendChild(this.canv);
+	    result.appendChild(this.canv);
 	    this.events = new (this.browser.EventList)();
-	    this.dom.appendChild(document.createTextNode(" ("));
-	    this.dom.appendChild(this.events.ensureDom());
-	    this.dom.appendChild(document.createTextNode(")"));
-	    this.browser.appendChild(this.dom);
-	    return this.dom;
+	    result.appendChild(document.createTextNode(" ("));
+	    result.appendChild(this.events.ensureDom());
+	    result.appendChild(document.createTextNode(")"));
+	    this.browser.appendChild(result);
+	    return result;
 	};
 	Geometry.prototype.ensureDom = function(){
 	    if("dom" in this) return this.dom;
-	    return this.makeDom();
+	    return this.dom = this.makeDom();
 	};
 	Geometry.prototype.assignValue = function(size, offset){
 	    this.size = size;
@@ -559,9 +569,7 @@ var Uzbl = (
 		)
 	    );
 	};
-	Geometry.prototype.handleGeometryChangedEvent = function(
-	    event
-	){
+	Geometry.prototype.handleGeometryChangedEvent = function(event){
 	    this.ensureDom();
 	    this.events.appendEvent(event);
 	    this.assignValue(event.event.size, event.event.offset);
@@ -572,24 +580,27 @@ var Uzbl = (
 	};
 
 	function Cookies(browser){
+	    this.construct(browser);
+	};
+	Cookies.prototype.construct = function(browser){
 	    this.browser = browser;
 	    this.cookies = {};
 	};
 	Cookies.prototype.makeDom = function(){
-	    this.dom = document.createElement("div");
-	    $(this.dom).text("cookie jar: ");
+	    var result = document.createElement("div");
+	    $(result).text("cookie jar: ");
 	    this.ul = new ToggleUl();
-	    this.dom.appendChild(this.ul.ensureDom());
+	    result.appendChild(this.ul.ensureDom());
 	    this.events = new (this.browser.EventList)();
-	    this.dom.appendChild(document.createTextNode(" ("));
-	    this.dom.appendChild(this.events.ensureDom());
-	    this.dom.appendChild(document.createTextNode(")"));
-	    this.browser.appendChild(this.dom);
-	    return this.dom;
+	    result.appendChild(document.createTextNode(" ("));
+	    result.appendChild(this.events.ensureDom());
+	    result.appendChild(document.createTextNode(")"));
+	    this.browser.appendChild(result);
+	    return result;
 	};
 	Cookies.prototype.ensureDom = function(){
 	    if("dom" in this) return this.dom;
-	    return this.makeDom();
+	    return this.dom = this.makeDom();
 	};
 	Cookies.prototype.handleAddCookieEvent = function(event){
 	    // TODO
@@ -602,20 +613,23 @@ var Uzbl = (
 	};
 
 	function Pages(browser){
+	    this.construct(browser);
+	};
+	Pages.prototype.construct = function(browser){
 	    this.browser = browser;
 	    this.newPage();
 	};
 	Pages.prototype.makeDom = function(){
-	    this.dom = document.createElement("div");
-	    $(this.dom).text("pages: ");
+	    var result = document.createElement("div");
+	    $(result).text("pages: ");
 	    this.ul = new ToggleUl();
-	    this.dom.appendChild(this.ul.ensureDom());
-	    this.browser.appendChild(this.dom);
-	    return this.dom;
+	    result.appendChild(this.ul.ensureDom());
+	    this.browser.appendChild(result);
+	    return result;
 	};
 	Pages.prototype.ensureDom = function(){
 	    if("dom" in this) return this.dom;
-	    return this.makeDom();
+	    return this.dom = this.makeDom();
 	};
 	Pages.prototype.newPage = function(){
 	    var vars = this.browser.ensureVariables().variables;
@@ -871,6 +885,7 @@ var Uzbl = (
     }
 )(
     function Uzbl(){
+	this.construct();
     }
 );
 
