@@ -114,6 +114,12 @@ function bindFrom(object, method){
 
 var Uzbl = (
     function(constructor){
+	function ensureDom(){
+	    if(!("dom" in this))
+		this.dom = this.makeDom();
+	    return this.dom;
+	}
+
 	function ToggleUl(){
 	    this.construct();
 	}
@@ -190,11 +196,6 @@ var Uzbl = (
 	    return this.ensureDom().appendChild(elem);
 	};
 
-	function ensureDom(){
-	    if(!("dom" in this))
-		this.dom = this.makeDom();
-	    return this.dom;
-	}
 	function buildDomClass(cls, construct, makeDom, members){
 	    cls.prototype.construct = construct;
 	    cls.prototype.makeDom = makeDom;
