@@ -291,13 +291,37 @@ var Uzbl = (
 		}
 	    ]
 	);
-	var OtherEvents = buildDomClass(
+
+	function storeBrowser(browser){
+	    this.browser = browser;
+	}
+	function deferInit(browser){
+	    this.storeBrowser(browser);
+	    return this.init.apply(this, [].slice.call(arguments, 1));
+	}
+	function buildWidgetClass(cls, init, makeDom, named, members){
+	    var renamed = {
+		init: init
+	    };
+	    if(members)
+		Object.keys(members).map(
+		    function(k){
+			renamed[k] = members[k];
+		    }
+		);
+	    return buildDomClass(
+		cls,
+		deferInit,
+		makeDom,
+		renamed,
+		[storeBrowser].concat(named)
+	    );
+	}
+	var OtherEvents = buildWidgetClass(
 	    function OtherEvents(browser){
 		this.construct(browser);
 	    },
-	    function(browser){
-		this.browser = browser;
-	    },
+	    NOP,
 	    function(){
 		this.events = new (this.browser.EventList)();
 		var result = this.events.ensureDom();
@@ -305,7 +329,6 @@ var Uzbl = (
 		this.browser.appendChild(result);
 		return result;
 	    },
-	    {},
 	    [
 		function toJSON(){
 		    var keys = Object.keys(this);
