@@ -186,25 +186,45 @@ var Uzbl = (
 	    return this.ensureDom().appendChild(elem);
 	};
 
-	function EventList(){
-	    this.events = [];
-	}
-	EventList.prototype.makeDom = function(){
-	    this.dom = document.createElement("span");
-	    this.summary = document.createElement("span");
-	    $(this.summary).text("events");
-	    this.dom.appendChild(this.summary);
-	    this.dom.appendChild(document.createTextNode(": "));
-	    this.ul = new ToggleUl();
-	    this.ul.toggleVisibility = bindFrom(this, "toggle");
-	    this.dom.appendChild(this.ul.ensureDom());
+	function ensureDom(){
+	    if(!("dom" in this))
+		this.dom = this.makeDom();
 	    return this.dom;
-	};
-	EventList.prototype.ensureDom = function(){
-	    if("dom" in this) return this.dom;
-	    return this.makeDom();
-	};
-	EventList.prototype.makeLiNumber = function(n){
+	}
+	var EventList = (
+	    function(cls, construct, makeDom, members){
+		cls.prototype.construct = construct;
+		cls.prototype.makeDom = makeDom;
+		cls.prototype.ensureDom = ensureDom;
+		Object.keys(members).map(
+		    function(k){
+			cls.prototype[k] = members[k];
+		    }
+		);
+		return cls;
+	    }
+	)(
+	    function EventList(){
+		this.construct();
+	    },
+	    function(){
+		this.events = [];
+	    },
+	    function(){
+		var result = document.createElement("span");
+		var summary = document.createElement("span");
+		this.summary = summary;
+		$(summary).text("events");
+		result.appendChild(summary);
+		result.appendChild(document.createTextNode(": "));
+		var ul = new ToggleUl();
+		this.ul = ul;
+		ul.toggleVisibility = bindFrom(this, "toggle");
+		result.appendChild(ul.ensureDom());
+		return result;
+	    },
+	    {
+		makeLiNumber: function(n){
 	    var li = document.createElement("li");
 	    var anchor = document.createElement("a");
 	    var pre = document.createElement("pre");
@@ -229,13 +249,13 @@ var Uzbl = (
 	    );
 	    li.appendChild(pre);
 	    return [li, pre];
-	};
-	EventList.prototype.makeLi = function(event){
+		},
+		makeLi: function(event){
 	    var lp = this.makeLiNumber(event["event ID"]);
 	    $(lp[1]).text(event["event type"]);
 	    return lp[0];
-	};
-	EventList.prototype.appendEvent = function(event){
+		},
+		appendEvent: function(event){
 	    this.events.push(event["event ID"]);
 	    this.ensureDom();
 	    this.ul.ensureDom();
@@ -244,31 +264,33 @@ var Uzbl = (
 	    var len = this.events.length;
 	    $(this.summary).text(len + " event" + (1 == len ? "" : "s"));
 	    return li;
-	};
-	EventList.prototype.hide = function(){
+		},
+		hide: function(){
 	    this.ensureDom();
 	    var ul = this.ul;
 	    $(ul.ul).hide("slow", function(){return $(ul.ul).html("");});
 	    $(ul.anchor).text("show");
-	};
-	EventList.prototype.populateUl = function(){
+		},
+		populateUl: function(){
 	    this.ensureDom();
 	    return $(this.ul.ul).html(
 		this.events.map(
 		    bindFrom(this, "makeLiNumber")
 		).map(pluck(0))
 	    );
-	};
-	EventList.prototype.show = function(){
+		},
+		show: function(){
 	    this.populateUl();
 	    $(this.ul.ul).show("slow");
 	    $(this.ul.anchor).text("hide");
-	};
-	EventList.prototype.toggle = function(){
+		},
+		toggle: function(){
 	    this.visible = !(this.visible);
 	    return this[this.visible ? "show" : "hide"]();
-	};
-	EventList.prototype.visible = false;
+		},
+		visible: false
+	    }
+	);
 
 	function OtherEvents(browser){
 	    this.browser = browser;
