@@ -491,174 +491,180 @@ var Uzbl = (
 		}
 	    }
 	);
-
 	var Geometry = buildDomClass(
-	function Geometry(browser){
-	    this.construct(browser);
-	},
+	    function Geometry(browser){
+		this.construct(browser);
+	    },
 	    function(browser){
-	    this.browser = browser;
-	    this.knownViewport = [1, 1];
+		this.browser = browser;
+		this.knownViewport = [1, 1];
 	    },
 	    function(){
-	    var result = document.createElement("div");
-	    $(result).text("geometry: ");
-	    this.text = document.createElement("span");
-	    result.appendChild(this.text);
-	    this.canv = document.createElement("canvas");
-	    this.canv.width = 64;
-	    this.canv.height = 64;
-	    this.canv.appendChild(document.createTextNode("[broken widget]"));
-	    result.appendChild(this.canv);
-	    this.events = new (this.browser.EventList)();
-	    result.appendChild(document.createTextNode(" ("));
-	    result.appendChild(this.events.ensureDom());
-	    result.appendChild(document.createTextNode(")"));
-	    this.browser.appendChild(result);
-	    return result;
+		var result = document.createElement("div");
+		$(result).text("geometry: ");
+		this.text = document.createElement("span");
+		result.appendChild(this.text);
+		this.canv = document.createElement("canvas");
+		this.canv.width = 64;
+		this.canv.height = 64;
+		this.canv.appendChild(
+		    document.createTextNode("[broken widget]")
+		);
+		result.appendChild(this.canv);
+		this.events = new (this.browser.EventList)();
+		result.appendChild(document.createTextNode(" ("));
+		result.appendChild(this.events.ensureDom());
+		result.appendChild(document.createTextNode(")"));
+		this.browser.appendChild(result);
+		return result;
 	    },
 	    {
 		assignValue: function(size, offset){
-	    this.size = size;
-	    this.offset = offset;
-	    var right = +(size[0]) + (+(offset[0]));
-	    var bottom = +(size[1]) + (+(offset[1]));
-	    if(right > this.knownViewport[0])
-		this.knownViewport[0] = right;
-	    if(bottom > this.knownViewport[1])
-		this.knownViewport[1] = bottom;
-	    var smallDimension = Math.min.apply(Math, this.knownViewport);
-	    var ratio = 64 / smallDimension;
-	    this.ensureDom();
-	    this.canv.width = Math.ceil(ratio * this.knownViewport[0]);
-	    this.canv.height = Math.ceil(ratio * this.knownViewport[1]);
-	    $(this.text).text([size.join("x")].concat(offset).join("+"));
-	    var ctx = this.canv.getContext("2d");
-	    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-	    ctx.strokeRect.apply(
-		ctx,
-		offset.concat(size).map(
-		    function(dim){
-			return dim * ratio;
-		    }
-		)
-	    );
+		    this.size = size;
+		    this.offset = offset;
+		    var right = +(size[0]) + (+(offset[0]));
+		    var bottom = +(size[1]) + (+(offset[1]));
+		    if(right > this.knownViewport[0])
+			this.knownViewport[0] = right;
+		    if(bottom > this.knownViewport[1])
+			this.knownViewport[1] = bottom;
+		    var smallDimension = Math.min.apply(
+			Math,
+			this.knownViewport
+		    );
+		    var ratio = 64 / smallDimension;
+		    this.ensureDom();
+		    this.canv.width = Math.ceil(ratio * this.knownViewport[0]);
+		    this.canv.height = Math.ceil(ratio * this.knownViewport[1]);
+		    $(this.text).text(
+			[
+			    size.join("x")
+			].concat(offset).join("+")
+		    );
+		    var ctx = this.canv.getContext("2d");
+		    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+		    ctx.strokeRect.apply(
+			ctx,
+			offset.concat(size).map(
+			    function(dim){
+				return dim * ratio;
+			    }
+			)
+		    );
 		},
 		handleGeometryChangedEvent: function(event){
-	    this.ensureDom();
-	    this.events.appendEvent(event);
-	    this.assignValue(event.event.size, event.event.offset);
+		    this.ensureDom();
+		    this.events.appendEvent(event);
+		    this.assignValue(event.event.size, event.event.offset);
 		},
 		handleEvent: function(event){
-	    if("GEOMETRY_CHANGED" == event["event type"])
-		return this.handleGeometryChangedEvent(event);
+		    if("GEOMETRY_CHANGED" == event["event type"])
+			return this.handleGeometryChangedEvent(event);
 		}
 	    }
 	);
-
 	var Cookies = buildDomClass(
-	function Cookies(browser){
-	    this.construct(browser);
-	},
+	    function Cookies(browser){
+		this.construct(browser);
+	    },
 	    function(browser){
-	    this.browser = browser;
-	    this.cookies = {};
+		this.browser = browser;
+		this.cookies = {};
 	    },
 	    function(){
-	    var result = document.createElement("div");
-	    $(result).text("cookie jar: ");
-	    this.ul = new ToggleUl();
-	    result.appendChild(this.ul.ensureDom());
-	    this.events = new (this.browser.EventList)();
-	    result.appendChild(document.createTextNode(" ("));
-	    result.appendChild(this.events.ensureDom());
-	    result.appendChild(document.createTextNode(")"));
-	    this.browser.appendChild(result);
-	    return result;
+		var result = document.createElement("div");
+		$(result).text("cookie jar: ");
+		this.ul = new ToggleUl();
+		result.appendChild(this.ul.ensureDom());
+		this.events = new (this.browser.EventList)();
+		result.appendChild(document.createTextNode(" ("));
+		result.appendChild(this.events.ensureDom());
+		result.appendChild(document.createTextNode(")"));
+		this.browser.appendChild(result);
+		return result;
 	    },
 	    {
 		handleAddCookieEvent: function(event){
-	    // TODO
+		    // TODO
 		},
 		handleEvent: function(event){
-	    this.ensureDom();
-	    this.events.appendEvent(event);
-	    if("ADD_COOKIE" == event["event type"])
-		return this.handleAddCookieEvent()
+		    this.ensureDom();
+		    this.events.appendEvent(event);
+		    if("ADD_COOKIE" == event["event type"])
+			return this.handleAddCookieEvent()
 		}
 	    }
 	);
-
 	var Pages = buildDomClass(
-	function Pages(browser){
-	    this.construct(browser);
-	},
+	    function Pages(browser){
+		this.construct(browser);
+	    },
 	    function(browser){
-	    this.browser = browser;
-	    this.newPage();
+		this.browser = browser;
+		this.newPage();
 	    },
 	    function(){
-	    var result = document.createElement("div");
-	    $(result).text("pages: ");
-	    this.ul = new ToggleUl();
-	    result.appendChild(this.ul.ensureDom());
-	    this.browser.appendChild(result);
-	    return result;
+		var result = document.createElement("div");
+		$(result).text("pages: ");
+		this.ul = new ToggleUl();
+		result.appendChild(this.ul.ensureDom());
+		this.browser.appendChild(result);
+		return result;
 	    },
 	    {
 		newPage: function(){
-	    var vars = this.browser.ensureVariables().variables;
-	    var keys = Object.keys(vars);
-	    var variables = {};
-	    keys.map(
-		function(k){
-		    variables[k] = vars[k].value;
-		}
-	    );
-	    var geom = this.browser.ensureGeometry();
-	    this.ensureDom();
-	    var geometry = {};
-	    if("size" in geom) geometry.size = geom.size.map(I);
-	    if("offset" in geom) geometry.offset = geom.offset.map(I);
-	    this.currentPage = {
-		dom: document.createElement("li"),
-		events: new (this.browser.EventList)(),
-		variables: variables,
-		geometry: geometry
-	    };
-	    this.currentPage.dom.appendChild(
-		this.currentPage.events.ensureDom()
-	    );
-	    this.ul.ul.appendChild(this.currentPage.dom);
-	    return this.currentPage;
+		    var vars = this.browser.ensureVariables().variables;
+		    var keys = Object.keys(vars);
+		    var variables = {};
+		    keys.map(
+			function(k){
+			    variables[k] = vars[k].value;
+			}
+		    );
+		    var geom = this.browser.ensureGeometry();
+		    this.ensureDom();
+		    var geometry = {};
+		    if("size" in geom) geometry.size = geom.size.map(I);
+		    if("offset" in geom) geometry.offset = geom.offset.map(I);
+		    this.currentPage = {
+			dom: document.createElement("li"),
+			events: new (this.browser.EventList)(),
+			variables: variables,
+			geometry: geometry
+		    };
+		    this.currentPage.dom.appendChild(
+			this.currentPage.events.ensureDom()
+		    );
+		    this.ul.ul.appendChild(this.currentPage.dom);
+		    return this.currentPage;
 		},
 		handleScrollHorizEvent: function(event){
-	    var evt = event.event;
-	    this.currentPage.scrollHoriz = {
-		"bounds": evt.bounds,
-		"viewport size": evt.page,
-		"scrollbar": evt.value
-	    };
-	    return this.currentPage.scrollHoriz;
+		    var evt = event.event;
+		    this.currentPage.scrollHoriz = {
+			"bounds": evt.bounds,
+			"viewport size": evt.page,
+			"scrollbar": evt.value
+		    };
+		    return this.currentPage.scrollHoriz;
 		},
 		handleScrollVertEvent: function(event){
-	    var evt = event.event;
-	    this.currentPage.scrollVert = {
-		"bounds": evt.bounds,
-		"viewport size": evt.page,
-		"scrollbar": evt.value
-	    };
-	    return this.currentPage.scrollVert;
+		    var evt = event.event;
+		    this.currentPage.scrollVert = {
+			"bounds": evt.bounds,
+			"viewport size": evt.page,
+			"scrollbar": evt.value
+		    };
+		    return this.currentPage.scrollVert;
 		},
 		handleEvent: function(event){
-	    if("load" == event["event type"])
-		if("start" == event.event.loadType)
-		    this.newPage();
-	    this.currentPage.events.appendEvent(event);
-	    if("SCROLL_HORIZ" == event["event type"])
-		return this.handleScrollHorizEvent(event);
-	    if("SCROLL_VERT" == event["event type"])
-		return this.handleScrollVertEvent(event);
+		    if("load" == event["event type"])
+			if("start" == event.event.loadType)
+			    this.newPage();
+		    this.currentPage.events.appendEvent(event);
+		    if("SCROLL_HORIZ" == event["event type"])
+			return this.handleScrollHorizEvent(event);
+		    if("SCROLL_VERT" == event["event type"])
+			return this.handleScrollVertEvent(event);
 		}
 	    }
 	);
