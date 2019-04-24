@@ -162,9 +162,16 @@ var Uzbl = (
 	    }
 	);
 
-	var _prot = constructor.prototype;
-	_prot.construct = NOP;
-	_prot.toJSON = function(){
+	constructor = buildDomClass(
+	    constructor,
+	    NOP,
+	    function(){
+	    var result = document.createElement("div");
+	    $("#evalBox").before(result);
+	    return result;
+	    },
+	    {
+		toJSON: function(){
 	    var keys = Object.keys(this);
 	    var result = {};
 	    var that = this;
@@ -193,16 +200,13 @@ var Uzbl = (
 		}
 	    );
 	    return result;
-	};
-	_prot.makeDom = function(){
-	    var result = document.createElement("div");
-	    $("#evalBox").before(result);
-	    return result;
-	};
-	_prot.ensureDom = ensureDom;
-	_prot.appendChild = function(elem){
+		},
+		appendChild: function(elem){
 	    return this.ensureDom().appendChild(elem);
-	};
+		}
+	    }
+	);
+	var _prot = constructor.prototype;
 
 	var EventList = buildDomClass(
 	    function EventList(){
