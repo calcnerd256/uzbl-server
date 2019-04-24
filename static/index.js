@@ -299,6 +299,13 @@ var Uzbl = (
 	    this.storeBrowser(browser);
 	    return this.init.apply(this, [].slice.call(arguments, 1));
 	}
+	function initEvents(container){
+	    var result = new (this.browser.EventList)();
+	    container.appendChild(document.createTextNode(" ("));
+	    container.appendChild(result.ensureDom());
+	    container.appendChild(document.createTextNode(")"));
+	    return result;
+	}
 	function buildWidgetClass(cls, init, makeDom, named, members){
 	    var renamed = {
 		init: init
@@ -314,15 +321,11 @@ var Uzbl = (
 		deferInit,
 		makeDom,
 		renamed,
-		[storeBrowser].concat(named)
+		[
+		    storeBrowser
+		    , initEvents
+		].concat(named)
 	    );
-	}
-	function initEvents(container){
-	    var result = new (this.browser.EventList)();
-	    container.appendChild(document.createTextNode(" ("));
-	    container.appendChild(result.ensureDom());
-	    container.appendChild(document.createTextNode(")"));
-	    return result;
 	}
 	var OtherEvents = buildWidgetClass(
 	    function OtherEvents(browser){
@@ -337,7 +340,6 @@ var Uzbl = (
 		return result;
 	    },
 	    [
-		initEvents,
 		function toJSON(){
 		    var keys = Object.keys(this);
 		    var result = {};
@@ -374,7 +376,6 @@ var Uzbl = (
 		return result;
 	    },
 	    [
-		initEvents,
 		function toJSON(){
 		    var keys = Object.keys(this);
 		    var result = {};
@@ -421,7 +422,6 @@ var Uzbl = (
 		return result;
 	    },
 	    [
-		initEvents,
 		function ensureUl(){
 		    this.ensureDom();
 		    return this.ul;
@@ -466,7 +466,6 @@ var Uzbl = (
 		return result;
 	    },
 	    [
-		initEvents,
 		function makeVariable(name){
 		    this.ensureDom();
 		    var li = document.createElement("li");
@@ -543,7 +542,6 @@ var Uzbl = (
 		return result;
 	    },
 	    [
-		initEvents,
 		function assignValue(size, offset){
 		    this.size = size;
 		    this.offset = offset;
@@ -605,7 +603,6 @@ var Uzbl = (
 		return result;
 	    },
 	    [
-		initEvents,
 		function handleAddCookieEvent(event){
 		    // TODO
 		},
@@ -633,7 +630,6 @@ var Uzbl = (
 		return result;
 	    },
 	    [
-		initEvents,
 		function newPage(){
 		    var vars = this.browser.ensureVariables().variables;
 		    var keys = Object.keys(vars);
