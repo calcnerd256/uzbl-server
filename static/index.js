@@ -421,10 +421,16 @@ var Uzbl = (
 		function handleEvent(e){
 		    this.ensureDom();
 		    this.events.appendEvent(e);
-		    if("INSTANCE_START" == e["event type"])
-			return this.handleInstanceStartEvent(e);
+		    var eventType = e["event type"];
+		    if(eventType in this.eventMethods)
+			return this[this.eventMethods[eventType]](e);
 		}
-	    ]
+	    ],
+	    {
+		eventMethods: {
+		    INSTANCE_START: "handleInstanceStartEvent"
+		}
+	    }
 	);
 	var Builtins = buildWidgetClass(
 	    "Builtins",
