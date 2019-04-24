@@ -306,31 +306,31 @@ var Uzbl = (
 		this.browser = browser;
 	    },
 	    function(){
-	    this.events = new (this.browser.EventList)();
-	    var result = this.events.ensureDom();
-	    this.ul = this.events.ul;
-	    this.browser.appendChild(result);
-	    return result;
+		this.events = new (this.browser.EventList)();
+		var result = this.events.ensureDom();
+		this.ul = this.events.ul;
+		this.browser.appendChild(result);
+		return result;
 	    },
 	    {
 		toJSON: function(){
-	    var keys = Object.keys(this);
-	    var result = {};
-	    var that = this;
-	    keys.map(function(k){result[k] = that[k];})
-	    var browserKeys = []
-	    if("browser" in this)
-		browserKeys = Object.keys(this.browser);
-	    var browser = {};
-	    browserKeys.map(function(k){browser[k] = that.browser[k];});
-	    delete browser.otherEvents;
-	    if("browser" in result)
-		result.browser = browser;
-	    return result;
+		    var keys = Object.keys(this);
+		    var result = {};
+		    var that = this;
+		    keys.map(function(k){result[k] = that[k];})
+		    var browserKeys = []
+		    if("browser" in this)
+			browserKeys = Object.keys(this.browser);
+		    var browser = {};
+		    browserKeys.map(function(k){browser[k] = that.browser[k];});
+		    delete browser.otherEvents;
+		    if("browser" in result)
+			result.browser = browser;
+		    return result;
 		},
 		displayEvent: function(e){
-	    this.ensureDom();
-	    return this.events.appendEvent(e);
+		    this.ensureDom();
+		    return this.events.appendEvent(e);
 		}
 	    }
 	);
