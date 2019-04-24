@@ -131,11 +131,12 @@ var Uzbl = (
 	    return cls;
 	}
 
+	var ToggleUl = buildDomClass(
 	function ToggleUl(){
 	    this.construct();
-	}
-	ToggleUl.prototype.construct = NOP;
-	ToggleUl.prototype.makeDom = function(){
+	},
+	    NOP,
+	    function(){
 	    var result = document.createElement("span");
 	    this.anchor = document.createElement("a");
 	    this.anchor.href = "#";
@@ -152,12 +153,14 @@ var Uzbl = (
 	    result.appendChild(this.ul);
 	    $(this.ul).hide();
 	    return result;
-	};
-	ToggleUl.prototype.ensureDom = ensureDom;
-	ToggleUl.prototype.toggleVisibility = function(){
+	    },
+	    {
+		toggleVisibility: function(){
 	    this.ensureDom();
 	    $(this.ul).toggle("slow");
-	};
+		}
+	    }
+	);
 
 	var _prot = constructor.prototype;
 	_prot.construct = NOP;
