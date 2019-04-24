@@ -351,12 +351,11 @@ var Uzbl = (
 		}
 	    ]
 	);
-	var InstanceId = buildDomClass(
+	var InstanceId = buildWidgetClass(
 	    function InstanceId(browser){
 		this.construct(browser);
 	    },
-	    function(browser){
-		this.browser = browser;
+	    function(){
 		this.events = [];
 	    },
 	    function(){
@@ -371,7 +370,6 @@ var Uzbl = (
 		$(result).text("unknown instance");
 		return result;
 	    },
-	    {},
 	    [
 		function toJSON(){
 		    var keys = Object.keys(this);
@@ -404,13 +402,11 @@ var Uzbl = (
 		}
 	    ]
 	);
-	var Builtins = buildDomClass(
+	var Builtins = buildWidgetClass(
 	    function Builtins(browser){
 		this.construct(browser);
 	    },
-	    function(browser){
-		this.browser = browser;
-	    },
+	    NOP,
 	    function(){
 		var result = document.createElement("div");
 		$(result).text("builtins: ");
@@ -424,7 +420,6 @@ var Uzbl = (
 		this.browser.appendChild(result);
 		return result;
 	    },
-	    {},
 	    [
 		function ensureUl(){
 		    this.ensureDom();
@@ -453,12 +448,11 @@ var Uzbl = (
 		}
 	    ]
 	);
-	var Variables = buildDomClass(
+	var Variables = buildWidgetClass(
 	    function Variables(browser){
 		this.construct(browser);
 	    },
-	    function(browser){
-		this.browser = browser;
+	    function(){
 		this.variables = {};
 	    },
 	    function(){
@@ -473,7 +467,6 @@ var Uzbl = (
 		this.browser.appendChild(result);
 		return result;
 	    },
-	    {},
 	    [
 		function makeVariable(name){
 		    this.ensureDom();
@@ -527,12 +520,11 @@ var Uzbl = (
 		}
 	    ]
 	);
-	var Geometry = buildDomClass(
+	var Geometry = buildWidgetClass(
 	    function Geometry(browser){
 		this.construct(browser);
 	    },
-	    function(browser){
-		this.browser = browser;
+	    function(){
 		this.knownViewport = [1, 1];
 	    },
 	    function(){
@@ -554,7 +546,6 @@ var Uzbl = (
 		this.browser.appendChild(result);
 		return result;
 	    },
-	    {},
 	    [
 		function assignValue(size, offset){
 		    this.size = size;
@@ -600,12 +591,11 @@ var Uzbl = (
 		}
 	    ]
 	);
-	var Cookies = buildDomClass(
+	var Cookies = buildWidgetClass(
 	    function Cookies(browser){
 		this.construct(browser);
 	    },
-	    function(browser){
-		this.browser = browser;
+	    function(){
 		this.cookies = {};
 	    },
 	    function(){
@@ -620,7 +610,6 @@ var Uzbl = (
 		this.browser.appendChild(result);
 		return result;
 	    },
-	    {},
 	    [
 		function handleAddCookieEvent(event){
 		    // TODO
@@ -633,12 +622,11 @@ var Uzbl = (
 		}
 	    ]
 	);
-	var Pages = buildDomClass(
+	var Pages = buildWidgetClass(
 	    function Pages(browser){
 		this.construct(browser);
 	    },
-	    function(browser){
-		this.browser = browser;
+	    function(){
 		this.newPage();
 	    },
 	    function(){
@@ -649,7 +637,6 @@ var Uzbl = (
 		this.browser.appendChild(result);
 		return result;
 	    },
-	    {},
 	    [
 		function newPage(){
 		    var vars = this.browser.ensureVariables().variables;
