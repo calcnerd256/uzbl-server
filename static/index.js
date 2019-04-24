@@ -351,6 +351,13 @@ var Uzbl = (
 		}
 	    ]
 	);
+	function initEvents(container){
+	    var result = new (this.browser.EventList)();
+	    container.appendChild(document.createTextNode(" ("));
+	    container.appendChild(result.ensureDom());
+	    container.appendChild(document.createTextNode(")"));
+	    return result;
+	}
 	var InstanceId = buildWidgetClass(
 	    function InstanceId(browser){
 		this.construct(browser);
@@ -360,15 +367,13 @@ var Uzbl = (
 		var result = document.createElement("span");
 		var div = document.createElement("div");
 		div.appendChild(result);
-		this.events = new (this.browser.EventList)();
-		div.appendChild(document.createTextNode(" ("));
-		div.appendChild(this.events.ensureDom());
-		div.appendChild(document.createTextNode(")"));
+		this.events = this.initEvents(div);
 		this.browser.appendChild(div);
 		$(result).text("unknown instance");
 		return result;
 	    },
 	    [
+		initEvents,
 		function toJSON(){
 		    var keys = Object.keys(this);
 		    var result = {};
