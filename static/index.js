@@ -161,7 +161,6 @@ var Uzbl = (
 		}
 	    }
 	);
-
 	cls = buildDomClass(
 	    constructor,
 	    NOP,
@@ -206,8 +205,6 @@ var Uzbl = (
 		}
 	    }
 	);
-	var _prot = cls.prototype;
-
 	var EventList = buildDomClass(
 	    function EventList(){
 		this.construct();
@@ -303,7 +300,6 @@ var Uzbl = (
 		visible: false
 	    }
 	);
-
 	var OtherEvents = buildDomClass(
 	    function OtherEvents(browser){
 		this.construct(browser);
@@ -340,7 +336,6 @@ var Uzbl = (
 		}
 	    }
 	);
-
 	var InstanceId = buildDomClass(
 	    function InstanceId(browser){
 		this.construct(browser);
@@ -393,7 +388,6 @@ var Uzbl = (
 		}
 	    }
 	);
-
 	var Builtins = buildDomClass(
 	    function Builtins(browser){
 		this.construct(browser);
@@ -676,6 +670,7 @@ var Uzbl = (
 		return this.handleScrollVertEvent(event);
 	};
 
+	var _prot = cls.prototype;
 	_prot.EventList = EventList;
 	_prot.OtherEvents = OtherEvents;
 	_prot["Instance ID"] = InstanceId;
