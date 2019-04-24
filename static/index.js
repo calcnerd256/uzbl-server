@@ -394,13 +394,14 @@ var Uzbl = (
 	    }
 	);
 
+	var Builtins = buildDomClass(
 	function Builtins(browser){
 	    this.construct(browser);
-	};
-	Builtins.prototype.construct = function(browser){
+	},
+	    function(browser){
 	    this.browser = browser;
-	};
-	Builtins.prototype.makeDom = function(){
+	    },
+	    function(){
 	    var result = document.createElement("div");
 	    $(result).text("builtins: ");
 	    var ul = new ToggleUl();
@@ -412,33 +413,35 @@ var Uzbl = (
 	    result.appendChild(document.createTextNode(")"));
 	    this.browser.appendChild(result);
 	    return result;
-	};
-	Builtins.prototype.ensureDom = ensureDom;
-	Builtins.prototype.ensureUl = function(){
+	    },
+	    {
+		ensureUl: function(){
 	    this.ensureDom();
 	    return this.ul;
-	};
-	Builtins.prototype.makeLi = function(name){
+		},
+		makeLi: function(name){
 	    var li = document.createElement("li");
 	    $(li).text(name);
 	    return li;
-	};
-	Builtins.prototype.assignValue = function(builtins){
+		},
+		assignValue: function(builtins){
 	    this.value = builtins;
 	    $(this.ensureUl()).html(
 		builtins.map(bindFrom(this, "makeLi"))
 	    );
 	    return this.value;
-	};
-	Builtins.prototype.handleBuiltinsEvent = function(e){
+		},
+		handleBuiltinsEvent: function(e){
 	    return this.assignValue(e.event.names);
-	};
-	Builtins.prototype.handleEvent = function(e){
+		},
+		handleEvent: function(e){
 	    this.ensureDom();
 	    this.events.appendEvent(e);
 	    if("BUILTINS" == e["event type"])
 		return this.handleBuiltinsEvent(e);
-	};
+		}
+	    }
+	);
 
 	function Variables(browser){
 	    this.construct(browser);
