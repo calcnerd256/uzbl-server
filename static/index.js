@@ -1,3 +1,34 @@
+function I(x){
+    return x;
+}
+function K(x){
+    return function(){
+	return x;
+    };
+}
+var NOP = K();
+
+function promiseDelay(milliseconds){
+    return new Promise(
+	function(res, rej){
+	    setTimeout(res, milliseconds);
+	}
+    );
+}
+function asyncDelay(milliseconds){
+    return function(){
+	return promiseDelay(milliseconds);
+    };
+}
+function pluck(key){
+    return function(object){
+	return object[key];
+    };
+}
+function bindFrom(object, method){
+    return object[method].bind(object);
+}
+
 function evalFromBox(){
     var evalBox = $("#evalBox")[0];
     var src = evalBox.value;
@@ -33,24 +64,6 @@ function clearOut(){
     $("#debugOutput").text("");
 }
 
-function echoPromise(p){
-    return p.then(echo);
-}
-function echoGet(url){
-    return echoPromise(
-	promiseHttpGet(
-	    url,
-	    null,
-	    "text"
-	)
-    );
-}
-function echoEvent(n){
-    return echoGet(
-	"/browser/events/" + +n
-    );
-}
-
 function getEvent(n){
     return promiseHttpGet(
 	"/browser/events/" + +n,
@@ -70,17 +83,6 @@ function getEvent(n){
     );
 }
 
-var nextEventId = 0;
-var browserEvents = [];
-function I(x){
-    return x;
-}
-function K(x){
-    return function(){
-	return x;
-    };
-}
-var NOP = K();
 function echoJson(ob){
     echo(
 	JSON.stringify(
@@ -90,26 +92,6 @@ function echoJson(ob){
 	)
     );
     return ob;
-}
-function promiseDelay(milliseconds){
-    return new Promise(
-	function(res, rej){
-	    setTimeout(res, milliseconds);
-	}
-    );
-}
-function asyncDelay(milliseconds){
-    return function(){
-	return promiseDelay(milliseconds);
-    };
-}
-function pluck(key){
-    return function(object){
-	return object[key];
-    };
-}
-function bindFrom(object, method){
-    return object[method].bind(object);
 }
 
 var Uzbl = (
@@ -811,6 +793,7 @@ var Uzbl = (
 	    );
 	};
 
+	var nextEventId = 0;
 	_prot.handleNextEvent = function(){
 	    if("currentEvent" in this)
 		return Promise.reject(this.keepGoing = true);
