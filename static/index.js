@@ -132,32 +132,32 @@ var Uzbl = (
 	}
 
 	var ToggleUl = buildDomClass(
-	function ToggleUl(){
-	    this.construct();
-	},
+	    function ToggleUl(){
+		this.construct();
+	    },
 	    NOP,
 	    function(){
-	    var result = document.createElement("span");
-	    this.anchor = document.createElement("a");
-	    this.anchor.href = "#";
-	    var that = this;
-	    $(this.anchor).text("show/hide").click(
-		function(){
-		    // late binding
-		    that.toggleVisibility();
-		    return false;
-		}
-	    );
-	    result.appendChild(this.anchor);
-	    this.ul = document.createElement("ul");
-	    result.appendChild(this.ul);
-	    $(this.ul).hide();
-	    return result;
+		var result = document.createElement("span");
+		this.anchor = document.createElement("a");
+		this.anchor.href = "#";
+		var that = this;
+		$(this.anchor).text("show/hide").click(
+		    function(){
+			// late binding
+			that.toggleVisibility();
+			return false;
+		    }
+		);
+		result.appendChild(this.anchor);
+		this.ul = document.createElement("ul");
+		result.appendChild(this.ul);
+		$(this.ul).hide();
+		return result;
 	    },
 	    {
 		toggleVisibility: function(){
-	    this.ensureDom();
-	    $(this.ul).toggle("slow");
+		    this.ensureDom();
+		    $(this.ul).toggle("slow");
 		}
 	    }
 	);
