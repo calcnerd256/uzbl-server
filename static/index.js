@@ -162,7 +162,7 @@ var Uzbl = (
 	    }
 	);
 
-	constructor = buildDomClass(
+	cls = buildDomClass(
 	    constructor,
 	    NOP,
 	    function(){
@@ -206,7 +206,7 @@ var Uzbl = (
 		}
 	    }
 	);
-	var _prot = constructor.prototype;
+	var _prot = cls.prototype;
 
 	var EventList = buildDomClass(
 	    function EventList(){
@@ -868,7 +868,7 @@ var Uzbl = (
 	    );
 	};
 
-	return constructor;
+	return cls;
     }
 )(
     function Uzbl(){
