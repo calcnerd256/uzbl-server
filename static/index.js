@@ -114,36 +114,36 @@ function bindFrom(object, method){
 
 var Uzbl = (
     function(constructor){
-function ToggleUl(){
-    this.construct();
-}
-ToggleUl.prototype.construct = NOP;
-ToggleUl.prototype.makeDom = function(){
-    var result = document.createElement("span");
-    this.anchor = document.createElement("a");
-    this.anchor.href = "#";
-    var that = this;
-    $(this.anchor).text("show/hide").click(
-	function(){
-	    // late binding
-	    that.toggleVisibility();
-	    return false;
+	function ToggleUl(){
+	    this.construct();
 	}
-    );
-    result.appendChild(this.anchor);
-    this.ul = document.createElement("ul");
-    result.appendChild(this.ul);
-    $(this.ul).hide();
-    return result;
-};
-ToggleUl.prototype.ensureDom = function(){
-    if("dom" in this) return this.dom;
-    return this.dom = this.makeDom();
-};
-ToggleUl.prototype.toggleVisibility = function(){
-    this.ensureDom();
-    $(this.ul).toggle("slow");
-};
+	ToggleUl.prototype.construct = NOP;
+	ToggleUl.prototype.makeDom = function(){
+	    var result = document.createElement("span");
+	    this.anchor = document.createElement("a");
+	    this.anchor.href = "#";
+	    var that = this;
+	    $(this.anchor).text("show/hide").click(
+		function(){
+		    // late binding
+		    that.toggleVisibility();
+		    return false;
+		}
+	    );
+	    result.appendChild(this.anchor);
+	    this.ul = document.createElement("ul");
+	    result.appendChild(this.ul);
+	    $(this.ul).hide();
+	    return result;
+	};
+	ToggleUl.prototype.ensureDom = function(){
+	    if("dom" in this) return this.dom;
+	    return this.dom = this.makeDom();
+	};
+	ToggleUl.prototype.toggleVisibility = function(){
+	    this.ensureDom();
+	    $(this.ul).toggle("slow");
+	};
 
 	var _prot = constructor.prototype;
 	_prot.construct = NOP;
