@@ -355,9 +355,7 @@ var Uzbl = (
 	    function InstanceId(browser){
 		this.construct(browser);
 	    },
-	    function(){
-		this.events = [];
-	    },
+	    NOP,
 	    function(){
 		var result = document.createElement("span");
 		var div = document.createElement("div");
@@ -391,12 +389,11 @@ var Uzbl = (
 		    $(this.ensureDom()).text("instance " + value);
 		},
 		function handleInstanceStartEvent(e){
-		    this.ensureDom();
-		    this.events.appendEvent(e);
 		    return this.assignValue(e.event["instance ID"]);
 		},
 		function handleEvent(e){
-		    this.events.push(e);
+		    this.ensureDom();
+		    this.events.appendEvent(e);
 		    if("INSTANCE_START" == e["event type"])
 			return this.handleInstanceStartEvent(e);
 		}
