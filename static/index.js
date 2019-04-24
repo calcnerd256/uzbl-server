@@ -306,7 +306,14 @@ var Uzbl = (
 	    container.appendChild(document.createTextNode(")"));
 	    return result;
 	}
-	function buildWidgetClass(cls, init, makeDom, named, members){
+	function buildWidgetClass(
+	    name,
+	    constructor,
+	    init,
+	    makeDom,
+	    named,
+	    members
+	){
 	    var renamed = {
 		init: init
 	    };
@@ -316,8 +323,8 @@ var Uzbl = (
 			renamed[k] = members[k];
 		    }
 		);
-	    return buildDomClass(
-		cls,
+	    return cls.prototype[name] = buildDomClass(
+		constructor,
 		deferInit,
 		makeDom,
 		renamed,
@@ -328,6 +335,7 @@ var Uzbl = (
 	    );
 	}
 	var OtherEvents = buildWidgetClass(
+	    "OtherEvents",
 	    function OtherEvents(browser){
 		this.construct(browser);
 	    },
@@ -362,6 +370,7 @@ var Uzbl = (
 	    ]
 	);
 	var InstanceId = buildWidgetClass(
+	    "Instance ID",
 	    function InstanceId(browser){
 		this.construct(browser);
 	    },
@@ -407,6 +416,7 @@ var Uzbl = (
 	    ]
 	);
 	var Builtins = buildWidgetClass(
+	    "Builtins",
 	    function Builtins(browser){
 		this.construct(browser);
 	    },
@@ -450,6 +460,7 @@ var Uzbl = (
 	    ]
 	);
 	var Variables = buildWidgetClass(
+	    "Variables",
 	    function Variables(browser){
 		this.construct(browser);
 	    },
@@ -519,6 +530,7 @@ var Uzbl = (
 	    ]
 	);
 	var Geometry = buildWidgetClass(
+	    "Geometry",
 	    function Geometry(browser){
 		this.construct(browser);
 	    },
@@ -587,6 +599,7 @@ var Uzbl = (
 	    ]
 	);
 	var Cookies = buildWidgetClass(
+	    "Cookies",
 	    function Cookies(browser){
 		this.construct(browser);
 	    },
@@ -615,6 +628,7 @@ var Uzbl = (
 	    ]
 	);
 	var Pages = buildWidgetClass(
+	    "Pages",
 	    function Pages(browser){
 		this.construct(browser);
 	    },
@@ -689,22 +703,12 @@ var Uzbl = (
 
 	var _prot = cls.prototype;
 	_prot.EventList = EventList;
-	_prot.OtherEvents = OtherEvents;
-	_prot["Instance ID"] = InstanceId;
-	_prot.Builtins = Builtins;
-	_prot.Variables = Variables;
-	_prot.Geometry = Geometry;
-	_prot.Cookies = Cookies;
-	_prot.Pages = Pages;
 
 	_prot.makeOtherEvents = function(){
-	    this.otherEvents = new (this.OtherEvents)(this);
-	    return this.otherEvents;
+	    return this.otherEvents = new (this.OtherEvents)(this);
 	};
 	_prot.makeInstanceId = function(){
-	    var result = new (this["Instance ID"])(this);
-	    this["instance ID"] = result;
-	    return result;
+	    return this["instance ID"] = new (this["Instance ID"])(this);
 	};
 	_prot.makeBuiltins = function(){
 	    return this.builtins = new (this.Builtins)(this);
