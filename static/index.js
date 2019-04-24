@@ -327,6 +327,10 @@ var Uzbl = (
 	    cls.prototype["make" + constructor.name] = function(){
 		return this[fieldName] = new (this[name])(this, arguments);
 	    };
+	    cls.prototype["ensure" + constructor.name] = function(){
+		if(fieldName in this) return this[fieldName];
+		return this["make" + constructor.name].apply(this, arguments);
+	    };
 	    return cls.prototype[name] = buildDomClass(
 		constructor,
 		deferInit,
@@ -338,6 +342,7 @@ var Uzbl = (
 		].concat(named)
 	    );
 	}
+
 	var OtherEvents = buildWidgetClass(
 	    "OtherEvents",
 	    "otherEvents",
@@ -714,35 +719,6 @@ var Uzbl = (
 
 	var _prot = cls.prototype;
 	_prot.EventList = EventList;
-
-	_prot.ensureOtherEvents = function(){
-	    if("otherEvents" in this) return this.otherEvents;
-	    return this.makeOtherEvents();
-	};
-	_prot.ensureInstanceId = function(){
-	    if("instance ID" in this) return this["instance ID"];
-	    return this.makeInstanceId();
-	};
-	_prot.ensureBuiltins = function(){
-	    if("builtins" in this) return this.builtins;
-	    return this.makeBuiltins();
-	};
-	_prot.ensureVariables = function(){
-	    if("variables" in this) return this.variables;
-	    return this.makeVariables();
-	};
-	_prot.ensureGeometry = function(){
-	    if("geometry" in this) return this.geometry;
-	    return this.makeGeometry();
-	};
-	_prot.ensureCookies = function(){
-	    if("cookies" in this) return this.cookies;
-	    return this.makeCookies();
-	};
-	_prot.ensurePages = function(){
-	    if("pages" in this) return this.pages;
-	    return this.makePages();
-	};
 
 	_prot.displayEvent = function(e){
 	    return this.ensureOtherEvents().displayEvent(e);
