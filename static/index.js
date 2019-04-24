@@ -395,50 +395,50 @@ var Uzbl = (
 	);
 
 	var Builtins = buildDomClass(
-	function Builtins(browser){
-	    this.construct(browser);
-	},
+	    function Builtins(browser){
+		this.construct(browser);
+	    },
 	    function(browser){
-	    this.browser = browser;
+		this.browser = browser;
 	    },
 	    function(){
-	    var result = document.createElement("div");
-	    $(result).text("builtins: ");
-	    var ul = new ToggleUl();
-	    result.appendChild(ul.ensureDom());
-	    this.ul = ul.ul;
-	    this.events = new (this.browser.EventList)();
-	    result.appendChild(document.createTextNode(" ("));
-	    result.appendChild(this.events.ensureDom());
-	    result.appendChild(document.createTextNode(")"));
-	    this.browser.appendChild(result);
-	    return result;
+		var result = document.createElement("div");
+		$(result).text("builtins: ");
+		var ul = new ToggleUl();
+		result.appendChild(ul.ensureDom());
+		this.ul = ul.ul;
+		this.events = new (this.browser.EventList)();
+		result.appendChild(document.createTextNode(" ("));
+		result.appendChild(this.events.ensureDom());
+		result.appendChild(document.createTextNode(")"));
+		this.browser.appendChild(result);
+		return result;
 	    },
 	    {
 		ensureUl: function(){
-	    this.ensureDom();
-	    return this.ul;
+		    this.ensureDom();
+		    return this.ul;
 		},
 		makeLi: function(name){
-	    var li = document.createElement("li");
-	    $(li).text(name);
-	    return li;
+		    var li = document.createElement("li");
+		    $(li).text(name);
+		    return li;
 		},
 		assignValue: function(builtins){
-	    this.value = builtins;
-	    $(this.ensureUl()).html(
-		builtins.map(bindFrom(this, "makeLi"))
-	    );
-	    return this.value;
+		    this.value = builtins;
+		    $(this.ensureUl()).html(
+			builtins.map(bindFrom(this, "makeLi"))
+		    );
+		    return this.value;
 		},
 		handleBuiltinsEvent: function(e){
-	    return this.assignValue(e.event.names);
+		    return this.assignValue(e.event.names);
 		},
 		handleEvent: function(e){
-	    this.ensureDom();
-	    this.events.appendEvent(e);
-	    if("BUILTINS" == e["event type"])
-		return this.handleBuiltinsEvent(e);
+		    this.ensureDom();
+		    this.events.appendEvent(e);
+		    if("BUILTINS" == e["event type"])
+			return this.handleBuiltinsEvent(e);
 		}
 	    }
 	);
