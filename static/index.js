@@ -298,13 +298,22 @@ var Uzbl = (
 	    }
 	);
 
-	function OtherEvents(browser){
-	    this.construct(browser);
-	};
-	OtherEvents.prototype.construct = function(browser){
-	    this.browser = browser;
-	}
-	OtherEvents.prototype.toJSON = function(){
+	var OtherEvents = buildDomClass(
+	    function OtherEvents(browser){
+		this.construct(browser);
+	    },
+	    function(browser){
+		this.browser = browser;
+	    },
+	    function(){
+	    this.events = new (this.browser.EventList)();
+	    var result = this.events.ensureDom();
+	    this.ul = this.events.ul;
+	    this.browser.appendChild(result);
+	    return result;
+	    },
+	    {
+		toJSON: function(){
 	    var keys = Object.keys(this);
 	    var result = {};
 	    var that = this;
@@ -318,23 +327,13 @@ var Uzbl = (
 	    if("browser" in result)
 		result.browser = browser;
 	    return result;
-	};
-	OtherEvents.prototype.makeDom = function(){
-	    this.events = new (this.browser.EventList)();
-	    var result = this.events.ensureDom();
-	    this.dom = result;
-	    this.ul = this.events.ul;
-	    this.browser.appendChild(result);
-	    return result;
-	};
-	OtherEvents.prototype.ensureDom = function(){
-	    if("dom" in this) return this.dom;
-	    return this.dom = this.makeDom();
-	};
-	OtherEvents.prototype.displayEvent = function(e){
+		},
+		displayEvent: function(e){
 	    this.ensureDom();
 	    return this.events.appendEvent(e);
-	};
+		}
+	    }
+	);
 
 	function InstanceId(browser){
 	    this.browser = browser;
