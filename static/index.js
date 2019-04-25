@@ -659,6 +659,25 @@ var Uzbl = (
 		}
 	    }
 	);
+	var Page = buildWidgetClass(
+	    "Page",
+	    "don't use",
+	    function Page(browser){
+		this.construct(browser);
+	    },
+	    NOP,
+	    function(){
+		var result = document.createElement("li");
+		$(result).text("TODO");
+		this.events = this.initEvents(result);
+		return result;
+	    },
+	    logEvent,
+	    [],
+	    {
+		eventMethods: {}
+	    }
+	);
 	var Pages = buildWidgetClass(
 	    "Pages",
 	    "pages",
@@ -693,19 +712,14 @@ var Uzbl = (
 			}
 		    );
 		    var geom = this.browser.ensureGeometry();
-		    this.ensureDom();
 		    var geometry = {};
 		    if("size" in geom) geometry.size = geom.size.map(I);
 		    if("offset" in geom) geometry.offset = geom.offset.map(I);
-		    this.currentPage = {
-			dom: document.createElement("li"),
-			events: new (this.browser.EventList)(),
-			variables: variables,
-			geometry: geometry
-		    };
-		    this.currentPage.dom.appendChild(
-			this.currentPage.events.ensureDom()
-		    );
+		    this.currentPage = new (this.browser.Page)(this.browser);
+		    this.currentPage.variables = variables;
+		    this.currentPage.geometry = geometry;
+		    this.currentPage.ensureDom();
+		    this.ensureDom();
 		    this.ul.ul.appendChild(this.currentPage.dom);
 		    return this.currentPage;
 		},
