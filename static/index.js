@@ -324,6 +324,22 @@ var Uzbl = (
 		return this[this.eventMethods[eventType]](event);
 	    return logged;
 	}
+	function toJSON(){
+		    var keys = Object.keys(this);
+		    var result = {};
+		    var that = this;
+		    keys.map(function(k){result[k] = that[k];})
+		    var browserKeys = []
+		    if("browser" in this)
+			browserKeys = Object.keys(this.getBrowser());
+		    var browser = {};
+		    browserKeys.map(function(k){browser[k] = that.browser[k];});
+		    if(this.names.field in browser)
+			delete browser[this.names.field];
+		    if("browser" in result)
+			result.browser = browser;
+		    return result;
+	}
 	function buildWidgetClass(
 	    name,
 	    fieldName,
@@ -395,22 +411,7 @@ var Uzbl = (
 	    },
 	    logEvent,
 	    [
-		function toJSON(){
-		    var keys = Object.keys(this);
-		    var result = {};
-		    var that = this;
-		    keys.map(function(k){result[k] = that[k];})
-		    var browserKeys = []
-		    if("browser" in this)
-			browserKeys = Object.keys(this.getBrowser());
-		    var browser = {};
-		    browserKeys.map(function(k){browser[k] = that.browser[k];});
-		    if(this.names.field in browser)
-			delete browser[this.names.field];
-		    if("browser" in result)
-			result.browser = browser;
-		    return result;
-		},
+		toJSON,
 		function displayEvent(event){
 		    return this.handleEvent(event);
 		}
@@ -437,22 +438,7 @@ var Uzbl = (
 	    },
 	    logEvent,
 	    [
-		function toJSON(){
-		    var keys = Object.keys(this);
-		    var result = {};
-		    var that = this;
-		    keys.map(function(k){result[k] = that[k];})
-		    var browserKeys = []
-		    if("browser" in this)
-			browserKeys = Object.keys(this.getBrowser());
-		    var browser = {};
-		    browserKeys.map(function(k){browser[k] = that.browser[k];});
-		    if(this.names.field in browser)
-			delete browser[this.names.field];
-		    if("browser" in result)
-			result.browser = browser;
-		    return result;
-		},
+		toJSON,
 		function assignValue(value){
 		    this.value = value;
 		    $(this.ensureDom()).text("instance " + value);
