@@ -472,10 +472,16 @@ var Uzbl = (
 		function handleEvent(e){
 		    this.ensureDom();
 		    this.events.appendEvent(e);
-		    if("BUILTINS" == e["event type"])
-			return this.handleBuiltinsEvent(e);
+		    var eventType = e["event type"];
+		    if(eventType in this.eventMethods)
+			return this[this.eventMethods[eventType]](e);
 		}
-	    ]
+	    ],
+	    {
+		eventMethods: {
+		    BUILTINS: "handleBuiltinsEvent"
+		}
+	    }
 	);
 	var Variables = buildWidgetClass(
 	    "Variables",
@@ -546,7 +552,10 @@ var Uzbl = (
 		    if("VARIABLE_SET" == event["event type"])
 			return this.handleVariableSetEvent(event);
 		}
-	    ]
+	    ],
+	    {
+		eventMethods: {}
+	    }
 	);
 	var Geometry = buildWidgetClass(
 	    "Geometry",
@@ -616,7 +625,10 @@ var Uzbl = (
 		    if("GEOMETRY_CHANGED" == event["event type"])
 			return this.handleGeometryChangedEvent(event);
 		}
-	    ]
+	    ],
+	    {
+		eventMethods: {}
+	    }
 	);
 	var Cookies = buildWidgetClass(
 	    "Cookies",
@@ -646,7 +658,10 @@ var Uzbl = (
 		    if("ADD_COOKIE" == event["event type"])
 			return this.handleAddCookieEvent()
 		}
-	    ]
+	    ],
+	    {
+		eventMethods: {}
+	    }
 	);
 	var Pages = buildWidgetClass(
 	    "Pages",
@@ -720,7 +735,10 @@ var Uzbl = (
 		    if("SCROLL_VERT" == event["event type"])
 			return this.handleScrollVertEvent(event);
 		}
-	    ]
+	    ],
+	    {
+		eventMethods: {}
+	    }
 	);
 
 	var _prot = cls.prototype;
