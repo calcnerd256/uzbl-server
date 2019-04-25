@@ -325,20 +325,20 @@ var Uzbl = (
 	    return logged;
 	}
 	function toJSON(){
-		    var keys = Object.keys(this);
-		    var result = {};
-		    var that = this;
-		    keys.map(function(k){result[k] = that[k];})
-		    var browserKeys = []
-		    if("browser" in this)
-			browserKeys = Object.keys(this.getBrowser());
-		    var browser = {};
-		    browserKeys.map(function(k){browser[k] = that.browser[k];});
-		    if(this.names.field in browser)
-			delete browser[this.names.field];
-		    if("browser" in result)
-			result.browser = browser;
-		    return result;
+	    var keys = Object.keys(this);
+	    var result = {};
+	    var that = this;
+	    keys.map(function(k){result[k] = that[k];})
+	    var browserKeys = []
+	    if("browser" in this)
+		browserKeys = Object.keys(this.getBrowser());
+	    var browser = {};
+	    browserKeys.map(function(k){browser[k] = that.browser[k];});
+	    if(this.names.field in browser)
+		delete browser[this.names.field];
+	    if("browser" in result)
+		result.browser = browser;
+	    return result;
 	}
 	function buildWidgetClass(
 	    name,
@@ -385,6 +385,7 @@ var Uzbl = (
 		    , getBrowser,
 		    makeEventList,
 		    appendToBrowser
+		    , toJSON
 		    , initEvents
 		    , handleEvent
 		].concat(named)
@@ -411,7 +412,6 @@ var Uzbl = (
 	    },
 	    logEvent,
 	    [
-		toJSON,
 		function displayEvent(event){
 		    return this.handleEvent(event);
 		}
@@ -438,7 +438,6 @@ var Uzbl = (
 	    },
 	    logEvent,
 	    [
-		toJSON,
 		function assignValue(value){
 		    this.value = value;
 		    $(this.ensureDom()).text("instance " + value);
