@@ -379,13 +379,13 @@ var Uzbl = (
 		}
 	    ]
 	);
-		function handleEvent(event){
-		    this.ensureDom();
-		    this.events.appendEvent(event);
-		    var eventType = event["event type"];
-		    if(eventType in this.eventMethods)
-			return this[this.eventMethods[eventType]](event);
-		}
+	function handleEvent(event){
+	    this.ensureDom();
+	    this.events.appendEvent(event);
+	    var eventType = event["event type"];
+	    if(eventType in this.eventMethods)
+		return this[this.eventMethods[eventType]](event);
+	}
 	var InstanceId = buildWidgetClass(
 	    "Instance ID",
 	    "instance ID",
