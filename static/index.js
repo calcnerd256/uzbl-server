@@ -589,6 +589,7 @@ var Uzbl = (
 	    ],
 	    {
 		eventMethods: {
+		    VARIABLE_SET: "handleVariableSetEvent"
 		}
 	    }
 	);
@@ -627,19 +628,10 @@ var Uzbl = (
 		    if(name in this.variables) return this.variables[name];
 		    return this.makeVariable(name);
 		},
-		function setVariable(name, varType, value){
-		    var v = this.ensureVariable(name);
-		    $(v.name).text(name);
-		    return v.assignValue(varType, value);
-		},
 		function handleVariableSetEvent(event){
-		    var evt = event.event;
-		    var name = evt.name;
-		    var val = evt.value;
-		    var valueType = val[0];
-		    var value = val[1];
-		    this.ensureVariable(name).events.appendEvent(event);
-		    return this.setVariable(name, valueType, value);
+		    return this.ensureVariable(
+			event.event.name
+		    ).handleEvent(event);
 		}
 	    ],
 	    {
