@@ -576,9 +576,20 @@ var Uzbl = (
 	    },
 	    logEvent,
 	    [
+		function assignValue(valueType, value){
+		    this.value = [valueType, value];
+		    $(this.valueType).text(valueType);
+		    $(this.pre).text("");
+		    this.pre.appendChild(document.createTextNode(""+value));
+		},
+		function handleVariableSetEvent(event){
+		    var val = event.event.value;
+		    return this.assignValue(val[0], val[1]);
+		}
 	    ],
 	    {
-		eventMethods: {}
+		eventMethods: {
+		}
 	    }
 	);
 	var Variables = buildWidgetClass(
@@ -618,11 +629,8 @@ var Uzbl = (
 		},
 		function setVariable(name, varType, value){
 		    var v = this.ensureVariable(name);
-		    v.value = [varType, value];
 		    $(v.name).text(name);
-		    $(v.valueType).text(varType);
-		    $(v.pre).text("");
-		    v.pre.appendChild(document.createTextNode(""+value));
+		    return v.assignValue(varType, value);
 		},
 		function handleVariableSetEvent(event){
 		    var evt = event.event;
