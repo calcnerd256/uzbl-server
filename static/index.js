@@ -336,6 +336,10 @@ var Uzbl = (
 	){
 	    var renamed = {
 		init: init
+		, names: {
+		    "class": name,
+		    field: fieldName
+		}
 		, logEvent: logEvent
 	    };
 	    if(members)
@@ -344,6 +348,7 @@ var Uzbl = (
 			renamed[k] = members[k];
 		    }
 		);
+	    if(null != fieldName){
 	    cls.prototype["make" + constructor.name] = function(){
 		return this[fieldName] = new (this[name])(this, arguments);
 	    };
@@ -351,6 +356,7 @@ var Uzbl = (
 		if(fieldName in this) return this[fieldName];
 		return this["make" + constructor.name].apply(this, arguments);
 	    };
+	    }
 	    return cls.prototype[name] = buildDomClass(
 		constructor,
 		deferInit,
@@ -397,7 +403,7 @@ var Uzbl = (
 			browserKeys = Object.keys(this.getBrowser());
 		    var browser = {};
 		    browserKeys.map(function(k){browser[k] = that.browser[k];});
-		    delete browser.otherEvents;
+		    delete browser[this.names.field];
 		    if("browser" in result)
 			result.browser = browser;
 		    return result;
@@ -438,7 +444,7 @@ var Uzbl = (
 			browserKeys = Object.keys(this.getBrowser());
 		    var browser = {};
 		    browserKeys.map(function(k){browser[k] = that.browser[k];});
-		    delete browser["instance ID"];
+		    delete browser[this.names.field];
 		    if("browser" in result)
 			result.browser = browser;
 		    return result;
@@ -675,7 +681,7 @@ var Uzbl = (
 	);
 	var Page = buildWidgetClass(
 	    "Page",
-	    "don't use",
+	    null,
 	    function Page(browser){
 		this.construct.apply(this, arguments);
 	    },
