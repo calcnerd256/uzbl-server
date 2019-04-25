@@ -554,6 +554,20 @@ var Uzbl = (
 		}
 	    }
 	);
+	var Variable = buildWidgetClass(
+	    "Variable",
+	    null,
+	    function Variable(browser){
+		this.construct(browser);
+	    },
+	    NOP,
+	    function(){
+		var result = document.createElement("li");
+		return result;
+	    },
+	    logEvent,
+	    []
+	);
 	var Variables = buildWidgetClass(
 	    "Variables",
 	    "variables",
@@ -576,14 +590,15 @@ var Uzbl = (
 	    [
 		function makeVariable(name){
 		    this.ensureDom();
-		    var li = document.createElement("li");
-		    var result = {
-			li: li,
-			name: document.createElement("span"),
-			valueType: document.createElement("span"),
-			pre: document.createElement("pre"),
-			events: this.makeEventList()
-		    };
+		    var result = new (
+			this.getBrowser().Variable
+		    )(this.getBrowser());
+		    var li = result.ensureDom();
+		    result.li = li;
+		    result.name = document.createElement("span");
+		    result.valueType = document.createElement("span");
+		    result.pre = document.createElement("pre");
+		    result.events = this.makeEventList();
 		    this.variables[name] = result;
 		    $(result.name).text(name);
 		    li.appendChild(result.name);
