@@ -295,12 +295,23 @@ var Uzbl = (
 	function storeBrowser(browser){
 	    this.browser = browser;
 	}
+	function getBrowser(){
+	    return this.browser;
+	}
+	function makeEventList(){
+	    return new (
+		this.getBrowser().EventList
+	    )();
+	}
+	function appendToBrowser(child){
+	    return this.getBrowser().appendChild(child);
+	}
 	function deferInit(browser){
 	    this.storeBrowser(browser);
 	    return this.init.apply(this, [].slice.call(arguments, 1));
 	}
 	function initEvents(container){
-	    var result = new (this.browser.EventList)();
+	    var result = this.makeEventList();
 	    container.appendChild(document.createTextNode(" ("));
 	    container.appendChild(result.ensureDom());
 	    container.appendChild(document.createTextNode(")"));
@@ -347,6 +358,9 @@ var Uzbl = (
 		renamed,
 		[
 		    storeBrowser
+		    , getBrowser,
+		    makeEventList,
+		    appendToBrowser
 		    , initEvents
 		    , handleEvent
 		].concat(named)
@@ -365,10 +379,10 @@ var Uzbl = (
 	    },
 	    NOP,
 	    function(){
-		this.events = new (this.browser.EventList)();
+		this.events = this.makeEventList();
 		var result = this.events.ensureDom();
 		this.ul = this.events.ul;
-		this.browser.appendChild(result);
+		this.appendToBrowser(result);
 		return result;
 	    },
 	    logEvent,
@@ -380,7 +394,7 @@ var Uzbl = (
 		    keys.map(function(k){result[k] = that[k];})
 		    var browserKeys = []
 		    if("browser" in this)
-			browserKeys = Object.keys(this.browser);
+			browserKeys = Object.keys(this.getBrowser());
 		    var browser = {};
 		    browserKeys.map(function(k){browser[k] = that.browser[k];});
 		    delete browser.otherEvents;
@@ -408,7 +422,7 @@ var Uzbl = (
 		var div = document.createElement("div");
 		div.appendChild(result);
 		this.events = this.initEvents(div);
-		this.browser.appendChild(div);
+		this.appendToBrowser(div);
 		$(result).text("unknown instance");
 		return result;
 	    },
@@ -421,7 +435,7 @@ var Uzbl = (
 		    keys.map(function(k){result[k] = that[k];})
 		    var browserKeys = []
 		    if("browser" in this)
-			browserKeys = Object.keys(this.browser);
+			browserKeys = Object.keys(this.getBrowser());
 		    var browser = {};
 		    browserKeys.map(function(k){browser[k] = that.browser[k];});
 		    delete browser["instance ID"];
@@ -457,7 +471,7 @@ var Uzbl = (
 		result.appendChild(ul.ensureDom());
 		this.ul = ul.ul;
 		this.events = this.initEvents(result);
-		this.browser.appendChild(result);
+		this.appendToBrowser(result);
 		return result;
 	    },
 	    logEvent,
@@ -503,7 +517,7 @@ var Uzbl = (
 		this.ul = new ToggleUl();
 		result.appendChild(this.ul.ensureDom());
 		this.events = this.initEvents(result);
-		this.browser.appendChild(result);
+		this.appendToBrowser(result);
 		return result;
 	    },
 	    logEvent,
@@ -516,7 +530,7 @@ var Uzbl = (
 			name: document.createElement("span"),
 			valueType: document.createElement("span"),
 			pre: document.createElement("pre"),
-			events: new (this.browser.EventList)()
+			events: this.makeEventList()
 		    };
 		    this.variables[name] = result;
 		    $(result.name).text(name);
@@ -581,7 +595,7 @@ var Uzbl = (
 		);
 		result.appendChild(this.canv);
 		this.events = this.initEvents(result);
-		this.browser.appendChild(result);
+		this.appendToBrowser(result);
 		return result;
 	    },
 	    logEvent,
@@ -644,7 +658,7 @@ var Uzbl = (
 		this.ul = new ToggleUl();
 		result.appendChild(this.ul.ensureDom());
 		this.events = this.initEvents(result);
-		this.browser.appendChild(result);
+		this.appendToBrowser(result);
 		return result;
 	    },
 	    logEvent,
@@ -705,7 +719,7 @@ var Uzbl = (
 		$(result).text("pages: ");
 		this.ul = new ToggleUl();
 		result.appendChild(this.ul.ensureDom());
-		this.browser.appendChild(result);
+		this.appendToBrowser(result);
 		return result;
 	    },
 	    function logEvent(event){
@@ -716,10 +730,10 @@ var Uzbl = (
 	    },
 	    [
 		function newPage(){
-		    this.currentPage = new (this.browser.Page)(
-			this.browser,
-			this.browser.ensureVariables().variables,
-			this.browser.ensureGeometry()
+		    this.currentPage = new (this.getBrowser().Page)(
+			this.getBrowser(),
+			this.getBrowser().ensureVariables().variables,
+			this.getBrowser().ensureGeometry()
 		    );
 		    this.ensureDom();
 		    this.currentPage.ensureDom();
