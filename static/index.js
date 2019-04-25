@@ -343,6 +343,16 @@ var Uzbl = (
 	    );
 	}
 
+	function logEvent(event){
+	    this.ensureDom();
+	    this.events.appendEvent(event);
+	};
+	function handleEvent(event){
+	    this.logEvent(event);
+	    var eventType = event["event type"];
+	    if(eventType in this.eventMethods)
+		return this[this.eventMethods[eventType]](event);
+	}
 	var OtherEvents = buildWidgetClass(
 	    "OtherEvents",
 	    "otherEvents",
@@ -382,16 +392,6 @@ var Uzbl = (
 		eventMethods: {}
 	    }
 	);
-	function logEvent(event){
-	    this.ensureDom();
-	    this.events.appendEvent(event);
-	};
-	function handleEvent(event){
-	    this.logEvent(event);
-	    var eventType = event["event type"];
-	    if(eventType in this.eventMethods)
-		return this[this.eventMethods[eventType]](event);
-	}
 	var InstanceId = buildWidgetClass(
 	    "Instance ID",
 	    "instance ID",
