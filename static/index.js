@@ -349,13 +349,15 @@ var Uzbl = (
 		    }
 		);
 	    if(null != fieldName){
-	    cls.prototype["make" + constructor.name] = function(){
-		return this[fieldName] = new (this[name])(this, arguments);
-	    };
-	    cls.prototype["ensure" + constructor.name] = function(){
-		if(fieldName in this) return this[fieldName];
-		return this["make" + constructor.name].apply(this, arguments);
-	    };
+		cls.prototype["make" + constructor.name] = function(){
+		    return this[fieldName] = new (this[name])(this, arguments);
+		};
+		cls.prototype["ensure" + constructor.name] = function(){
+		    if(fieldName in this) return this[fieldName];
+		    return this[
+			"make" + constructor.name
+		    ].apply(this, arguments);
+		};
 	    }
 	    return cls.prototype[name] = buildDomClass(
 		constructor,
@@ -403,7 +405,8 @@ var Uzbl = (
 			browserKeys = Object.keys(this.getBrowser());
 		    var browser = {};
 		    browserKeys.map(function(k){browser[k] = that.browser[k];});
-		    delete browser[this.names.field];
+		    if(this.names.field in browser)
+			delete browser[this.names.field];
 		    if("browser" in result)
 			result.browser = browser;
 		    return result;
@@ -444,7 +447,8 @@ var Uzbl = (
 			browserKeys = Object.keys(this.getBrowser());
 		    var browser = {};
 		    browserKeys.map(function(k){browser[k] = that.browser[k];});
-		    delete browser[this.names.field];
+		    if(this.names.field in browser)
+			delete browser[this.names.field];
 		    if("browser" in result)
 			result.browser = browser;
 		    return result;
