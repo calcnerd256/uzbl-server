@@ -547,12 +547,7 @@ var Uzbl = (
 		    return this.setVariable(name, valueType, value);
 		},
 		logEvent,
-		function handleEvent(event){
-		    this.logEvent(event);
-		    var eventType = event["event type"];
-		    if(eventType in this.eventMethods)
-			return this[this.eventMethods[eventType]](event);
-		}
+		handleEvent
 	    ],
 	    {
 		eventMethods: {
@@ -623,11 +618,7 @@ var Uzbl = (
 		    this.assignValue(event.event.size, event.event.offset);
 		},
 		logEvent,
-		function handleEvent(event){
-		    this.logEvent(event);
-		    if("GEOMETRY_CHANGED" == event["event type"])
-			return this.handleGeometryChangedEvent(event);
-		}
+		handleEvent
 	    ],
 	    {
 		eventMethods: {
@@ -658,11 +649,7 @@ var Uzbl = (
 		    // TODO
 		},
 		logEvent,
-		function handleEvent(event){
-		    this.logEvent(event);
-		    if("ADD_COOKIE" == event["event type"])
-			return this.handleAddCookieEvent()
-		}
+		handleEvent
 	    ],
 	    {
 		eventMethods: {
@@ -753,6 +740,9 @@ var Uzbl = (
 	    {
 		logEvents: false,
 		eventMethods: {
+		    load: "handleLoadEvent",
+		    SCROLL_HORIZ: "handleScrollHorizEvent",
+		    SCROLL_VERT: "handleScrollVertEvent"
 		}
 	    }
 	);
