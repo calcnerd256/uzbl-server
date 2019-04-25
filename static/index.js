@@ -570,6 +570,8 @@ var Uzbl = (
 		result.appendChild(document.createTextNode(" : "));
 		result.appendChild(this.valueType);
 		$(this.valueType).text("unknown");
+		result.appendChild(this.pre);
+		this.events = this.initEvents(result);
 		return result;
 	    },
 	    logEvent,
@@ -603,8 +605,6 @@ var Uzbl = (
 		    var li = result.ensureDom();
 		    this.variables[name] = result;
 		    $(result.name).text(name);
-		    li.appendChild(result.pre);
-		    result.events = this.initEvents(li);
 		    this.ul.ul.appendChild(li);
 		    return result;
 		},
