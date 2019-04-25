@@ -306,17 +306,26 @@ var Uzbl = (
 	    container.appendChild(document.createTextNode(")"));
 	    return result;
 	}
+	function handleEvent(event){
+	    var logged = this.logEvent(event);
+	    var eventType = event["event type"];
+	    if(eventType in this.eventMethods)
+		return this[this.eventMethods[eventType]](event);
+	    return logged;
+	}
 	function buildWidgetClass(
 	    name,
 	    fieldName,
 	    constructor,
 	    init,
 	    makeDom,
+	    logEvent,
 	    named,
 	    members
 	){
 	    var renamed = {
 		init: init
+		, logEvent: logEvent
 	    };
 	    if(members)
 		Object.keys(members).map(
@@ -347,13 +356,6 @@ var Uzbl = (
 	    this.ensureDom();
 	    return this.events.appendEvent(event);
 	};
-	function handleEvent(event){
-	    var logged = this.logEvent(event);
-	    var eventType = event["event type"];
-	    if(eventType in this.eventMethods)
-		return this[this.eventMethods[eventType]](event);
-	    return logged;
-	}
 	var OtherEvents = buildWidgetClass(
 	    "OtherEvents",
 	    "otherEvents",
@@ -368,6 +370,7 @@ var Uzbl = (
 		this.browser.appendChild(result);
 		return result;
 	    },
+	    logEvent,
 	    [
 		function toJSON(){
 		    var keys = Object.keys(this);
@@ -385,9 +388,9 @@ var Uzbl = (
 		    return result;
 		},
 		function displayEvent(event){
-		    return this.logEvent(event);
+		    return this.handleEvent(event);
 		},
-		logEvent
+		handleEvent
 	    ],
 	    {
 		eventMethods: {}
@@ -409,6 +412,7 @@ var Uzbl = (
 		$(result).text("unknown instance");
 		return result;
 	    },
+	    logEvent,
 	    [
 		function toJSON(){
 		    var keys = Object.keys(this);
@@ -432,7 +436,6 @@ var Uzbl = (
 		function handleInstanceStartEvent(e){
 		    return this.assignValue(e.event["instance ID"]);
 		},
-		logEvent,
 		handleEvent
 	    ],
 	    {
@@ -458,6 +461,7 @@ var Uzbl = (
 		this.browser.appendChild(result);
 		return result;
 	    },
+	    logEvent,
 	    [
 		function ensureUl(){
 		    this.ensureDom();
@@ -478,7 +482,6 @@ var Uzbl = (
 		function handleBuiltinsEvent(e){
 		    return this.assignValue(e.event.names);
 		},
-		logEvent,
 		handleEvent
 	    ],
 	    {
@@ -505,6 +508,7 @@ var Uzbl = (
 		this.browser.appendChild(result);
 		return result;
 	    },
+	    logEvent,
 	    [
 		function makeVariable(name){
 		    this.ensureDom();
@@ -550,7 +554,6 @@ var Uzbl = (
 		    this.ensureVariable(name).events.appendEvent(event);
 		    return this.setVariable(name, valueType, value);
 		},
-		logEvent,
 		handleEvent
 	    ],
 	    {
@@ -584,6 +587,7 @@ var Uzbl = (
 		this.browser.appendChild(result);
 		return result;
 	    },
+	    logEvent,
 	    [
 		function assignValue(size, offset){
 		    this.size = size;
@@ -621,7 +625,6 @@ var Uzbl = (
 		function handleGeometryChangedEvent(event){
 		    this.assignValue(event.event.size, event.event.offset);
 		},
-		logEvent,
 		handleEvent
 	    ],
 	    {
@@ -648,11 +651,11 @@ var Uzbl = (
 		this.browser.appendChild(result);
 		return result;
 	    },
+	    logEvent,
 	    [
 		function handleAddCookieEvent(event){
 		    // TODO
 		},
-		logEvent,
 		handleEvent
 	    ],
 	    {
@@ -678,6 +681,12 @@ var Uzbl = (
 		this.browser.appendChild(result);
 		return result;
 	    },
+		function logEvent(event){
+		    if("load" == event["event type"])
+			if("start" == event.event.loadType)
+			    this.newPage();
+		    this.currentPage.events.appendEvent(event);
+		},
 	    [
 		function newPage(){
 		    var vars = this.browser.ensureVariables().variables;
@@ -722,12 +731,6 @@ var Uzbl = (
 			"scrollbar": evt.value
 		    };
 		    return this.currentPage.scrollVert;
-		},
-		function logEvent(event){
-		    if("load" == event["event type"])
-			if("start" == event.event.loadType)
-			    this.newPage();
-		    this.currentPage.events.appendEvent(event);
 		},
 		function handleLoadEvent(event){
 		},
