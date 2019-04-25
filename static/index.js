@@ -328,16 +328,44 @@ var Uzbl = (
 	    var keys = Object.keys(this);
 	    var result = {};
 	    var that = this;
-	    keys.map(function(k){result[k] = that[k];})
+	    keys.filter(
+		function(k){
+		    if("browser" == k) return false;
+		    try{
+			JSON.stringify(that[k]);
+			return true;
+		    }
+		    catch(e){
+			return false;
+		    }
+		}
+	    ).map(
+		function(k){
+		    result[k] = that[k];
+		}
+	    );
+
 	    var browserKeys = []
-	    if("browser" in this)
-		browserKeys = Object.keys(this.getBrowser());
+	    var b = null;
+	    if("getBrowser" in this)
+		if("function" == typeof this.getBrowser)
+		    b = this.getBrowser();
+	    if(null == b) return result;
+
+	    browserKeys = Object.keys(b);
 	    var browser = {};
-	    browserKeys.map(function(k){browser[k] = that.browser[k];});
-	    if(this.names.field in browser)
-		delete browser[this.names.field];
-	    if("browser" in result)
-		result.browser = browser;
+	    browserKeys.filter(
+		function(k){
+		    return k != that.names.field;
+		}
+	    ).map(
+		function(k){
+		    browser[k] = b[k];
+		}
+	    );
+	    if("toJSON" in b)
+		browser.toJSON = b.toJSON;
+	    result.browser = browser;
 	    return result;
 	}
 	function buildWidgetClass(
