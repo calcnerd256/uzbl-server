@@ -563,6 +563,13 @@ var Uzbl = (
 	    NOP,
 	    function(){
 		var result = document.createElement("li");
+		this.name = document.createElement("span");
+		this.valueType = document.createElement("span");
+		this.pre = document.createElement("pre");
+		result.appendChild(this.name);
+		result.appendChild(document.createTextNode(" : "));
+		result.appendChild(this.valueType);
+		$(this.valueType).text("unknown");
 		return result;
 	    },
 	    logEvent,
@@ -594,21 +601,10 @@ var Uzbl = (
 			this.getBrowser().Variable
 		    )(this.getBrowser());
 		    var li = result.ensureDom();
-		    result.li = li;
-		    result.name = document.createElement("span");
-		    result.valueType = document.createElement("span");
-		    result.pre = document.createElement("pre");
-		    result.events = this.makeEventList();
 		    this.variables[name] = result;
 		    $(result.name).text(name);
-		    li.appendChild(result.name);
-		    li.appendChild(document.createTextNode(" : "));
-		    li.appendChild(result.valueType);
-		    $(result.valueType).text("unknown");
 		    li.appendChild(result.pre);
-		    li.appendChild(document.createTextNode(" ("));
-		    li.appendChild(result.events.ensureDom());
-		    li.appendChild(document.createTextNode(")"));
+		    result.events = this.initEvents(li);
 		    this.ul.ul.appendChild(li);
 		    return result;
 		},
