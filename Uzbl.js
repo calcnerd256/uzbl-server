@@ -436,7 +436,7 @@ function parseEvent(rest){
 	EventModPress,
 	EventModRelease,
 	EventAddCookie
-	, EventAddCookie
+	, EventDeleteCookie
     ];
     var matches = glossary_alist.filter(
 	function(cls){
