@@ -681,12 +681,12 @@ var Uzbl = (
 		this.browser.appendChild(result);
 		return result;
 	    },
-		function logEvent(event){
-		    if("load" == event["event type"])
-			if("start" == event.event.loadType)
-			    this.newPage();
-		    this.currentPage.events.appendEvent(event);
-		},
+	    function logEvent(event){
+		if("load" == event["event type"])
+		    if("start" == event.event.loadType)
+			this.newPage();
+		this.currentPage.events.appendEvent(event);
+	    },
 	    [
 		function newPage(){
 		    var vars = this.browser.ensureVariables().variables;
