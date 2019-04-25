@@ -258,31 +258,58 @@ var Uzbl = (
 	    {},
 	    [
 		function toJSON(){
-		    var keys = Object.keys(this);
 		    var result = {};
 		    var that = this;
-		    keys.map(
+		    Object.keys(this).filter(
 			function(k){
-			    var val = that[k];
-			    result[k] = val;
-			    if("object" == typeof val)
-				if("browser" in val)
-				    if(val.browser == that){
-					var keys = Object.keys(val);
-					var v = {};
-					keys.map(function(k){v[k] = val[k]});
-					delete v.browser;
-				    }
+			    if("dom" == k) return false;
+			    return true;
+			}
+		    ).map(
+			function(k){
+			    return [k, that[k]];
+			}
+		    ).map(
+			function(kv){
+			    var v = kv[1];
+			    if("object" != typeof v) return kv;
+			    if(!("toJSON" in v)) return kv;
+			    return [kv[0], v.toJSON()];
+			}
+		    ).map(
+			function(kv){
+			    var k = kv[0];
+			    var val = kv[1];
+			    if("object" != typeof val) return kv;
+			    if(!("browser" in val)) return kv;
+			    var result = {};
+			    Object.keys(val).filter(
+				function(k){
+				    return "browser" != k;
+				}
+			    ).map(
+				function(k){
+				    result[k] = val[k];
+				}
+			    );
+			    return [k, result];
+			}
+		    ).map(
+			function(kv){
 			    try{
-				result[k] = JSON.parse(
-				    JSON.stringify(
-					v
-				    )
-				);
+				return JSON.stringify(kv);
 			    }
 			    catch(e){
-				delete result[k];
+				return false;
 			    }
+			}
+		    ).filter(I).map(
+			function(s){
+			    return JSON.parse(s);
+			}
+		    ).map(
+			function(kv){
+			    result[kv[0]] = kv[1];
 			}
 		    );
 		    return result;
@@ -325,12 +352,16 @@ var Uzbl = (
 	    return logged;
 	}
 	function toJSON(){
-	    var keys = Object.keys(this);
+	    if("toJson" in this)
+		return this.toJson();
 	    var result = {};
 	    var that = this;
-	    keys.filter(
+	    Object.keys(this).filter(
 		function(k){
-		    if("browser" == k) return false;
+		    return "browser" != k;
+		}
+	    ).filter(
+		function(k){
 		    try{
 			JSON.stringify(that[k]);
 			return true;
@@ -345,16 +376,14 @@ var Uzbl = (
 		}
 	    );
 
-	    var browserKeys = []
 	    var b = null;
 	    if("getBrowser" in this)
 		if("function" == typeof this.getBrowser)
 		    b = this.getBrowser();
 	    if(null == b) return result;
 
-	    browserKeys = Object.keys(b);
 	    var browser = {};
-	    browserKeys.filter(
+	    Object.keys(b).filter(
 		function(k){
 		    return k != that.names.field;
 		}
@@ -782,6 +811,52 @@ var Uzbl = (
 		    return this.currentPage.scrollVert;
 		},
 		function handleLoadEvent(event){
+		},
+		function toJson(){
+		    var result = {};
+		    var that = this;
+		    Object.keys(this).filter(
+			function(k){
+			    if("browser" == k) return false;
+			    if("currentPage" == k) return false;
+			    return true;
+			}
+		    ).map(
+			function(k){
+			    return [k, that[k]];
+			}
+		    ).map(
+			function(kv){
+			    try{
+				return JSON.stringify(kv);
+			    }
+			    catch(e){
+				return false;
+			    }
+			}
+		    ).filter(I).map(
+			function(s){
+			    return JSON.parse(s);
+			}
+		    ).map(
+			function(kv){
+			    result[kv[0]] = JSON.parse(kv[1]);
+			}
+		    );
+		    result.currentPage = {}
+		    var page = this.currentPage;
+		    if("toJSON" in page)
+			page = page.toJSON();
+		    Object.keys(page).filter(
+			function(k){
+			    return "browser" != k;
+			}
+		    ).map(
+			function(k){
+			    result.currentPage[k] = page[k]
+			}
+		    );
+		    return result;
 		}
 	    ],
 	    {
