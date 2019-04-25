@@ -729,11 +729,18 @@ var Uzbl = (
 		    };
 		    return this.currentPage.scrollVert;
 		},
-		function handleEvent(event){
+		function logEvent(event){
 		    if("load" == event["event type"])
 			if("start" == event.event.loadType)
 			    this.newPage();
 		    this.currentPage.events.appendEvent(event);
+		},
+		function handleLoadEvent(event){
+		},
+		function handleEvent(event){
+		    this.logEvent(event);
+		    if("load" == event["event type"])
+			return this.handleLoadEvent(event);
 		    if("SCROLL_HORIZ" == event["event type"])
 			return this.handleScrollHorizEvent(event);
 		    if("SCROLL_VERT" == event["event type"])
