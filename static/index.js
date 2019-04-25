@@ -348,6 +348,7 @@ var Uzbl = (
 		[
 		    storeBrowser
 		    , initEvents
+		    , handleEvent
 		].concat(named)
 	    );
 	}
@@ -389,8 +390,7 @@ var Uzbl = (
 		},
 		function displayEvent(event){
 		    return this.handleEvent(event);
-		},
-		handleEvent
+		}
 	    ],
 	    {
 		eventMethods: {}
@@ -435,8 +435,7 @@ var Uzbl = (
 		},
 		function handleInstanceStartEvent(e){
 		    return this.assignValue(e.event["instance ID"]);
-		},
-		handleEvent
+		}
 	    ],
 	    {
 		eventMethods: {
@@ -481,8 +480,7 @@ var Uzbl = (
 		},
 		function handleBuiltinsEvent(e){
 		    return this.assignValue(e.event.names);
-		},
-		handleEvent
+		}
 	    ],
 	    {
 		eventMethods: {
@@ -553,8 +551,7 @@ var Uzbl = (
 		    var value = val[1];
 		    this.ensureVariable(name).events.appendEvent(event);
 		    return this.setVariable(name, valueType, value);
-		},
-		handleEvent
+		}
 	    ],
 	    {
 		eventMethods: {
@@ -624,8 +621,7 @@ var Uzbl = (
 		},
 		function handleGeometryChangedEvent(event){
 		    this.assignValue(event.event.size, event.event.offset);
-		},
-		handleEvent
+		}
 	    ],
 	    {
 		eventMethods: {
@@ -655,8 +651,7 @@ var Uzbl = (
 	    [
 		function handleAddCookieEvent(event){
 		    // TODO
-		},
-		handleEvent
+		}
 	    ],
 	    {
 		eventMethods: {
@@ -733,8 +728,7 @@ var Uzbl = (
 		    return this.currentPage.scrollVert;
 		},
 		function handleLoadEvent(event){
-		},
-		handleEvent
+		}
 	    ],
 	    {
 		logEvents: false,
