@@ -348,10 +348,11 @@ var Uzbl = (
 	    return this.events.appendEvent(event);
 	};
 	function handleEvent(event){
-	    this.logEvent(event);
+	    var logged = this.logEvent(event);
 	    var eventType = event["event type"];
 	    if(eventType in this.eventMethods)
 		return this[this.eventMethods[eventType]](event);
+	    return logged;
 	}
 	var OtherEvents = buildWidgetClass(
 	    "OtherEvents",
@@ -382,10 +383,13 @@ var Uzbl = (
 		    if("browser" in result)
 			result.browser = browser;
 		    return result;
-		}
+		},
+		function displayEvent(event){
+		    return this.logEvent(event);
+		},
+		logEvent
 	    ],
 	    {
-		displayEvent: logEvent,
 		eventMethods: {}
 	    }
 	);
@@ -727,15 +731,7 @@ var Uzbl = (
 		},
 		function handleLoadEvent(event){
 		},
-		function handleEvent(event){
-		    this.logEvent(event);
-		    if("load" == event["event type"])
-			return this.handleLoadEvent(event);
-		    if("SCROLL_HORIZ" == event["event type"])
-			return this.handleScrollHorizEvent(event);
-		    if("SCROLL_VERT" == event["event type"])
-			return this.handleScrollVertEvent(event);
-		}
+		handleEvent
 	    ],
 	    {
 		logEvents: false,
