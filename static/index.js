@@ -575,7 +575,11 @@ var Uzbl = (
 		return result;
 	    },
 	    logEvent,
-	    []
+	    [
+	    ],
+	    {
+		eventMethods: {}
+	    }
 	);
 	var Variables = buildWidgetClass(
 	    "Variables",
