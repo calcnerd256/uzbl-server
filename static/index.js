@@ -663,9 +663,22 @@ var Uzbl = (
 	    "Page",
 	    "don't use",
 	    function Page(browser){
-		this.construct(browser);
+		this.construct.apply(this, arguments);
 	    },
-	    NOP,
+	    function(variables, geometry){
+		var v = {};
+		var keys = Object.keys(variables);
+		keys.map(
+		    function(k){
+			v[k] = variables[k].value;
+		    }
+		);
+		var g = {};
+		if("size" in geometry) g.size = geometry.size.map(I);
+		if("offset" in geometry) g.offset = geometry.offset.map(I);
+		this.variables = v;
+		this.geometry = g;
+	    },
 	    function(){
 		var result = document.createElement("li");
 		$(result).text("TODO");
@@ -703,23 +716,13 @@ var Uzbl = (
 	    },
 	    [
 		function newPage(){
-		    var vars = this.browser.ensureVariables().variables;
-		    var keys = Object.keys(vars);
-		    var variables = {};
-		    keys.map(
-			function(k){
-			    variables[k] = vars[k].value;
-			}
+		    this.currentPage = new (this.browser.Page)(
+			this.browser,
+			this.browser.ensureVariables().variables,
+			this.browser.ensureGeometry()
 		    );
-		    var geom = this.browser.ensureGeometry();
-		    var geometry = {};
-		    if("size" in geom) geometry.size = geom.size.map(I);
-		    if("offset" in geom) geometry.offset = geom.offset.map(I);
-		    this.currentPage = new (this.browser.Page)(this.browser);
-		    this.currentPage.variables = variables;
-		    this.currentPage.geometry = geometry;
-		    this.currentPage.ensureDom();
 		    this.ensureDom();
+		    this.currentPage.ensureDom();
 		    this.ul.ul.appendChild(this.currentPage.dom);
 		    return this.currentPage;
 		},
