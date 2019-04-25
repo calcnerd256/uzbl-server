@@ -345,7 +345,7 @@ var Uzbl = (
 
 	function logEvent(event){
 	    this.ensureDom();
-	    this.events.appendEvent(event);
+	    return this.events.appendEvent(event);
 	};
 	function handleEvent(event){
 	    this.logEvent(event);
@@ -382,13 +382,10 @@ var Uzbl = (
 		    if("browser" in result)
 			result.browser = browser;
 		    return result;
-		},
-		function displayEvent(e){
-		    this.ensureDom();
-		    return this.events.appendEvent(e);
 		}
 	    ],
 	    {
+		displayEvent: logEvent,
 		eventMethods: {}
 	    }
 	);
