@@ -418,12 +418,12 @@ var Uzbl = (
 		function handleInstanceStartEvent(e){
 		    return this.assignValue(e.event["instance ID"]);
 		},
-		function handleEvent(e){
+		function handleEvent(event){
 		    this.ensureDom();
-		    this.events.appendEvent(e);
-		    var eventType = e["event type"];
+		    this.events.appendEvent(event);
+		    var eventType = event["event type"];
 		    if(eventType in this.eventMethods)
-			return this[this.eventMethods[eventType]](e);
+			return this[this.eventMethods[eventType]](event);
 		}
 	    ],
 	    {
@@ -469,12 +469,12 @@ var Uzbl = (
 		function handleBuiltinsEvent(e){
 		    return this.assignValue(e.event.names);
 		},
-		function handleEvent(e){
+		function handleEvent(event){
 		    this.ensureDom();
-		    this.events.appendEvent(e);
-		    var eventType = e["event type"];
+		    this.events.appendEvent(event);
+		    var eventType = event["event type"];
 		    if(eventType in this.eventMethods)
-			return this[this.eventMethods[eventType]](e);
+			return this[this.eventMethods[eventType]](event);
 		}
 	    ],
 	    {
@@ -549,12 +549,15 @@ var Uzbl = (
 		function handleEvent(event){
 		    this.ensureDom();
 		    this.events.appendEvent(event);
-		    if("VARIABLE_SET" == event["event type"])
-			return this.handleVariableSetEvent(event);
+		    var eventType = event["event type"];
+		    if(eventType in this.eventMethods)
+			return this[this.eventMethods[eventType]](event);
 		}
 	    ],
 	    {
-		eventMethods: {}
+		eventMethods: {
+		    VARIABLE_SET: "handleVariableSetEvent"
+		}
 	    }
 	);
 	var Geometry = buildWidgetClass(
@@ -627,7 +630,8 @@ var Uzbl = (
 		}
 	    ],
 	    {
-		eventMethods: {}
+		eventMethods: {
+		}
 	    }
 	);
 	var Cookies = buildWidgetClass(
@@ -660,7 +664,8 @@ var Uzbl = (
 		}
 	    ],
 	    {
-		eventMethods: {}
+		eventMethods: {
+		}
 	    }
 	);
 	var Pages = buildWidgetClass(
@@ -737,7 +742,8 @@ var Uzbl = (
 		}
 	    ],
 	    {
-		eventMethods: {}
+		eventMethods: {
+		}
 	    }
 	);
 
