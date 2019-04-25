@@ -394,6 +394,17 @@ EventAddCookie.fromString = function(s){
     return new this(domain, path, name, value, scheme, expiration);
 };
 
+function EventDeleteCookie(domain, path, name, value, scheme, expiration){
+    this.domain = domain;
+    this.path = path;
+    this.name = name;
+    this.value = value;
+    this.scheme = scheme;
+    this.expiration = expiration;
+}
+EventDeleteCookie.prototype = new UzblEvent("DELETE_COOKIE");
+EventDeleteCookie.fromString = EventAddCookie.fromString;
+
 function FocusEvent(status){
     this.status = status;
 }
@@ -425,6 +436,7 @@ function parseEvent(rest){
 	EventModPress,
 	EventModRelease,
 	EventAddCookie
+	, EventAddCookie
     ];
     var matches = glossary_alist.filter(
 	function(cls){
