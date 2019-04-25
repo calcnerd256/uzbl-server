@@ -377,7 +377,10 @@ var Uzbl = (
 		    this.ensureDom();
 		    return this.events.appendEvent(e);
 		}
-	    ]
+	    ],
+	    {
+		eventMethods: {}
+	    }
 	);
 	function handleEvent(event){
 	    this.ensureDom();
@@ -470,13 +473,7 @@ var Uzbl = (
 		function handleBuiltinsEvent(e){
 		    return this.assignValue(e.event.names);
 		},
-		function handleEvent(event){
-		    this.ensureDom();
-		    this.events.appendEvent(event);
-		    var eventType = event["event type"];
-		    if(eventType in this.eventMethods)
-			return this[this.eventMethods[eventType]](event);
-		}
+		handleEvent
 	    ],
 	    {
 		eventMethods: {
@@ -621,17 +618,18 @@ var Uzbl = (
 		    );
 		},
 		function handleGeometryChangedEvent(event){
-		    this.ensureDom();
-		    this.events.appendEvent(event);
 		    this.assignValue(event.event.size, event.event.offset);
 		},
 		function handleEvent(event){
+		    this.ensureDom();
+		    this.events.appendEvent(event);
 		    if("GEOMETRY_CHANGED" == event["event type"])
 			return this.handleGeometryChangedEvent(event);
 		}
 	    ],
 	    {
 		eventMethods: {
+		    GEOMETRY_CHANGED: "handleGeometryChangedEvent"
 		}
 	    }
 	);
@@ -743,6 +741,7 @@ var Uzbl = (
 		}
 	    ],
 	    {
+		logEvents: false,
 		eventMethods: {
 		}
 	    }
