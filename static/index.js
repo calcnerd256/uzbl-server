@@ -382,9 +382,12 @@ var Uzbl = (
 		eventMethods: {}
 	    }
 	);
-	function handleEvent(event){
+	function logEvent(event){
 	    this.ensureDom();
 	    this.events.appendEvent(event);
+	};
+	function handleEvent(event){
+	    this.logEvent(event);
 	    var eventType = event["event type"];
 	    if(eventType in this.eventMethods)
 		return this[this.eventMethods[eventType]](event);
@@ -428,6 +431,7 @@ var Uzbl = (
 		function handleInstanceStartEvent(e){
 		    return this.assignValue(e.event["instance ID"]);
 		},
+		logEvent,
 		handleEvent
 	    ],
 	    {
@@ -473,6 +477,7 @@ var Uzbl = (
 		function handleBuiltinsEvent(e){
 		    return this.assignValue(e.event.names);
 		},
+		logEvent,
 		handleEvent
 	    ],
 	    {
@@ -544,9 +549,9 @@ var Uzbl = (
 		    this.ensureVariable(name).events.appendEvent(event);
 		    return this.setVariable(name, valueType, value);
 		},
+		logEvent,
 		function handleEvent(event){
-		    this.ensureDom();
-		    this.events.appendEvent(event);
+		    this.logEvent(event);
 		    var eventType = event["event type"];
 		    if(eventType in this.eventMethods)
 			return this[this.eventMethods[eventType]](event);
@@ -620,9 +625,9 @@ var Uzbl = (
 		function handleGeometryChangedEvent(event){
 		    this.assignValue(event.event.size, event.event.offset);
 		},
+		logEvent,
 		function handleEvent(event){
-		    this.ensureDom();
-		    this.events.appendEvent(event);
+		    this.logEvent(event);
 		    if("GEOMETRY_CHANGED" == event["event type"])
 			return this.handleGeometryChangedEvent(event);
 		}
@@ -655,15 +660,16 @@ var Uzbl = (
 		function handleAddCookieEvent(event){
 		    // TODO
 		},
+		logEvent,
 		function handleEvent(event){
-		    this.ensureDom();
-		    this.events.appendEvent(event);
+		    this.logEvent(event);
 		    if("ADD_COOKIE" == event["event type"])
 			return this.handleAddCookieEvent()
 		}
 	    ],
 	    {
 		eventMethods: {
+		    ADD_COOKIE: "handleAddCookieEvent"
 		}
 	    }
 	);
