@@ -920,16 +920,6 @@ var Uzbl = (
 		    this.narrative.ul.appendChild(story.ensureDom());
 		    return story;
 		},
-		function newStory(){
-		    return this.useStory(
-			{
-			    dom: document.createElement("li"),
-			    ensureDom: function(){
-				return this.dom;
-			    }
-			}
-		    );
-		},
 		function variablesSnapshotDom(variables){
 		},
 		function initialStory(){
@@ -972,11 +962,18 @@ var Uzbl = (
 		    this.variables[event.event.name] = event.event.value;
 		},
 		function makeGenericStory(storyType, title){
-		    var story = this.newStory();
-		    story["type"] = storyType;
+		    var story = this.useStory(
+			{
+			    dom: document.createElement("li"),
+			    ensureDom: function(){
+				return this.dom;
+			    },
+			    "type": storyType
+			}
+		    );
 		    var titleHeading = document.createElement("h1");
 		    $(titleHeading).text(title);
-		    story.dom.appendChild(titleHeading);
+		    story.ensureDom().appendChild(titleHeading);
 		    story.events = this.initEvents(story.ensureDom());
 		    return story;
 		},
