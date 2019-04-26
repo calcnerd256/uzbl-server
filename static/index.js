@@ -977,9 +977,11 @@ var Uzbl = (
 		    return story;
 		},
 		function handleGeometryChangedEvent(event){
-		    if("geometry" != this.currentStory["type"])
-			this.makeGeometryStory();
-		    return this.currentStory.events.appendEvent(event);
+		    return this.handleAnEvent(
+			"geometry",
+			"makeGeometryStory",
+			event
+		    );
 		},
 		function makeCommandsStory(){
 		    var story = this.newStory();
@@ -991,9 +993,11 @@ var Uzbl = (
 		    return story;
 		},
 		function handleCommandExecutedEvent(event){
-		    if("commands" != this.currentStory["type"])
-			this.makeCommandsStory();
-		    return this.currentStory.events.appendEvent(event);
+		    return this.handleAnEvent(
+			"commands",
+			"makeCommandsStory",
+			event
+		    );
 		},
 		function makeNetworkStory(){
 		    var story = this.newStory();
@@ -1005,14 +1009,18 @@ var Uzbl = (
 		    return story;
 		},
 		function handleLoadEvent(event){
-		    if("network" != this.currentStory["type"])
-			this.makeNetworkStory();
-		    return this.currentStory.events.appendEvent(event);
+		    return this.handleAnEvent(
+			"network",
+			"makeNetworkStory",
+			event
+		    );
 		},
 		function handleRequestStartingEvent(event){
-		    if("network" != this.currentStory["type"])
-			this.makeNetworkStory();
-		    return this.currentStory.events.appendEvent(event);
+		    return this.handleAnEvent(
+			"network",
+			"makeNetworkStory",
+			event
+		    );
 		},
 		function makeFocusStory(){
 		    var story = this.newStory();
@@ -1024,9 +1032,11 @@ var Uzbl = (
 		    return story;
 		},
 		function handleFocusEvent(event){
-		    if("focus" != this.currentStory["type"])
-			this.makeFocusStory();
-		    return this.currentStory.events.appendEvent(event);
+		    return this.handleAnEvent(
+			"focus",
+			"makeFocusStory",
+			event
+		    );
 		},
 		function makeTitleStory(){
 		    var story = this.newStory();
@@ -1038,9 +1048,11 @@ var Uzbl = (
 		    return story;
 		},
 		function handleTitleChangedEvent(event){
-		    if("title" != this.currentStory["type"])
-			this.makeTitleStory();
-		    return this.currentStory.events.appendEvent(event);
+		    return this.handleAnEvent(
+			"title",
+			"makeTitleStory",
+			event
+		    );
 		},
 		function makePointerStory(){
 		    var story = this.newStory();
@@ -1052,9 +1064,11 @@ var Uzbl = (
 		    return story;
 		},
 		function handlePtrMoveEvent(event){
-		    if("pointer" != this.currentStory["type"])
-			this.makePointerStory();
-		    return this.currentStory.events.appendEvent(event);
+		    return this.handleAnEvent(
+			"pointer",
+			"makePointerStory",
+			event
+		    );
 		},
 		function makeLinkHoverStory(){
 		    var story = this.newStory();
@@ -1066,14 +1080,18 @@ var Uzbl = (
 		    return story;
 		},
 		function handleLinkHoverEvent(event){
-		    if("link hover" != this.currentStory["type"])
-			this.makeLinkHoverStory();
-		    return this.currentStory.events.appendEvent(event);
+		    return this.handleAnEvent(
+			"link hover",
+			"makeLinkHoverStory",
+			event
+		    );
 		},
 		function handleLinkUnhoverEvent(event){
-		    if("link hover" != this.currentStory["type"])
-			this.makeLinkHoverStory();
-		    return this.currentStory.events.appendEvent(event);
+		    return this.handleAnEvent(
+			"link hover",
+			"makeLinkHoverStory",
+			event
+		    );
 		},
 		function makeClickStory(){
 		    var story = this.newStory();
@@ -1085,21 +1103,27 @@ var Uzbl = (
 		    return story;
 		},
 		function handleRootActiveEvent(event){
-		    if("click" != this.currentStory["type"])
-			this.makeClickStory();
-		    return this.currentStory.events.appendEvent(event);
+		    return this.handleAnEvent(
+			"click",
+			"makeClickStory",
+			event
+		    );
 		}
 		, function makeCookieStory(){
 		},
 		function handleAddCookieEvent(event){
-		    if("cookie" != this.currentStory["type"])
-			this.makeCookieStory();
-		    return this.currentStory.events.appendEvent(event);
+		    return this.handleAnEvent(
+			"cookie",
+			"makeCookieStory",
+			event
+		    );
 		},
 		function handleDeleteCookieEvent(event){
-		    if("cookie" != this.currentStory["type"])
-			this.makeCookieStory();
-		    return this.currentStory.events.appendEvent(event);
+		    return this.handleAnEvent(
+			"cookie",
+			"makeCookieStory",
+			event
+		    );
 		},
 		function makeKeyboardStory(){
 		    var story = this.newStory();
@@ -1111,14 +1135,18 @@ var Uzbl = (
 		    return story;
 		},
 		function handleKeyPressEvent(event){
-		    if("keyboard" != this.currentStory["type"])
-			this.makeKeyboardStory();
-		    return this.currentStory.events.appendEvent(event);
+		    return this.handleAnEvent(
+			"keyboard",
+			"makeKeyboardStory",
+			event
+		    );
 		},
 		function handleKeyReleaseEvent(event){
-		    if("keyboard" != this.currentStory["type"])
-			this.makeKeyboardStory();
-		    return this.currentStory.events.appendEvent(event);
+		    return this.handleAnEvent(
+			"keyboard",
+			"makeKeyboardStory",
+			event
+		    );
 		}
 	    ],
 	    {
