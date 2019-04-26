@@ -969,8 +969,8 @@ var Uzbl = (
 			event,
 			this.variables
 		    );
-		}
-		, function makeGenericStory(storyType, title){
+		},
+		function makeGenericStory(storyType, title){
 		    var story = this.newStory();
 		    story["type"] = storyType;
 		    var titleHeading = document.createElement("h1");
@@ -978,8 +978,8 @@ var Uzbl = (
 		    story.dom.appendChild(titleHeading);
 		    story.events = this.initEvents(story.ensureDom());
 		    return story;
-		}
-		, function handleEventWithGenericStory(storyType, event){
+		},
+		function handleEventWithGenericStory(storyType, event){
 		    if(storyType != this.currentStory["type"])
 			this.makeGenericStory(storyType, storyType);
 		    return this.currentStory.events.appendEvent(event);
@@ -1025,8 +1025,7 @@ var Uzbl = (
 		},
 		function handleRootActiveEvent(event){
 		    return this.handleEventWithGenericStory("click", event);
-		}
-		,
+		},
 		function handleAddCookieEvent(event){
 		    return this.handleEventWithGenericStory("cookie", event);
 		},
