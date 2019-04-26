@@ -1024,6 +1024,9 @@ var Uzbl = (
 		function handleRootActiveEvent(event){
 		    return this.handleEventWithGenericStory("click", event);
 		},
+		function handleFormActiveEvent(event){
+		    return this.handleEventWithGenericStory("click", event);
+		},
 		function handleAddCookieEvent(event){
 		    return this.handleEventWithGenericStory("cookie", event);
 		},
@@ -1034,6 +1037,12 @@ var Uzbl = (
 		    return this.handleEventWithGenericStory("keyboard", event);
 		},
 		function handleKeyReleaseEvent(event){
+		    return this.handleEventWithGenericStory("keyboard", event);
+		}
+		, function handleModPressEvent(event){
+		    return this.handleEventWithGenericStory("keyboard", event);
+		},
+		function handleModReleaseEvent(event){
 		    return this.handleEventWithGenericStory("keyboard", event);
 		}
 		, function handleNewWindowEvent(event){
@@ -1055,10 +1064,13 @@ var Uzbl = (
 		    LINK_HOVER: "handleLinkHoverEvent",
 		    LINK_UNHOVER: "handleLinkUnhoverEvent",
 		    ROOT_ACTIVE: "handleRootActiveEvent"
+		    , FORM_ACTIVE: "handleFormActiveEvent"
 		    , ADD_COOKIE: "handleAddCookieEvent",
 		    DELETE_COOKIE: "handleDeleteCookieEvent",
 		    KEY_PRESS: "handleKeyPressEvent",
 		    KEY_RELEASE: "handleKeyReleaseEvent"
+		    , MOD_PRESS: "handleModPressEvent",
+		    MOD_RELEASE: "handleModReleaseEvent"
 		    , NEW_WINDOW: "handleNewWindowEvent"
 		}
 	    }
