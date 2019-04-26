@@ -806,13 +806,12 @@ var Uzbl = (
 		    this.narrative.ul.appendChild(this.currentStory.dom);
 		    return this.currentStory;
 		},
-		function variablesSnapshotDom(){
+		function variablesSnapshotDom(variables){
 		    var result = new ToggleUl();
-		    var v = this.variables;
 		    result.ensureDom();
-		    Object.keys(v).map(
+		    Object.keys(variables).map(
 			function(k){
-			    var val = v[k];
+			    var val = variables[k];
 			    var li = document.createElement("li");
 			    var pre = document.createElement("pre");
 			    var line = k + " : " + val[0] + " =\n";
@@ -849,7 +848,9 @@ var Uzbl = (
 			document.createTextNode("variables: ")
 		    );
 		    story.dom.appendChild(
-			this.variablesSnapshotDom().ensureDom()
+			this.variablesSnapshotDom(
+			    this.variables
+			).ensureDom()
 		    );
 		    story.dom.appendChild(
 			document.createTextNode("geometry: ")
@@ -864,7 +865,9 @@ var Uzbl = (
 		    $(title).text("variables");
 		    story.dom.appendChild(title);
 		    story.dom.appendChild(
-			this.variablesSnapshotDom().ensureDom()
+			this.variablesSnapshotDom(
+			    this.variables
+			).ensureDom()
 		    );
 		    story.events = this.initEvents(story.ensureDom());
 		    return story;
