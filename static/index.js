@@ -832,7 +832,7 @@ var Uzbl = (
 		);
 		var title = document.createElement("h1");
 		title.appendChild(
-		    document.createTextNode("init")
+		    document.createTextNode(this["type"])
 		);
 		result.appendChild(title);
 		result.appendChild(
@@ -855,6 +855,37 @@ var Uzbl = (
 	    ],
 	    {
 		"type": "init",
+		eventMethods: {}
+	    }
+	);
+	var VariablesStory = buildWidgetClass(
+	    "Story Variables",
+	    null,
+	    function VariablesStory(browser){
+		this.construct.apply(this, arguments);
+	    },
+	    function(variables){
+		this.snapshot = variables;
+	    },
+	    function(){
+		var result = document.createElement("li");
+		var title = document.createElement("h1");
+		$(title).text(this["type"]);
+		result.appendChild(title);
+		var browser = this.getBrowser();
+		var vars = new (
+		    browser["Variables Snapshot"]
+		)(browser, this.snapshot);
+		vars.ensureDom();
+		result.appendChild(vars.ul.ensureDom());
+		this.events = this.initEvents(result);
+		return result;
+	    },
+	    logEvent,
+	    [
+	    ],
+	    {
+		"type": "variables",
 		eventMethods: {}
 	    }
 	);
@@ -897,12 +928,6 @@ var Uzbl = (
 		    return this.currentStory;
 		},
 		function variablesSnapshotDom(variables){
-		    var browser = this.getBrowser();
-		    var result = new (
-			browser["Variables Snapshot"]
-		    )(browser, variables);
-		    result.ensureDom();
-		    return result.ul;
 		},
 		function initialStory(){
 		    var browser = this.getBrowser();
@@ -915,17 +940,13 @@ var Uzbl = (
 		    return story;
 		},
 		function makeVariablesStory(){
-		    var story = this.newStory();
-		    story["type"] = "variables";
-		    var title = document.createElement("h1");
-		    $(title).text("variables");
-		    story.dom.appendChild(title);
-		    story.dom.appendChild(
-			this.variablesSnapshotDom(
-			    this.variables
-			).ensureDom()
-		    );
-		    story.events = this.initEvents(story.ensureDom());
+		    var browser = this.getBrowser();
+		    var story = new (
+			browser["Story Variables"]
+		    )(browser, this.variables);
+		    this.currentStory = story;
+		    this.ensureDom();
+		    this.narrative.ul.appendChild(story.ensureDom());
 		    return story;
 		},
 		function handleAnEvent(
