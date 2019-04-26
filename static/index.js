@@ -633,6 +633,24 @@ var Uzbl = (
 			event.event.name
 		    ).handleEvent(event);
 		}
+		, function snapshot(){
+		    var result = {};
+		    var v = this.variables;
+		    Object.keys(v).map(
+			function(k){
+			    return [k, v[k]];
+			}
+		    ).map(
+			function(kv){
+			    return [kv[0]].concat(kv[1].value);
+			}
+		    ).map(
+			function(triple){
+			    result[triple.shift()] = triple;
+			}
+		    );
+		    return result;
+		}
 	    ],
 	    {
 		eventMethods: {
@@ -703,6 +721,14 @@ var Uzbl = (
 		function handleGeometryChangedEvent(event){
 		    this.assignValue(event.event.size, event.event.offset);
 		}
+		, function snapshot(){
+		    var result = {};
+		    if("size" in this)
+			result.size = this.size.map(I);
+		    if("offset" in this)
+			result.offset = this.offset.map(I);
+		    return result;
+		}
 	    ],
 	    {
 		eventMethods: {
@@ -751,18 +777,8 @@ var Uzbl = (
 		this.construct.apply(this, arguments);
 	    },
 	    function(variables, geometry){
-		var v = {};
-		var keys = Object.keys(variables);
-		keys.map(
-		    function(k){
-			v[k] = variables[k].value;
-		    }
-		);
-		var g = {};
-		if("size" in geometry) g.size = geometry.size.map(I);
-		if("offset" in geometry) g.offset = geometry.offset.map(I);
-		this.variables = v;
-		this.geometry = g;
+		this.variables = variables.snapshot();
+		this.geometry = geometry.snapshot();
 		this.initialStory();
 	    },
 	    function(){
@@ -1080,7 +1096,7 @@ var Uzbl = (
 		function newPage(){
 		    this.currentPage = new (this.getBrowser().Page)(
 			this.getBrowser(),
-			this.getBrowser().ensureVariables().variables,
+			this.getBrowser().ensureVariables(),
 			this.getBrowser().ensureGeometry()
 		    );
 		    this.ensureDom();
