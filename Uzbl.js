@@ -194,6 +194,18 @@ EventScrollVert.fromNumbers = EventScrollHoriz.fromNumbers;
 EventScrollVert.fromString = EventScrollHoriz.fromString;
 
 
+function parseUriEvent(Event, string){
+    var q = suffix(string, Event.prototype["type"] + " ");
+    var uri = parseSingleQuotedString(q);
+    if(null == uri)
+	return new EventUnknown(
+	    [
+		Event.prototype["type"],
+		q
+	    ]
+	);
+    return new Event(uri);
+}
 function EventLoadCommit(uri){
     this["type"] = "load";
     this.uri = uri;
@@ -201,11 +213,7 @@ function EventLoadCommit(uri){
 EventLoadCommit.prototype = new UzblEvent("LOAD_COMMIT");
 EventLoadCommit.prototype.loadType = "commit";
 EventLoadCommit.fromString = function(s){
-    var q = suffix(s, this.prototype["type"] + " ");
-    var uri = parseSingleQuotedString(q);
-    if(null == uri)
-	return new EventUnknown([this.prototype["type"], q]);
-    return new this(uri);
+    return parseUriEvent(this, s);
 }
 
 function EventLoadStart(uri){
@@ -236,10 +244,7 @@ function EventLoadFinish(uri){
 EventLoadFinish.prototype = new UzblEvent("LOAD_FINISH");
 EventLoadFinish.prototype.loadType = "finish";
 EventLoadFinish.fromString = function(s){
-    var q = suffix(s, this.prototype["type"] + " ");
-    var uri = parseSingleQuotedString(q);
-    if(null == uri) return new EventUnknown([this.prototype["type"], q]);
-    return new this(uri);
+    return parseUriEvent(this, s);
 }
 
 
@@ -262,10 +267,7 @@ function EventRequestStarting(uri){
 }
 EventRequestStarting.prototype = new UzblEvent("REQUEST_STARTING");
 EventRequestStarting.fromString = function(s){
-    var q = suffix(s, this.prototype["type"] + " ");
-    var uri = parseSingleQuotedString(q);
-    if(null == uri) return new EventUnknown([this.prototype["type"], q]);
-    return new this(uri);
+    return parseUriEvent(this, s);
 }
 
 function EventCommandExecuted(commandType, command){
@@ -324,10 +326,7 @@ function EventLinkHover(uri){
 }
 EventLinkHover.prototype = new UzblEvent("LINK_HOVER");
 EventLinkHover.fromString = function(s){
-    var q = suffix(s, this.prototype["type"] + " ");
-    var uri = parseSingleQuotedString(q);
-    if(null == uri) return new EventUnknown([this.prototype["type"], q]);
-    return new this(uri);
+    return parseUriEvent(this, s);
 };
 function EventLinkUnhover(uri){
     this.uri = uri;
@@ -406,6 +405,14 @@ function EventDeleteCookie(domain, path, name, value, scheme, expiration){
 EventDeleteCookie.prototype = new UzblEvent("DELETE_COOKIE");
 EventDeleteCookie.fromString = EventAddCookie.fromString;
 
+function EventNewWindow(uri){
+    this.uri = uri;
+}
+EventNewWindow.prototype = new UzblEvent("NEW_WINDOW");
+EventNewWindow.fromString = function(s){
+    return parseUriEvent(this, s);
+};
+
 function FocusEvent(status){
     this.status = status;
 }
@@ -438,6 +445,7 @@ function parseEvent(rest){
 	EventModRelease,
 	EventAddCookie
 	, EventDeleteCookie
+	, EventNewWindow
     ];
     var matches = glossary_alist.filter(
 	function(cls){
