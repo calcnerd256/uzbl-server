@@ -812,6 +812,52 @@ var Uzbl = (
 		eventMethods: {}
 	    }
 	);
+	var PageInitStory = buildWidgetClass(
+	    "Story PageInit",
+	    null,
+	    function PageInitStory(browser){
+		this.construct.apply(this, arguments);
+	    },
+	    function(variables, geometry){
+		this.variables = variables;
+		this.geometry = geometry;
+	    },
+	    function(){
+		var result = document.createElement("li");
+		var geom = document.createElement("pre");
+		geom.appendChild(
+		    document.createTextNode(
+			JSON.stringify(this.geometry, null, "\t")
+		    )
+		);
+		var title = document.createElement("h1");
+		title.appendChild(
+		    document.createTextNode("init")
+		);
+		result.appendChild(title);
+		result.appendChild(
+		    document.createTextNode("variables: ")
+		);
+		var browser = this.getBrowser();
+		var vars = new (
+		    browser["Variables Snapshot"]
+		)(browser, this.variables);
+		vars.ensureDom();
+		result.appendChild(vars.ul.ensureDom());
+		result.appendChild(
+		    document.createTextNode("geometry: ")
+		);
+		result.appendChild(geom);
+		return result;
+	    },
+	    logEvent,
+	    [
+	    ],
+	    {
+		"type": "init",
+		eventMethods: {}
+	    }
+	);
 	var Page = buildWidgetClass(
 	    "Page",
 	    null,
@@ -845,42 +891,30 @@ var Uzbl = (
 			}
 		    };
 		    this.ensureDom();
-		    this.narrative.ul.appendChild(this.currentStory.dom);
+		    this.narrative.ul.appendChild(
+			this.currentStory.ensureDom()
+		    );
 		    return this.currentStory;
 		},
 		function variablesSnapshotDom(variables){
+		    var browser = this.getBrowser();
 		    var result = new (
-			this.getBrowser()["Variables Snapshot"]
+			browser["Variables Snapshot"]
 		    )(browser, variables);
 		    result.ensureDom();
 		    return result.ul;
 		},
 		function initialStory(){
-		    var story = this.newStory();
-		    story["type"] = "init";
-		    var geom = document.createElement("pre");
-		    geom.appendChild(
-			document.createTextNode(
-			    JSON.stringify(this.geometry, null, "\t")
-			)
+		    var browser = this.getBrowser();
+		    this.currentStory = new (
+			browser["Story PageInit"]
+		    )(browser, this.variables, this.geometry);
+		    this.ensureDom();
+		    this.narrative.ul.appendChild(
+			this.currentStory.ensureDom()
 		    );
-		    var title = document.createElement("h1");
-		    title.appendChild(
-			document.createTextNode("init")
-		    );
-		    story.dom.appendChild(title);
-		    story.dom.appendChild(
-			document.createTextNode("variables: ")
-		    );
-		    story.dom.appendChild(
-			this.variablesSnapshotDom(
-			    this.variables
-			).ensureDom()
-		    );
-		    story.dom.appendChild(
-			document.createTextNode("geometry: ")
-		    );
-		    story.dom.appendChild(geom);
+		    var story = this.currentStory;
+		    story.ensureDom();
 		    return story;
 		},
 		function makeVariablesStory(){
