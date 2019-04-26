@@ -942,15 +942,6 @@ var Uzbl = (
 			)
 		    );
 		},
-		function handleAnEvent(
-		    storyType,
-		    storyFactoryMethodName,
-		    event
-		){
-		    if(storyType != this.currentStory["type"])
-			this[storyFactoryMethodName]();
-		    return this.currentStory.events.appendEvent(event);
-		},
 		function handleEventWithStory(className, event){
 		    // https://stackoverflow.com/questions/1606797/use-of-apply-with-new-operator-is-this-possible/8843181#8843181
 		    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind
