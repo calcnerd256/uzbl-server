@@ -914,40 +914,42 @@ var Uzbl = (
 		return this.events.appendEvent(event);
 	    },
 	    [
+		function useStory(story){
+		    this.currentStory = story;
+		    this.ensureDom();
+		    this.narrative.ul.appendChild(story.ensureDom());
+		    return story;
+		},
 		function newStory(){
-		    this.currentStory = {
+		    return this.useStory(
+			{
 			dom: document.createElement("li"),
 			ensureDom: function(){
 			    return this.dom;
 			}
-		    };
-		    this.ensureDom();
-		    this.narrative.ul.appendChild(
-			this.currentStory.ensureDom()
+			}
 		    );
-		    return this.currentStory;
 		},
 		function variablesSnapshotDom(variables){
 		},
 		function initialStory(){
 		    var browser = this.getBrowser();
-		    var story = new (
-			browser["Story PageInit"]
-		    )(browser, this.variables, this.geometry);
-		    this.currentStory = story;
-		    this.ensureDom();
-		    this.narrative.ul.appendChild(story.ensureDom());
-		    return story;
+		    return this.useStory(
+			new (browser["Story PageInit"])(
+			    browser,
+			    this.variables,
+			    this.geometry
+			)
+		    );
 		},
 		function makeVariablesStory(){
 		    var browser = this.getBrowser();
-		    var story = new (
-			browser["Story Variables"]
-		    )(browser, this.variables);
-		    this.currentStory = story;
-		    this.ensureDom();
-		    this.narrative.ul.appendChild(story.ensureDom());
-		    return story;
+		    return this.useStory(
+			new (browser["Story Variables"])(
+			    browser,
+			    this.variables
+			)
+		    );
 		},
 		function handleAnEvent(
 		    storyType,
