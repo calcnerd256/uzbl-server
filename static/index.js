@@ -928,10 +928,21 @@ var Uzbl = (
 		    story.events = this.initEvents(story.ensureDom());
 		    return story;
 		},
-		function handleVariableSetEvent(event){
-		    if("variables" != this.currentStory["type"])
-			this.makeVariablesStory();
+		function handleAnEvent(
+		    storyType,
+		    storyFactoryMethodName,
+		    event
+		){
+		    if(storyType != this.currentStory["type"])
+			this[storyFactoryMethodName]();
 		    return this.currentStory.events.appendEvent(event);
+		},
+		function handleVariableSetEvent(event){
+		    return this.handleAnEvent(
+			"variables",
+			"makeVariablesStory",
+			event
+		    );
 		}
 		, function makeScrollStory(){
 		    var story = this.newStory();
@@ -943,14 +954,18 @@ var Uzbl = (
 		    return story;
 		},
 		function handleScrollHorizEvent(event){
-		    if("scroll" != this.currentStory["type"])
-			this.makeScrollStory();
-		    return this.currentStory.events.appendEvent(event);
+		    return this.handleAnEvent(
+			"scroll",
+			"makeScrollStory",
+			event
+		    );
 		},
 		function handleScrollVertEvent(event){
-		    if("scroll" != this.currentStory["type"])
-			this.makeScrollStory();
-		    return this.currentStory.events.appendEvent(event);
+		    return this.handleAnEvent(
+			"scroll",
+			"makeScrollStory",
+			event
+		    );
 		},
 		function makeGeometryStory(){
 		    var story = this.newStory();
