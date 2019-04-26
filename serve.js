@@ -30,7 +30,7 @@ function StandardErrorUzblCoreLine(source, line){
     this.source = source;
     line = line.substring(this.prefix.length);
     var tokens = line.split(")");
-    var uzblId = tokens.shift();
+    var uzblId = +(tokens.shift());
     line = tokens.join(")").substring(": ".length);
     this.event = {
 	"type": "uzbl-core",
@@ -41,12 +41,17 @@ function StandardErrorUzblCoreLine(source, line){
 StandardErrorUzblCoreLine.prototype.prefix = "(uzbl-core:";
 function ConsoleMessage(source, line){
     this.source = source;
+    line = line.substring(this.prefix.length);
+    var tokens = line.split(":");
+    var lineNumber = +(tokens.shift());
+    line = tokens.join(":").substring(" ".length);
     this.event = {
 	"type": "console message",
-	message: line.substring(this.prefix.length)
+	line: lineNumber,
+	message: line
     }
 };
-ConsoleMessage.prototype.prefix = "** Message: console message:";
+ConsoleMessage.prototype.prefix = "** Message: console message:  @";
 StandardErrorLine.prototype["type"] = "stderr";
 function parseStderrLine(source, lineType, line){
     if("line" == lineType){
