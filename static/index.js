@@ -770,6 +770,48 @@ var Uzbl = (
 		}
 	    }
 	);
+	var VariablesSnapshot = buildWidgetClass(
+	    "Variables Snapshot",
+	    null,
+	    function VariablesSnapshot(browser){
+		this.construct.apply(this, arguments);
+	    },
+	    function(variables){
+		this.variables = variables;
+	    },
+	    function(){
+		var ul = new ToggleUl();
+		this.ul = ul;
+		var result = ul.ensureDom();
+		var variables = this.variables;
+		Object.keys(variables).map(
+		    function(k){
+			var val = variables[k];
+			var li = document.createElement("li");
+			var pre = document.createElement("pre");
+			var line = k + " : " + val[0] + " =\n";
+			pre.appendChild(
+			    document.createTextNode(
+				line + val[1]
+			    )
+			);
+			li.appendChild(pre);
+			return li;
+		    }
+		).map(
+		    function(li){
+			ul.ul.appendChild(li);
+		    }
+		);
+		return result;
+	    },
+	    logEvent,
+	    [
+	    ],
+	    {
+		eventMethods: {}
+	    }
+	);
 	var Page = buildWidgetClass(
 	    "Page",
 	    null,
@@ -807,28 +849,11 @@ var Uzbl = (
 		    return this.currentStory;
 		},
 		function variablesSnapshotDom(variables){
-		    var result = new ToggleUl();
+		    var result = new (
+			this.getBrowser()["Variables Snapshot"]
+		    )(browser, variables);
 		    result.ensureDom();
-		    Object.keys(variables).map(
-			function(k){
-			    var val = variables[k];
-			    var li = document.createElement("li");
-			    var pre = document.createElement("pre");
-			    var line = k + " : " + val[0] + " =\n";
-			    pre.appendChild(
-				document.createTextNode(
-				    line + val[1]
-				)
-			    );
-			    li.appendChild(pre);
-			    return li;
-			}
-		    ).map(
-			function(li){
-			    result.ul.appendChild(li);
-			}
-		    );
-		    return result;
+		    return result.ul;
 		},
 		function initialStory(){
 		    var story = this.newStory();
