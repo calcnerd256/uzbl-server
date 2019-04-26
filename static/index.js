@@ -988,22 +988,16 @@ var Uzbl = (
 		    story.events = this.initEvents(story.ensureDom());
 		    return story;
 		}
-		, function makeScrollStory(){
-		    return this.makeGenericStory("scroll", "scroll");
+		, function handleEventWithGenericStory(storyType, event){
+		    if(storyType != this.currentStory["type"])
+			this.makeGenericStory(storyType, storyType);
+		    return this.currentStory.events.appendEvent(event);
 		},
 		function handleScrollHorizEvent(event){
-		    return this.handleAnEvent(
-			"scroll",
-			"makeScrollStory",
-			event
-		    );
+		    return this.handleEventWithGenericStory("scroll", event);
 		},
 		function handleScrollVertEvent(event){
-		    return this.handleAnEvent(
-			"scroll",
-			"makeScrollStory",
-			event
-		    );
+		    return this.handleEventWithGenericStory("scroll", event);
 		},
 		function makeGeometryStory(){
 		    return this.makeGenericStory("geometry", "geometry");
