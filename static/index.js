@@ -923,10 +923,10 @@ var Uzbl = (
 		function newStory(){
 		    return this.useStory(
 			{
-			dom: document.createElement("li"),
-			ensureDom: function(){
-			    return this.dom;
-			}
+			    dom: document.createElement("li"),
+			    ensureDom: function(){
+				return this.dom;
+			    }
 			}
 		    );
 		},
