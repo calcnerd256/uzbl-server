@@ -42,9 +42,10 @@ UzblOutputLine.prototype.setTime = function(){
     this.timestamp = new Date();
 };
 
-function UzblErrorLine(error){
+function UzblErrorLine(error, line){
     this.setTime();
     this.error = error;
+    this.offender = line;
 }
 UzblErrorLine.prototype = new UzblOutputLine("error");
 
@@ -456,21 +457,23 @@ function parseEvent(rest){
     return new EventUnknown(rest);
 }
 
-function UzblEventLine(instanceId, event){
+function UzblEventLine(instanceId, event, sourceText){
     this.setTime();
     this["instance ID"] = instanceId;
     this["event type"] = event["type"];
     this.event = event;
+    this.source = sourceText;
 }
 UzblEventLine.prototype = new UzblOutputLine("event");
-UzblEventLine.parseFromLine = function(eventLineTail){
+UzblEventLine.parseFromLine = function(eventLineTail, entireLine){
     var bracketsLength = eventLineTail.indexOf(" ");
-    if(-1 == bracketsLength) return new UzblErrorLine("ERROR " + eventLineTail);
+    if(-1 == bracketsLength)
+	return new UzblErrorLine("ERROR " + eventLineTail, entireLine);
     var withBrackets = eventLineTail.substring(0, bracketsLength);
     eventLineTail = suffix(eventLineTail, withBrackets + " ");
     var instanceIdString = withBrackets.substring(1, withBrackets.length - 1);
     var event = parseEvent(eventLineTail);
-    return new this(+instanceIdString, event);
+    return new this(+instanceIdString, event, entireLine);
 };
 
 function UzblOutputTextLine(line){
@@ -480,7 +483,7 @@ function UzblOutputTextLine(line){
 UzblOutputTextLine.prototype = new UzblOutputLine("line");
 UzblOutputTextLine.parse = function(line){
     if(testPrefix(line, "EVENT "))
-	return UzblEventLine.parseFromLine(suffix(line, "EVENT "));
+	return UzblEventLine.parseFromLine(suffix(line, "EVENT "), line);
     return new this(line);
 };
 
