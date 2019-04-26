@@ -732,11 +732,15 @@ var Uzbl = (
 	    [
 		function handleAddCookieEvent(event){
 		    // TODO
+		},
+		function handleDeleteCookieEvent(event){
+		    // TODO
 		}
 	    ],
 	    {
 		eventMethods: {
 		    ADD_COOKIE: "handleAddCookieEvent"
+		    , DELETE_COOKIE: "handleDeleteCookieEvent"
 		}
 	    }
 	);
@@ -759,17 +763,106 @@ var Uzbl = (
 		if("offset" in geometry) g.offset = geometry.offset.map(I);
 		this.variables = v;
 		this.geometry = g;
+		this.initialStory();
 	    },
 	    function(){
 		var result = document.createElement("li");
 		$(result).text("TODO");
+		this.narrative = new ToggleUl();
+		result.appendChild(this.narrative.ensureDom());
 		this.events = this.initEvents(result);
 		return result;
 	    },
-	    logEvent,
-	    [],
+	    function logEvent(event){
+		if(event["event type"] in this.eventMethods)
+		    return;
+		return this.events.appendEvent(event);
+	    },
+	    [
+		function newStory(){
+		    this.currentStory = {
+			dom: document.createElement("li"),
+			ensureDom: function(){
+			    return this.dom;
+			}
+		    };
+		    this.ensureDom();
+		    this.narrative.ul.appendChild(this.currentStory.dom);
+		    return this.currentStory;
+		},
+		function variablesSnapshotDom(){
+		    var result = new ToggleUl();
+		    var v = this.variables;
+		    result.ensureDom();
+		    Object.keys(v).map(
+			function(k){
+			    var val = v[k];
+			    var li = document.createElement("li");
+			    var pre = document.createElement("pre");
+			    var line = k + " : " + val[0] + " =\n";
+			    pre.appendChild(
+				document.createTextNode(
+				    line + val[1]
+				)
+			    );
+			    li.appendChild(pre);
+			    return li;
+			}
+		    ).map(
+			function(li){
+			    result.ul.appendChild(li);
+			}
+		    );
+		    return result;
+		},
+		function initialStory(){
+		    var story = this.newStory();
+		    story["type"] = "init";
+		    var geom = document.createElement("pre");
+		    geom.appendChild(
+			document.createTextNode(
+			    JSON.stringify(this.geometry, null, "\t")
+			)
+		    );
+		    var title = document.createElement("h1");
+		    title.appendChild(
+			document.createTextNode("init")
+		    );
+		    story.dom.appendChild(title);
+		    story.dom.appendChild(
+			document.createTextNode("variables: ")
+		    );
+		    story.dom.appendChild(
+			this.variablesSnapshotDom().ensureDom()
+		    );
+		    story.dom.appendChild(
+			document.createTextNode("geometry: ")
+		    );
+		    story.dom.appendChild(geom);
+		    return story;
+		},
+		function makeVariablesStory(){
+		    var story = this.newStory();
+		    story["type"] = "variables";
+		    var title = document.createElement("h1");
+		    $(title).text("variables");
+		    story.dom.appendChild(title);
+		    story.dom.appendChild(
+			this.variablesSnapshotDom().ensureDom()
+		    );
+		    story.events = this.initEvents(story.ensureDom());
+		    return story;
+		},
+		function handleVariableSetEvent(event){
+		    if("variables" != this.currentStory["type"])
+			this.makeVariablesStory();
+		    return this.currentStory.events.appendEvent(event);
+		}
+	    ],
 	    {
-		eventMethods: {}
+		eventMethods: {
+		    VARIABLE_SET: "handleVariableSetEvent"
+		}
 	    }
 	);
 	var Pages = buildWidgetClass(
@@ -793,7 +886,7 @@ var Uzbl = (
 		if("load" == event["event type"])
 		    if("start" == event.event.loadType)
 			this.newPage();
-		this.currentPage.events.appendEvent(event);
+		this.currentPage.handleEvent(event);
 	    },
 	    [
 		function newPage(){
@@ -875,7 +968,6 @@ var Uzbl = (
 		}
 	    ],
 	    {
-		logEvents: false,
 		eventMethods: {
 		    load: "handleLoadEvent",
 		    SCROLL_HORIZ: "handleScrollHorizEvent",
@@ -930,6 +1022,7 @@ var Uzbl = (
 		SCROLL_VERT: "handleScrollVertEvent",
 		GEOMETRY_CHANGED: "handleGeometryChangedEvent",
 		ADD_COOKIE: "forwardEventToCookies",
+		DELETE_COOKIE: "forwardEventToCookies",
 		COMMAND_EXECUTED: "forwardEventToPages",
 		load: "forwardEventToPages",
 		REQUEST_STARTING: "forwardEventToPages",
