@@ -979,14 +979,17 @@ var Uzbl = (
 			this.variables
 		    );
 		}
-		, function makeScrollStory(){
+		, function makeGenericStory(storyType, title){
 		    var story = this.newStory();
-		    story["type"] = "scroll";
-		    var title = document.createElement("h1");
-		    $(title).text("scroll");
-		    story.dom.appendChild(title);
+		    story["type"] = storyType;
+		    var titleHeading = document.createElement("h1");
+		    $(titleHeading).text(title);
+		    story.dom.appendChild(titleHeading);
 		    story.events = this.initEvents(story.ensureDom());
 		    return story;
+		}
+		, function makeScrollStory(){
+		    return this.makeGenericStory("scroll", "scroll");
 		},
 		function handleScrollHorizEvent(event){
 		    return this.handleAnEvent(
@@ -1003,13 +1006,7 @@ var Uzbl = (
 		    );
 		},
 		function makeGeometryStory(){
-		    var story = this.newStory();
-		    story["type"] = "geometry";
-		    var title = document.createElement("h1");
-		    $(title).text("geometry");
-		    story.dom.appendChild(title);
-		    story.events = this.initEvents(story.ensureDom());
-		    return story;
+		    return this.makeGenericStory("geometry", "geometry");
 		},
 		function handleGeometryChangedEvent(event){
 		    return this.handleAnEvent(
@@ -1019,13 +1016,7 @@ var Uzbl = (
 		    );
 		},
 		function makeCommandsStory(){
-		    var story = this.newStory();
-		    story["type"] = "commands";
-		    var title = document.createElement("h1");
-		    $(title).text("commands");
-		    story.dom.appendChild(title);
-		    story.events = this.initEvents(story.ensureDom());
-		    return story;
+		    return this.makeGenericStory("commands", "commands");
 		},
 		function handleCommandExecutedEvent(event){
 		    return this.handleAnEvent(
@@ -1035,13 +1026,7 @@ var Uzbl = (
 		    );
 		},
 		function makeNetworkStory(){
-		    var story = this.newStory();
-		    story["type"] = "network";
-		    var title = document.createElement("h1");
-		    $(title).text("network");
-		    story.dom.appendChild(title);
-		    story.events = this.initEvents(story.ensureDom());
-		    return story;
+		    return this.makeGenericStory("network", "network");
 		},
 		function handleLoadEvent(event){
 		    return this.handleAnEvent(
@@ -1058,13 +1043,7 @@ var Uzbl = (
 		    );
 		},
 		function makeFocusStory(){
-		    var story = this.newStory();
-		    story["type"] = "focus";
-		    var title = document.createElement("h1");
-		    $(title).text("focus");
-		    story.dom.appendChild(title);
-		    story.events = this.initEvents(story.ensureDom());
-		    return story;
+		    return this.makeGenericStory("focus", "focus");
 		},
 		function handleFocusEvent(event){
 		    return this.handleAnEvent(
@@ -1074,13 +1053,7 @@ var Uzbl = (
 		    );
 		},
 		function makeTitleStory(){
-		    var story = this.newStory();
-		    story["type"] = "title";
-		    var title = document.createElement("h1");
-		    $(title).text("title");
-		    story.dom.appendChild(title);
-		    story.events = this.initEvents(story.ensureDom());
-		    return story;
+		    return this.makeGenericStory("title", "title");
 		},
 		function handleTitleChangedEvent(event){
 		    return this.handleAnEvent(
@@ -1090,13 +1063,7 @@ var Uzbl = (
 		    );
 		},
 		function makePointerStory(){
-		    var story = this.newStory();
-		    story["type"] = "pointer";
-		    var title = document.createElement("h1");
-		    $(title).text("pointer");
-		    story.dom.appendChild(title);
-		    story.events = this.initEvents(story.ensureDom());
-		    return story;
+		    return this.makeGenericStory("pointer", "pointer");
 		},
 		function handlePtrMoveEvent(event){
 		    return this.handleAnEvent(
@@ -1106,13 +1073,7 @@ var Uzbl = (
 		    );
 		},
 		function makeLinkHoverStory(){
-		    var story = this.newStory();
-		    story["type"] = "link hover";
-		    var title = document.createElement("h1");
-		    $(title).text("link hover");
-		    story.dom.appendChild(title);
-		    story.events = this.initEvents(story.ensureDom());
-		    return story;
+		    return this.makeGenericStory("link hover", "link hover");
 		},
 		function handleLinkHoverEvent(event){
 		    return this.handleAnEvent(
@@ -1129,13 +1090,7 @@ var Uzbl = (
 		    );
 		},
 		function makeClickStory(){
-		    var story = this.newStory();
-		    story["type"] = "click";
-		    var title = document.createElement("h1");
-		    $(title).text("click");
-		    story.dom.appendChild(title);
-		    story.events = this.initEvents(story.ensureDom());
-		    return story;
+		    return this.makeGenericStory("click", "click");
 		},
 		function handleRootActiveEvent(event){
 		    return this.handleAnEvent(
@@ -1145,6 +1100,7 @@ var Uzbl = (
 		    );
 		}
 		, function makeCookieStory(){
+		    return this.makeGenericStory("cookie", "cookie");
 		},
 		function handleAddCookieEvent(event){
 		    return this.handleAnEvent(
@@ -1161,13 +1117,7 @@ var Uzbl = (
 		    );
 		},
 		function makeKeyboardStory(){
-		    var story = this.newStory();
-		    story["type"] = "keyboard";
-		    var title = document.createElement("h1");
-		    $(title).text("keyboard");
-		    story.dom.appendChild(title);
-		    story.events = this.initEvents(story.ensureDom());
-		    return story;
+		    return this.makeGenericStory("keyboard", "keyboard");
 		},
 		function handleKeyPressEvent(event){
 		    return this.handleAnEvent(
