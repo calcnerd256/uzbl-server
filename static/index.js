@@ -999,133 +999,54 @@ var Uzbl = (
 		function handleScrollVertEvent(event){
 		    return this.handleEventWithGenericStory("scroll", event);
 		},
-		function makeGeometryStory(){
-		    return this.makeGenericStory("geometry", "geometry");
-		},
 		function handleGeometryChangedEvent(event){
-		    return this.handleAnEvent(
-			"geometry",
-			"makeGeometryStory",
-			event
-		    );
-		},
-		function makeCommandsStory(){
-		    return this.makeGenericStory("commands", "commands");
+		    return this.handleEventWithGenericStory("geometry", event);
 		},
 		function handleCommandExecutedEvent(event){
-		    return this.handleAnEvent(
-			"commands",
-			"makeCommandsStory",
-			event
-		    );
-		},
-		function makeNetworkStory(){
-		    return this.makeGenericStory("network", "network");
+		    return this.handleEventWithGenericStory("commands", event);
 		},
 		function handleLoadEvent(event){
-		    return this.handleAnEvent(
-			"network",
-			"makeNetworkStory",
-			event
-		    );
+		    return this.handleEventWithGenericStory("network", event);
 		},
 		function handleRequestStartingEvent(event){
-		    return this.handleAnEvent(
-			"network",
-			"makeNetworkStory",
-			event
-		    );
-		},
-		function makeFocusStory(){
-		    return this.makeGenericStory("focus", "focus");
+		    return this.handleEventWithGenericStory("network", event);
 		},
 		function handleFocusEvent(event){
-		    return this.handleAnEvent(
-			"focus",
-			"makeFocusStory",
-			event
-		    );
-		},
-		function makeTitleStory(){
-		    return this.makeGenericStory("title", "title");
+		    return this.handleEventWithGenericStory("focus", event);
 		},
 		function handleTitleChangedEvent(event){
-		    return this.handleAnEvent(
-			"title",
-			"makeTitleStory",
-			event
-		    );
-		},
-		function makePointerStory(){
-		    return this.makeGenericStory("pointer", "pointer");
+		    return this.handleEventWithGenericStory("title", event);
 		},
 		function handlePtrMoveEvent(event){
-		    return this.handleAnEvent(
-			"pointer",
-			"makePointerStory",
-			event
-		    );
-		},
-		function makeLinkHoverStory(){
-		    return this.makeGenericStory("link hover", "link hover");
+		    return this.handleEventWithGenericStory("pointer", event);
 		},
 		function handleLinkHoverEvent(event){
-		    return this.handleAnEvent(
+		    return this.handleEventWithGenericStory(
 			"link hover",
-			"makeLinkHoverStory",
 			event
 		    );
 		},
 		function handleLinkUnhoverEvent(event){
-		    return this.handleAnEvent(
+		    return this.handleEventWithGenericStory(
 			"link hover",
-			"makeLinkHoverStory",
 			event
 		    );
-		},
-		function makeClickStory(){
-		    return this.makeGenericStory("click", "click");
 		},
 		function handleRootActiveEvent(event){
-		    return this.handleAnEvent(
-			"click",
-			"makeClickStory",
-			event
-		    );
+		    return this.handleEventWithGenericStory("click", event);
 		}
-		, function makeCookieStory(){
-		    return this.makeGenericStory("cookie", "cookie");
-		},
+		,
 		function handleAddCookieEvent(event){
-		    return this.handleAnEvent(
-			"cookie",
-			"makeCookieStory",
-			event
-		    );
+		    return this.handleEventWithGenericStory("cookie", event);
 		},
 		function handleDeleteCookieEvent(event){
-		    return this.handleAnEvent(
-			"cookie",
-			"makeCookieStory",
-			event
-		    );
-		},
-		function makeKeyboardStory(){
-		    return this.makeGenericStory("keyboard", "keyboard");
+		    return this.handleEventWithGenericStory("cookie", event);
 		},
 		function handleKeyPressEvent(event){
-		    return this.handleAnEvent(
-			"keyboard",
-			"makeKeyboardStory",
-			event
-		    );
+		    return this.handleEventWithGenericStory("keyboard", event);
 		},
 		function handleKeyReleaseEvent(event){
-		    return this.handleAnEvent(
-			"keyboard",
-			"makeKeyboardStory",
-			event
-		    );
+		    return this.handleEventWithGenericStory("keyboard", event);
 		}
 	    ],
 	    {
