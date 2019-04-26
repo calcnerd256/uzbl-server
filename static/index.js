@@ -964,11 +964,12 @@ var Uzbl = (
 		    return this.currentStory.events.appendEvent(event);
 		},
 		function handleVariableSetEvent(event){
-		    return this.handleEventWithStory(
+		    this.handleEventWithStory(
 			"Story Variables",
 			event,
 			this.variables
 		    );
+		    this.variables[event.event.name] = event.event.value;
 		},
 		function makeGenericStory(storyType, title){
 		    var story = this.newStory();
@@ -1038,6 +1039,9 @@ var Uzbl = (
 		function handleKeyReleaseEvent(event){
 		    return this.handleEventWithGenericStory("keyboard", event);
 		}
+		, function handleNewWindowEvent(event){
+		    return this.handleEventWithGenericStory("popup", event);
+		}
 	    ],
 	    {
 		eventMethods: {
@@ -1058,6 +1062,7 @@ var Uzbl = (
 		    DELETE_COOKIE: "handleDeleteCookieEvent",
 		    KEY_PRESS: "handleKeyPressEvent",
 		    KEY_RELEASE: "handleKeyReleaseEvent"
+		    , NEW_WINDOW: "handleNewWindowEvent"
 		}
 	    }
 	);
