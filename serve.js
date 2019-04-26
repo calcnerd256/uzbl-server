@@ -42,16 +42,19 @@ StandardErrorUzblCoreLine.prototype.prefix = "(uzbl-core:";
 function ConsoleMessage(source, line){
     this.source = source;
     line = line.substring(this.prefix.length);
-    var tokens = line.split(":");
+    var tokens = line.split(" @");
+    var uri = tokens.shift();
+    tokens = tokens.join(" @").split(":");
     var lineNumber = +(tokens.shift());
     line = tokens.join(":").substring(" ".length);
     this.event = {
 	"type": "console message",
+	URI: uri,
 	line: lineNumber,
 	message: line
     }
 };
-ConsoleMessage.prototype.prefix = "** Message: console message:  @";
+ConsoleMessage.prototype.prefix = "** Message: console message: ";
 StandardErrorLine.prototype["type"] = "stderr";
 function parseStderrLine(source, lineType, line){
     if("line" == lineType){
