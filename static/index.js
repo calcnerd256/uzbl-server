@@ -906,15 +906,12 @@ var Uzbl = (
 		},
 		function initialStory(){
 		    var browser = this.getBrowser();
-		    this.currentStory = new (
+		    var story = new (
 			browser["Story PageInit"]
 		    )(browser, this.variables, this.geometry);
+		    this.currentStory = story;
 		    this.ensureDom();
-		    this.narrative.ul.appendChild(
-			this.currentStory.ensureDom()
-		    );
-		    var story = this.currentStory;
-		    story.ensureDom();
+		    this.narrative.ul.appendChild(story.ensureDom());
 		    return story;
 		},
 		function makeVariablesStory(){
