@@ -16,8 +16,10 @@ function parseSingleQuotedString(s){
     var l = s.length - 1;
     if("'" != s[l]) return null;
     var result = s.substring(1, l);
-    if(-1 != result.indexOf("'")) return null;
-    return result;
+    var tokens = result.split("\\'");
+    if(tokens.filter(function(t){return -1 != t.indexOf("'");}).length)
+	return null;
+    return tokens.join("'").split("\\\\").join("\\");
 }
 function parseSingleQuotedStringWithoutSpaces(spaceless){
     if(-1 != spaceless.indexOf(" ")) return null;
