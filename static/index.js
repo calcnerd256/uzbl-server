@@ -858,10 +858,163 @@ var Uzbl = (
 			this.makeVariablesStory();
 		    return this.currentStory.events.appendEvent(event);
 		}
+		, function makeScrollStory(){
+		    var story = this.newStory();
+		    story["type"] = "scroll";
+		    var title = document.createElement("h1");
+		    $(title).text("scroll");
+		    story.dom.appendChild(title);
+		    story.events = this.initEvents(story.ensureDom());
+		    return story;
+		},
+		function handleScrollHorizEvent(event){
+		    if("scroll" != this.currentStory["type"])
+			this.makeScrollStory();
+		    return this.currentStory.events.appendEvent(event);
+		},
+		function handleScrollVertEvent(event){
+		    if("scroll" != this.currentStory["type"])
+			this.makeScrollStory();
+		    return this.currentStory.events.appendEvent(event);
+		},
+		function makeGeometryStory(){
+		    var story = this.newStory();
+		    story["type"] = "geometry";
+		    var title = document.createElement("h1");
+		    $(title).text("geometry");
+		    story.dom.appendChild(title);
+		    story.events = this.initEvents(story.ensureDom());
+		    return story;
+		},
+		function handleGeometryChangedEvent(event){
+		    if("geometry" != this.currentStory["type"])
+			this.makeGeometryStory();
+		    return this.currentStory.events.appendEvent(event);
+		},
+		function makeCommandsStory(){
+		    var story = this.newStory();
+		    story["type"] = "commands";
+		    var title = document.createElement("h1");
+		    $(title).text("commands");
+		    story.dom.appendChild(title);
+		    story.events = this.initEvents(story.ensureDom());
+		    return story;
+		},
+		function handleCommandExecutedEvent(event){
+		    if("commands" != this.currentStory["type"])
+			this.makeCommandsStory();
+		    return this.currentStory.events.appendEvent(event);
+		},
+		function makeNetworkStory(){
+		    var story = this.newStory();
+		    story["type"] = "network";
+		    var title = document.createElement("h1");
+		    $(title).text("network");
+		    story.dom.appendChild(title);
+		    story.events = this.initEvents(story.ensureDom());
+		    return story;
+		},
+		function handleLoadEvent(event){
+		    if("network" != this.currentStory["type"])
+			this.makeNetworkStory();
+		    return this.currentStory.events.appendEvent(event);
+		},
+		function handleRequestStartingEvent(event){
+		    if("network" != this.currentStory["type"])
+			this.makeNetworkStory();
+		    return this.currentStory.events.appendEvent(event);
+		},
+		function makeFocusStory(){
+		    var story = this.newStory();
+		    story["type"] = "focus";
+		    var title = document.createElement("h1");
+		    $(title).text("focus");
+		    story.dom.appendChild(title);
+		    story.events = this.initEvents(story.ensureDom());
+		    return story;
+		},
+		function handleFocusEvent(event){
+		    if("focus" != this.currentStory["type"])
+			this.makeFocusStory();
+		    return this.currentStory.events.appendEvent(event);
+		},
+		function makeTitleStory(){
+		    var story = this.newStory();
+		    story["type"] = "title";
+		    var title = document.createElement("h1");
+		    $(title).text("title");
+		    story.dom.appendChild(title);
+		    story.events = this.initEvents(story.ensureDom());
+		    return story;
+		},
+		function handleTitleChangedEvent(event){
+		    if("title" != this.currentStory["type"])
+			this.makeTitleStory();
+		    return this.currentStory.events.appendEvent(event);
+		},
+		function makePointerStory(){
+		    var story = this.newStory();
+		    story["type"] = "pointer";
+		    var title = document.createElement("h1");
+		    $(title).text("pointer");
+		    story.dom.appendChild(title);
+		    story.events = this.initEvents(story.ensureDom());
+		    return story;
+		},
+		function handlePtrMoveEvent(event){
+		    if("pointer" != this.currentStory["type"])
+			this.makePointerStory();
+		    return this.currentStory.events.appendEvent(event);
+		},
+		function makeLinkHoverStory(){
+		    var story = this.newStory();
+		    story["type"] = "link hover";
+		    var title = document.createElement("h1");
+		    $(title).text("link hover");
+		    story.dom.appendChild(title);
+		    story.events = this.initEvents(story.ensureDom());
+		    return story;
+		},
+		function handleLinkHoverEvent(event){
+		    if("link hover" != this.currentStory["type"])
+			this.makeLinkHoverStory();
+		    return this.currentStory.events.appendEvent(event);
+		},
+		function handleLinkUnhoverEvent(event){
+		    if("link hover" != this.currentStory["type"])
+			this.makeLinkHoverStory();
+		    return this.currentStory.events.appendEvent(event);
+		},
+		function makeClickStory(){
+		    var story = this.newStory();
+		    story["type"] = "click";
+		    var title = document.createElement("h1");
+		    $(title).text("click");
+		    story.dom.appendChild(title);
+		    story.events = this.initEvents(story.ensureDom());
+		    return story;
+		},
+		function handleRootActiveEvent(event){
+		    if("click" != this.currentStory["type"])
+			this.makeClickStory();
+		    return this.currentStory.events.appendEvent(event);
+		}
 	    ],
 	    {
 		eventMethods: {
 		    VARIABLE_SET: "handleVariableSetEvent"
+		    , SCROLL_HORIZ: "handleScrollHorizEvent",
+		    SCROLL_VERT: "handleScrollHorizEvent",
+		    GEOMETRY_CHANGED: "handleGeometryChangedEvent",
+		    COMMAND_EXECUTED: "handleCommandExecutedEvent",
+		    load: "handleLoadEvent",
+		    REQUEST_STARTING: "handleRequestStartingEvent",
+		    focus: "handleFocusEvent",
+		    TITLE_CHANGED: "handleTitleChangedEvent",
+		    PTR_MOVE: "handlePtrMoveEvent",
+		    LINK_HOVER: "handleLinkHoverEvent",
+		    LINK_UNHOVER: "handleLinkUnhoverEvent",
+		    ROOT_ACTIVE: "handleRootActiveEvent"
 		}
 	    }
 	);
