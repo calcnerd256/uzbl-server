@@ -999,6 +999,37 @@ var Uzbl = (
 			this.makeClickStory();
 		    return this.currentStory.events.appendEvent(event);
 		}
+		, function makeCookieStory(){
+		},
+		function handleAddCookieEvent(event){
+		    if("cookie" != this.currentStory["type"])
+			this.makeCookieStory();
+		    return this.currentStory.events.appendEvent(event);
+		},
+		function handleDeleteCookieEvent(event){
+		    if("cookie" != this.currentStory["type"])
+			this.makeCookieStory();
+		    return this.currentStory.events.appendEvent(event);
+		},
+		function makeKeyboardStory(){
+		    var story = this.newStory();
+		    story["type"] = "keyboard";
+		    var title = document.createElement("h1");
+		    $(title).text("keyboard");
+		    story.dom.appendChild(title);
+		    story.events = this.initEvents(story.ensureDom());
+		    return story;
+		},
+		function handleKeyPressEvent(event){
+		    if("keyboard" != this.currentStory["type"])
+			this.makeKeyboardStory();
+		    return this.currentStory.events.appendEvent(event);
+		},
+		function handleKeyReleaseEvent(event){
+		    if("keyboard" != this.currentStory["type"])
+			this.makeKeyboardStory();
+		    return this.currentStory.events.appendEvent(event);
+		}
 	    ],
 	    {
 		eventMethods: {
@@ -1015,6 +1046,10 @@ var Uzbl = (
 		    LINK_HOVER: "handleLinkHoverEvent",
 		    LINK_UNHOVER: "handleLinkUnhoverEvent",
 		    ROOT_ACTIVE: "handleRootActiveEvent"
+		    , ADD_COOKIE: "handleAddCookieEvent",
+		    DELETE_COOKIE: "handleDeleteCookieEvent",
+		    KEY_PRESS: "handleKeyPressEvent",
+		    KEY_RELEASE: "handleKeyReleaseEvent"
 		}
 	    }
 	);
