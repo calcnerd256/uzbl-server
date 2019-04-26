@@ -193,7 +193,6 @@ EventScrollVert.prototype = new UzblEvent("SCROLL_VERT");
 EventScrollVert.fromNumbers = EventScrollHoriz.fromNumbers;
 EventScrollVert.fromString = EventScrollHoriz.fromString;
 
-
 function parseUriEvent(Event, string){
     var q = suffix(string, Event.prototype["type"] + " ");
     var uri = parseSingleQuotedString(q);
@@ -215,7 +214,6 @@ EventLoadCommit.prototype.loadType = "commit";
 EventLoadCommit.fromString = function(s){
     return parseUriEvent(this, s);
 }
-
 function EventLoadStart(uri){
     this["type"] = "load";
     this.uri = uri;
@@ -223,7 +221,6 @@ function EventLoadStart(uri){
 EventLoadStart.prototype = new UzblEvent("LOAD_START");
 EventLoadStart.prototype.loadType = "start";
 EventLoadStart.fromString = EventLoadCommit.fromString;
-
 function EventLoadProgress(amount){
     this["type"] = "load";
     this.amount = amount;
@@ -236,7 +233,6 @@ EventLoadProgress.fromString = function(s){
     if(1 != tokens.length) return new EventUnknown([evtType, tokens]);
     return new this(+(tokens[0]));
 }
-
 function EventLoadFinish(uri){
     this["type"] = "load";
     this.uri = uri;
@@ -245,8 +241,34 @@ EventLoadFinish.prototype = new UzblEvent("LOAD_FINISH");
 EventLoadFinish.prototype.loadType = "finish";
 EventLoadFinish.fromString = function(s){
     return parseUriEvent(this, s);
+};
+function EventLoadError(uri, number, message){
+    this["type"] = "load";
+    this.uri = uri;
+    this.number = number;
+    this.message = message;
 }
-
+EventLoadError.prototype = new UzblEvent("LOAD_ERROR");
+EventLoadError.prototype.loadType = "error";
+EventLoadError.fromString = function(s){
+    var tokens = s.split(" ");
+    if(tokens.shift() != this.prototype["type"])
+	return new EventUnknown([s]);
+    var q = tokens.shift();
+    var uri = parseSingleQuotedStringWithoutSpaces(q);
+    if(null == uri)
+	return new EventUnknown([this.prototype["type"], q].concat(tokens));
+    var n = tokens.shift();
+    if(!(stringIsNumberp(n)))
+	return new EventUnknown(
+	    [this.prototype["type"], uri, n].concat(tokens)
+	);
+    q = tokens.join(" ");
+    var message = parseSingleQuotedString(q);
+    if(null == message)
+	return new EventUnknown([this.prototype["type"], uri, +n, q]);
+    return new this(uri, +n, message);
+};
 
 function EventGeometryChanged(size, offset){
     this.size = size;
@@ -430,6 +452,7 @@ function parseEvent(rest){
 	EventLoadStart,
 	EventLoadProgress,
 	EventLoadFinish,
+	EventLoadError,
 	EventGeometryChanged,
 	EventRequestStarting,
 	EventCommandExecuted,
