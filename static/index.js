@@ -942,15 +942,6 @@ var Uzbl = (
 			)
 		    );
 		},
-		function makeVariablesStory(){
-		    var browser = this.getBrowser();
-		    return this.useStory(
-			new (browser["Story Variables"])(
-			    browser,
-			    this.variables
-			)
-		    );
-		},
 		function handleAnEvent(
 		    storyType,
 		    storyFactoryMethodName,
@@ -960,11 +951,32 @@ var Uzbl = (
 			this[storyFactoryMethodName]();
 		    return this.currentStory.events.appendEvent(event);
 		},
+		function handleEventWithStory(className, event){
+		    // https://stackoverflow.com/questions/1606797/use-of-apply-with-new-operator-is-this-possible/8843181#8843181
+		    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Function/bind
+		    var browser = this.getBrowser();
+		    var constructor = browser[className];
+		    if(
+			constructor.prototype["type"] !=
+			    this.currentStory["type"]
+		    )
+			this.useStory(
+			    new (
+				I.bind.apply(
+				    constructor,
+				    [null, browser].concat(
+					[].slice.call(arguments, 2)
+				    )
+				)
+			    )()
+			);
+		    return this.currentStory.events.appendEvent(event);
+		},
 		function handleVariableSetEvent(event){
-		    return this.handleAnEvent(
-			"variables",
-			"makeVariablesStory",
-			event
+		    return this.handleEventWithStory(
+			"Story Variables",
+			event,
+			this.variables
 		    );
 		}
 		, function makeScrollStory(){
