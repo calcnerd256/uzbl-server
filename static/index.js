@@ -1225,6 +1225,7 @@ var Uzbl = (
 		LINK_HOVER: "forwardEventToPages",
 		LINK_UNHOVER: "forwardEventToPages",
 		FORM_ACTIVE: "forwardEventToPages"
+		, NEW_WINDOW: "forwardEventToPages"
 	    }
 	    var et = e["event type"];
 	    var method = "displayEvent";
