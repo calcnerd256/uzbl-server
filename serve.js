@@ -13,15 +13,51 @@ var lines = uzbl.lines;
 var Uzbl = uzbl.Uzbl;
 
 
-function parseStderrLine(source, lineType, line){
-    return {
-	"type": "stderr",
-	source: source,
-	event: {
-	    "type": lineType,
-	    line: line
-	}
+function StandardErrorLine(source, lineType, line){
+    this.source = source;
+    this.event = {
+	"type": lineType,
+	line: line
     };
+}
+function StandardErrorEmptyLine(source){
+    this.source = source;
+}
+StandardErrorEmptyLine.prototype.event = {
+    "type": "empty"
+};
+function StandardErrorUzblCoreLine(source, line){
+    this.source = source;
+    line = line.substring(this.prefix.length);
+    var tokens = line.split(")");
+    var uzblId = tokens.shift();
+    line = tokens.join(")").substring(": ".length);
+    this.event = {
+	"type": "uzbl-core",
+	"uzbl-core": uzblId,
+	line: line
+    };
+}
+StandardErrorUzblCoreLine.prototype.prefix = "(uzbl-core:";
+function ConsoleMessage(source, line){
+    this.source = source;
+    this.event = {
+	"type": "console message",
+	message: line.substring(this.prefix.length)
+    }
+};
+ConsoleMessage.prototype.prefix = "** Message: console message:";
+StandardErrorLine.prototype["type"] = "stderr";
+function parseStderrLine(source, lineType, line){
+    if("line" == lineType){
+	if(testPrefix(line, ConsoleMessage.prototype.prefix))
+	    return new ConsoleMessage(source, line);
+	if("" == line)
+	    return new StandardErrorEmptyLine(source);
+	if(testPrefix(line, StandardErrorUzblCoreLine.prototype.prefix))
+	    return new StandardErrorUzblCoreLine(source, line);
+    }
+    return new StandardErrorLine(source, lineType, line);
 }
 var controller = false;
 function handleStderrLine(line){
