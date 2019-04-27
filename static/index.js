@@ -397,17 +397,23 @@ var Uzbl = (
 	    result.browser = browser;
 	    return result;
 	}
+	function logEvent(event){
+	    this.ensureDom();
+	    return this.events.appendEvent(event);
+	};
 	function buildWidgetClass(
 	    name,
 	    fieldName,
 	    constructor,
 	    init,
 	    makeDom,
-	    logEvent,
+	    logAnEvent,
 	    named,
 	    eventMethods,
 	    members
 	){
+	    if(!logAnEvent) logAnEvent = logEvent;
+	    if(!named) named = [];
 	    if(!eventMethods) eventMethods = {};
 	    var renamed = {
 		init: init
@@ -415,7 +421,7 @@ var Uzbl = (
 		    "class": name,
 		    field: fieldName
 		}
-		, logEvent: logEvent
+		, logEvent: logAnEvent
 		, eventMethods: eventMethods
 	    };
 	    if(members)
@@ -452,10 +458,6 @@ var Uzbl = (
 	    );
 	}
 
-	function logEvent(event){
-	    this.ensureDom();
-	    return this.events.appendEvent(event);
-	};
 	var OtherEvents = buildWidgetClass(
 	    "OtherEvents",
 	    "otherEvents",
@@ -470,7 +472,7 @@ var Uzbl = (
 		this.appendToBrowser(result);
 		return result;
 	    },
-	    logEvent,
+	    null,
 	    [
 		function displayEvent(event){
 		    return this.handleEvent(event);
@@ -493,7 +495,7 @@ var Uzbl = (
 		$(result).text("unknown instance");
 		return result;
 	    },
-	    logEvent,
+	    null,
 	    [
 		function assignValue(value){
 		    this.value = value;
@@ -524,7 +526,7 @@ var Uzbl = (
 		this.appendToBrowser(result);
 		return result;
 	    },
-	    logEvent,
+	    null,
 	    [
 		function ensureUl(){
 		    this.ensureDom();
@@ -570,7 +572,7 @@ var Uzbl = (
 		this.events = this.initEvents(result);
 		return result;
 	    },
-	    logEvent,
+	    null,
 	    [
 		function assignValue(valueType, value){
 		    this.value = [valueType, value];
@@ -605,7 +607,7 @@ var Uzbl = (
 		this.appendToBrowser(result);
 		return result;
 	    },
-	    logEvent,
+	    null,
 	    [
 		function makeVariable(name){
 		    this.ensureDom();
@@ -675,7 +677,7 @@ var Uzbl = (
 		this.appendToBrowser(result);
 		return result;
 	    },
-	    logEvent,
+	    null,
 	    [
 		function assignValue(size, offset){
 		    this.size = size;
@@ -744,7 +746,7 @@ var Uzbl = (
 		this.appendToBrowser(result);
 		return result;
 	    },
-	    logEvent,
+	    null,
 	    [
 		function handleAddCookieEvent(event){
 		    // TODO
@@ -792,10 +794,7 @@ var Uzbl = (
 		    }
 		);
 		return result;
-	    },
-	    logEvent,
-	    [
-	    ]
+	    }
 	);
 	var PageInitStory = buildWidgetClass(
 	    "Story PageInit",
@@ -835,7 +834,7 @@ var Uzbl = (
 		result.appendChild(geom);
 		return result;
 	    },
-	    logEvent,
+	    null,
 	    [
 	    ],
 	    {
@@ -867,7 +866,7 @@ var Uzbl = (
 		this.events = this.initEvents(result);
 		return result;
 	    },
-	    logEvent,
+	    null,
 	    [
 	    ],
 	    {
@@ -890,7 +889,7 @@ var Uzbl = (
 		$(result).click(bindFrom(this, "click"));
 		return result;
 	    },
-	    logEvent,
+	    null,
 	    [
 		function click(){
 		    var uri = this.ensureDom().href;
