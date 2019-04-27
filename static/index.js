@@ -405,8 +405,10 @@ var Uzbl = (
 	    makeDom,
 	    logEvent,
 	    named,
+	    eventMethods,
 	    members
 	){
+	    if(!eventMethods) eventMethods = {};
 	    var renamed = {
 		init: init
 		, names: {
@@ -414,6 +416,7 @@ var Uzbl = (
 		    field: fieldName
 		}
 		, logEvent: logEvent
+		, eventMethods: eventMethods
 	    };
 	    if(members)
 		Object.keys(members).map(
@@ -473,8 +476,8 @@ var Uzbl = (
 		    return this.handleEvent(event);
 		}
 	    ],
+	    {},
 	    {
-		eventMethods: {}
 	    }
 	);
 	var InstanceId = buildWidgetClass(
@@ -504,9 +507,9 @@ var Uzbl = (
 		}
 	    ],
 	    {
-		eventMethods: {
 		    INSTANCE_START: "handleInstanceStartEvent"
-		}
+	    },
+	    {
 	    }
 	);
 	var Builtins = buildWidgetClass(
@@ -549,9 +552,9 @@ var Uzbl = (
 		}
 	    ],
 	    {
-		eventMethods: {
 		    BUILTINS: "handleBuiltinsEvent"
-		}
+	    },
+	    {
 	    }
 	);
 	var Variable = buildWidgetClass(
@@ -588,9 +591,9 @@ var Uzbl = (
 		}
 	    ],
 	    {
-		eventMethods: {
 		    VARIABLE_SET: "handleVariableSetEvent"
-		}
+	    },
+	    {
 	    }
 	);
 	var Variables = buildWidgetClass(
@@ -653,9 +656,9 @@ var Uzbl = (
 		}
 	    ],
 	    {
-		eventMethods: {
 		    VARIABLE_SET: "handleVariableSetEvent"
-		}
+	    },
+	    {
 	    }
 	);
 	var Geometry = buildWidgetClass(
@@ -731,9 +734,9 @@ var Uzbl = (
 		}
 	    ],
 	    {
-		eventMethods: {
 		    GEOMETRY_CHANGED: "handleGeometryChangedEvent"
-		}
+	    },
+	    {
 	    }
 	);
 	var Cookies = buildWidgetClass(
@@ -764,10 +767,10 @@ var Uzbl = (
 		}
 	    ],
 	    {
-		eventMethods: {
 		    ADD_COOKIE: "handleAddCookieEvent"
 		    , DELETE_COOKIE: "handleDeleteCookieEvent"
-		}
+	    },
+	    {
 	    }
 	);
 	var VariablesSnapshot = buildWidgetClass(
@@ -809,7 +812,8 @@ var Uzbl = (
 	    [
 	    ],
 	    {
-		eventMethods: {}
+	    },
+	    {
 	    }
 	);
 	var PageInitStory = buildWidgetClass(
@@ -854,8 +858,9 @@ var Uzbl = (
 	    [
 	    ],
 	    {
-		"type": "init",
-		eventMethods: {}
+	    },
+	    {
+		"type": "init"
 	    }
 	);
 	var VariablesStory = buildWidgetClass(
@@ -885,8 +890,9 @@ var Uzbl = (
 	    [
 	    ],
 	    {
-		"type": "variables",
-		eventMethods: {}
+	    },
+	    {
+		"type": "variables"
 	    }
 	);
 	var PageAddress = buildWidgetClass(
@@ -925,7 +931,8 @@ var Uzbl = (
 		}
 	    ],
 	    {
-		eventMethods: {}
+	    },
+	    {
 	    }
 	);
 	var Page = buildWidgetClass(
@@ -1098,7 +1105,6 @@ var Uzbl = (
 		}
 	    ],
 	    {
-		eventMethods: {
 		    VARIABLE_SET: "handleVariableSetEvent"
 		    , SCROLL_HORIZ: "handleScrollHorizEvent",
 		    SCROLL_VERT: "handleScrollHorizEvent",
@@ -1120,7 +1126,8 @@ var Uzbl = (
 		    , MOD_PRESS: "handleModPressEvent",
 		    MOD_RELEASE: "handleModReleaseEvent"
 		    , NEW_WINDOW: "handleNewWindowEvent"
-		}
+	    },
+	    {
 	    }
 	);
 	var Pages = buildWidgetClass(
@@ -1226,11 +1233,11 @@ var Uzbl = (
 		}
 	    ],
 	    {
-		eventMethods: {
 		    load: "handleLoadEvent",
 		    SCROLL_HORIZ: "handleScrollHorizEvent",
 		    SCROLL_VERT: "handleScrollVertEvent"
-		}
+	    },
+	    {
 	    }
 	);
 
