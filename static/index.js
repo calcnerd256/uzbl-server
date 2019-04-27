@@ -475,10 +475,7 @@ var Uzbl = (
 		function displayEvent(event){
 		    return this.handleEvent(event);
 		}
-	    ],
-	    {},
-	    {
-	    }
+	    ]
 	);
 	var InstanceId = buildWidgetClass(
 	    "Instance ID",
@@ -507,9 +504,7 @@ var Uzbl = (
 		}
 	    ],
 	    {
-		    INSTANCE_START: "handleInstanceStartEvent"
-	    },
-	    {
+		INSTANCE_START: "handleInstanceStartEvent"
 	    }
 	);
 	var Builtins = buildWidgetClass(
@@ -552,9 +547,7 @@ var Uzbl = (
 		}
 	    ],
 	    {
-		    BUILTINS: "handleBuiltinsEvent"
-	    },
-	    {
+		BUILTINS: "handleBuiltinsEvent"
 	    }
 	);
 	var Variable = buildWidgetClass(
@@ -591,9 +584,7 @@ var Uzbl = (
 		}
 	    ],
 	    {
-		    VARIABLE_SET: "handleVariableSetEvent"
-	    },
-	    {
+		VARIABLE_SET: "handleVariableSetEvent"
 	    }
 	);
 	var Variables = buildWidgetClass(
@@ -656,9 +647,7 @@ var Uzbl = (
 		}
 	    ],
 	    {
-		    VARIABLE_SET: "handleVariableSetEvent"
-	    },
-	    {
+		VARIABLE_SET: "handleVariableSetEvent"
 	    }
 	);
 	var Geometry = buildWidgetClass(
@@ -734,9 +723,7 @@ var Uzbl = (
 		}
 	    ],
 	    {
-		    GEOMETRY_CHANGED: "handleGeometryChangedEvent"
-	    },
-	    {
+		GEOMETRY_CHANGED: "handleGeometryChangedEvent"
 	    }
 	);
 	var Cookies = buildWidgetClass(
@@ -767,10 +754,8 @@ var Uzbl = (
 		}
 	    ],
 	    {
-		    ADD_COOKIE: "handleAddCookieEvent"
-		    , DELETE_COOKIE: "handleDeleteCookieEvent"
-	    },
-	    {
+		ADD_COOKIE: "handleAddCookieEvent",
+		DELETE_COOKIE: "handleDeleteCookieEvent"
 	    }
 	);
 	var VariablesSnapshot = buildWidgetClass(
@@ -810,11 +795,7 @@ var Uzbl = (
 	    },
 	    logEvent,
 	    [
-	    ],
-	    {
-	    },
-	    {
-	    }
+	    ]
 	);
 	var PageInitStory = buildWidgetClass(
 	    "Story PageInit",
@@ -929,11 +910,7 @@ var Uzbl = (
 		    anchor.title = uri;
 		    $(anchor).text(uri.split("/").join(" "));
 		}
-	    ],
-	    {
-	    },
-	    {
-	    }
+	    ]
 	);
 	var Page = buildWidgetClass(
 	    "Page",
@@ -1105,29 +1082,27 @@ var Uzbl = (
 		}
 	    ],
 	    {
-		    VARIABLE_SET: "handleVariableSetEvent"
-		    , SCROLL_HORIZ: "handleScrollHorizEvent",
-		    SCROLL_VERT: "handleScrollHorizEvent",
-		    GEOMETRY_CHANGED: "handleGeometryChangedEvent",
-		    COMMAND_EXECUTED: "handleCommandExecutedEvent",
-		    load: "handleLoadEvent",
-		    REQUEST_STARTING: "handleRequestStartingEvent",
-		    focus: "handleFocusEvent",
-		    TITLE_CHANGED: "handleTitleChangedEvent",
-		    PTR_MOVE: "handlePtrMoveEvent",
-		    LINK_HOVER: "handleLinkHoverEvent",
-		    LINK_UNHOVER: "handleLinkUnhoverEvent",
-		    ROOT_ACTIVE: "handleRootActiveEvent"
-		    , FORM_ACTIVE: "handleFormActiveEvent"
-		    , ADD_COOKIE: "handleAddCookieEvent",
-		    DELETE_COOKIE: "handleDeleteCookieEvent",
-		    KEY_PRESS: "handleKeyPressEvent",
-		    KEY_RELEASE: "handleKeyReleaseEvent"
-		    , MOD_PRESS: "handleModPressEvent",
-		    MOD_RELEASE: "handleModReleaseEvent"
-		    , NEW_WINDOW: "handleNewWindowEvent"
-	    },
-	    {
+		VARIABLE_SET: "handleVariableSetEvent",
+		SCROLL_HORIZ: "handleScrollHorizEvent",
+		SCROLL_VERT: "handleScrollHorizEvent",
+		GEOMETRY_CHANGED: "handleGeometryChangedEvent",
+		COMMAND_EXECUTED: "handleCommandExecutedEvent",
+		load: "handleLoadEvent",
+		REQUEST_STARTING: "handleRequestStartingEvent",
+		focus: "handleFocusEvent",
+		TITLE_CHANGED: "handleTitleChangedEvent",
+		PTR_MOVE: "handlePtrMoveEvent",
+		LINK_HOVER: "handleLinkHoverEvent",
+		LINK_UNHOVER: "handleLinkUnhoverEvent",
+		ROOT_ACTIVE: "handleRootActiveEvent",
+		FORM_ACTIVE: "handleFormActiveEvent",
+		ADD_COOKIE: "handleAddCookieEvent",
+		DELETE_COOKIE: "handleDeleteCookieEvent",
+		KEY_PRESS: "handleKeyPressEvent",
+		KEY_RELEASE: "handleKeyReleaseEvent",
+		MOD_PRESS: "handleModPressEvent",
+		MOD_RELEASE: "handleModReleaseEvent",
+		NEW_WINDOW: "handleNewWindowEvent"
 	    }
 	);
 	var Pages = buildWidgetClass(
@@ -1233,11 +1208,9 @@ var Uzbl = (
 		}
 	    ],
 	    {
-		    load: "handleLoadEvent",
-		    SCROLL_HORIZ: "handleScrollHorizEvent",
-		    SCROLL_VERT: "handleScrollVertEvent"
-	    },
-	    {
+		load: "handleLoadEvent",
+		SCROLL_HORIZ: "handleScrollHorizEvent",
+		SCROLL_VERT: "handleScrollVertEvent"
 	    }
 	);
 
