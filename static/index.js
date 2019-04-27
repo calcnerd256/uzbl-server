@@ -889,6 +889,45 @@ var Uzbl = (
 		eventMethods: {}
 	    }
 	);
+	var PageAddress = buildWidgetClass(
+	    "Page Address",
+	    null,
+	    function PageAddress(browser){
+		this.construct(browser);
+	    },
+	    NOP,
+	    function(){
+		var result = document.createElement("a");
+		result.href = "about:blank";
+		$(result).text("about:blank");
+		$(result).click(bindFrom(this, "click"));
+		return result;
+	    },
+	    logEvent,
+	    [
+		function click(){
+		    var uri = this.ensureDom().href;
+		    $.post(
+			"/send-line",
+			{
+			    "line": "uri " + uri
+			},
+			function(){
+			}
+		    );
+		    return false;
+		},
+		function assignValue(uri){
+		    var anchor = this.ensureDom();
+		    anchor.href = uri;
+		    anchor.title = uri;
+		    $(anchor).text(uri.split("/").join(" "));
+		}
+	    ],
+	    {
+		eventMethods: {}
+	    }
+	);
 	var Page = buildWidgetClass(
 	    "Page",
 	    null,
@@ -902,7 +941,10 @@ var Uzbl = (
 	    },
 	    function(){
 		var result = document.createElement("li");
-		$(result).text("TODO");
+		var browser = this.getBrowser();
+		this.address = new (browser["Page Address"])(browser);
+		result.appendChild(this.address.ensureDom());
+		result.appendChild(document.createTextNode(" "));
 		this.narrative = new ToggleUl();
 		result.appendChild(this.narrative.ensureDom());
 		this.events = this.initEvents(result);
@@ -994,8 +1036,14 @@ var Uzbl = (
 		function handleCommandExecutedEvent(event){
 		    return this.handleEventWithGenericStory("commands", event);
 		},
+		function displayAddress(uri){
+		    this.ensureDom();
+		    this.address.assignValue(uri);
+		},
 		function handleLoadEvent(event){
-		    return this.handleEventWithGenericStory("network", event);
+		    this.handleEventWithGenericStory("network", event);
+		    if("start" == event.event.loadType)
+			this.displayAddress(event.event.uri);
 		},
 		function handleRequestStartingEvent(event){
 		    return this.handleEventWithGenericStory("network", event);
