@@ -900,15 +900,7 @@ var Uzbl = (
 	    [
 		function click(){
 		    this.ensureDom();
-		    var uri = this.anchor.href;
-		    $.post(
-			"/send-line",
-			{
-			    "line": "uri " + uri
-			},
-			function(){
-			}
-		    );
+		    this.getBrowser().navigate(this.anchor.href);
 		    return false;
 		},
 		function assignValue(uri){
@@ -916,7 +908,7 @@ var Uzbl = (
 		    this.anchor.title = this.anchor.href = uri;
 		    $(this.anchor).text(uri.split("/").join(" "));
 		    if("" == $(this.title).text())
-			$(this.title).text(uri).split("/").join(" / ");
+			$(this.title).text(uri.split("/").join(" / "));
 		}
 		, function setTitle(title){
 		    $(this.title).text(title);
@@ -936,6 +928,48 @@ var Uzbl = (
 		TITLE_CHANGED: "handleTitleChangedEvent"
 	    }
 	);
+	var PopUps = buildWidgetClass(
+	    "Page Popups",
+	    null,
+	    function PopUps(browser){
+		this.construct(browser);
+	    },
+	    NOP,
+	    function makeDom(){
+		var result = document.createElement("div");
+		var ul = document.createElement("ul");
+		this.ul = ul;
+		$(result).text("popups: ");
+		result.appendChild(ul);
+		this.events = this.initEvents(result);
+		return result;
+	    },
+	    null,
+	    [
+		function click(li, uri){
+		    this.getBrowser().navigate(uri);
+		    $(li).remove();
+		    return false;
+		},
+		function appendPopup(uri){
+		    var li = document.createElement("li");
+		    var anchor = document.createElement("a");
+		    $(anchor).text(uri);
+		    anchor.href = uri;
+		    $(anchor).click(this.click.bind(this, li, uri));
+		    li.appendChild(anchor);
+		    this.ensureDom();
+		    this.ul.appendChild(li);
+		    return li;
+		},
+		function handleNewWindowEvent(event){
+		    this.appendPopup(event.event.uri);
+		}
+	    ],
+	    {
+		NEW_WINDOW: "handleNewWindowEvent"
+	    }
+	);
 	var Page = buildWidgetClass(
 	    "Page",
 	    null,
@@ -952,6 +986,8 @@ var Uzbl = (
 		var browser = this.getBrowser();
 		this.address = new (browser["Page Address"])(browser);
 		result.appendChild(this.address.ensureDom());
+		this.popups = new (browser["Page Popups"])(browser);
+		result.appendChild(this.popups.ensureDom());
 		this.narrative = new ToggleUl();
 		result.appendChild(this.narrative.ensureDom());
 		this.events = this.initEvents(result);
@@ -1176,7 +1212,9 @@ var Uzbl = (
 		    return this.handleEventWithGenericStory("keyboard", event);
 		}
 		, function handleNewWindowEvent(event){
-		    return this.handleEventWithGenericStory("popup", event);
+		    this.handleEventWithGenericStory("popup", event);
+		    this.ensureDom();
+		    this.popups.handleEvent(event);
 		}
 	    ],
 	    {
@@ -1315,6 +1353,17 @@ var Uzbl = (
 	var _prot = cls.prototype;
 	_prot.EventList = EventList;
 
+	_prot.navigate = function(uri){
+	    // TODO: make this a promise
+	    $.post(
+		"/send-line",
+		{
+		    "line": "uri " + uri
+		},
+		function(){
+		}
+	    );
+	};
 	_prot.displayEvent = function(e){
 	    return this.ensureOtherEvents().displayEvent(e);
 	};
