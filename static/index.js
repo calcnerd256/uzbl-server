@@ -1034,7 +1034,17 @@ var Uzbl = (
 		){
 		    if(!tolerate) tolerate = [];
 		    tolerate = [storyType].concat(tolerate);
-		    if(-1 == tolerate.indexOf(this.currentStory["type"])){
+		    var storyTolerance = [this.currentStory["type"]];
+		    if("tolerate" in this.currentStory)
+			storyTolerance = storyTolerance.concat(
+			    this.currentStory.tolerate
+			);
+		    var matches = tolerate.filter(
+			function(t){
+			    return -1 != storyTolerance.indexOf(t);
+			}
+		    );
+		    if(!(matches.length)){
 			this.makeGenericStory(storyType, storyType);
 			this.currentStory.tolerate = tolerate;
 		    }
@@ -1056,10 +1066,26 @@ var Uzbl = (
 		    return story.events.appendEvent(event);
 		},
 		function handleScrollHorizEvent(event){
-		    return this.handleEventWithGenericStory("scroll", event);
+		    return this.handleEventWithGenericStory(
+			"scroll",
+			event,
+			[
+			    "mouse",
+			    "network",
+			    "window"
+			]
+		    );
 		},
 		function handleScrollVertEvent(event){
-		    return this.handleEventWithGenericStory("scroll", event);
+		    return this.handleEventWithGenericStory(
+			"scroll",
+			event,
+			[
+			    "mouse",
+			    "network",
+			    "window"
+			]
+		    );
 		},
 		function handleGeometryChangedEvent(event){
 		    return this.handleEventWithGenericStory("geometry", event);
@@ -1089,25 +1115,39 @@ var Uzbl = (
 		    return this.address.handleEvent(event);
 		},
 		function handlePtrMoveEvent(event){
-		    return this.handleEventWithGenericStory("pointer", event);
+		    return this.handleEventWithGenericStory(
+			"pointer",
+			event,
+			["mouse"]
+		    );
 		},
 		function handleLinkHoverEvent(event){
 		    return this.handleEventWithGenericStory(
 			"link hover",
 			event
+			, ["mouse", "scroll"]
 		    );
 		},
 		function handleLinkUnhoverEvent(event){
 		    return this.handleEventWithGenericStory(
 			"link hover",
 			event
+			, ["mouse", "scroll"]
 		    );
 		},
 		function handleRootActiveEvent(event){
-		    return this.handleEventWithGenericStory("click", event);
+		    return this.handleEventWithGenericStory(
+			"click",
+			event,
+			["mouse"]
+		    );
 		},
 		function handleFormActiveEvent(event){
-		    return this.handleEventWithGenericStory("click", event);
+		    return this.handleEventWithGenericStory(
+			"click",
+			event,
+			["mouse"]
+		    );
 		},
 		function handleAddCookieEvent(event){
 		    return this.handleEventWithGenericStory("cookie", event);
@@ -1116,10 +1156,18 @@ var Uzbl = (
 		    return this.handleEventWithGenericStory("cookie", event);
 		},
 		function handleKeyPressEvent(event){
-		    return this.handleEventWithGenericStory("keyboard", event);
+		    return this.handleEventWithGenericStory(
+			"keyboard",
+			event,
+			["scroll"]
+		    );
 		},
 		function handleKeyReleaseEvent(event){
-		    return this.handleEventWithGenericStory("keyboard", event);
+		    return this.handleEventWithGenericStory(
+			"keyboard",
+			event,
+			["scroll"]
+		    );
 		}
 		, function handleModPressEvent(event){
 		    return this.handleEventWithGenericStory("keyboard", event);
