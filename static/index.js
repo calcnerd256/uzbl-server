@@ -849,10 +849,10 @@ var Uzbl = (
 	    function VariablesStory(browser){
 		this.construct.apply(this, arguments);
 	    },
-	    function(variables){
+	    function construct(variables){
 		this.snapshot = variables;
 	    },
-	    function(){
+	    function makeDom(){
 		var result = document.createElement("li");
 		var title = document.createElement("h1");
 		$(title).text(this["type"]);
@@ -884,6 +884,7 @@ var Uzbl = (
 	    NOP,
 	    function makeDom(){
 		var result = document.createElement("div");
+		$(result).text("Location: ");
 		var anchor = document.createElement("a");
 		this.anchor = anchor;
 		result.appendChild(anchor);
@@ -892,6 +893,7 @@ var Uzbl = (
 		var title = document.createElement("div");
 		this.title = title;
 		result.appendChild(title);
+		this.events = this.initEvents(result);
 		return result;
 	    },
 	    null,
@@ -919,7 +921,18 @@ var Uzbl = (
 		, function setTitle(title){
 		    $(this.title).text(title);
 		}
-	    ]
+		, function handleLoadEvent(event){
+		    if("start" == event.event.loadType)
+			return this.assignValue(event.event.uri);
+		},
+		function handleTitleChangedEvent(event){
+		    this.setTitle(event.event.title);
+		}
+	    ],
+	    {
+		load: "handleLoadEvent",
+		TITLE_CHANGED: "handleTitleChangedEvent"
+	    }
 	);
 	var Page = buildWidgetClass(
 	    "Page",
@@ -1011,7 +1024,11 @@ var Uzbl = (
 		    story.events = this.initEvents(story.ensureDom());
 		    return story;
 		},
-		function handleEventWithGenericStory(storyType, event){
+		function handleEventWithGenericStory(
+		    storyType,
+		    event,
+		    tolerate
+		){
 		    if(storyType != this.currentStory["type"])
 			this.makeGenericStory(storyType, storyType);
 		    return this.currentStory.events.appendEvent(event);
@@ -1028,14 +1045,10 @@ var Uzbl = (
 		function handleCommandExecutedEvent(event){
 		    return this.handleEventWithGenericStory("commands", event);
 		},
-		function displayAddress(uri){
-		    this.ensureDom();
-		    this.address.assignValue(uri);
-		},
 		function handleLoadEvent(event){
 		    this.handleEventWithGenericStory("network", event);
 		    if("start" == event.event.loadType)
-			return this.displayAddress(event.event.uri);
+			return this.address.handleEvent(event);
 		},
 		function handleRequestStartingEvent(event){
 		    return this.handleEventWithGenericStory("network", event);
@@ -1043,13 +1056,13 @@ var Uzbl = (
 		function handleFocusEvent(event){
 		    return this.handleEventWithGenericStory("focus", event);
 		},
-		function displayTitle(title){
-		    this.ensureDom();
-		    this.address.setTitle(title);
-		},
 		function handleTitleChangedEvent(event){
-		    this.handleEventWithGenericStory("title", event);
-		    return this.displayTitle(event.event.title);
+		    this.handleEventWithGenericStory(
+			"title",
+			event,
+			["network"]
+		    );
+		    return this.address.handleEvent(event);
 		},
 		function handlePtrMoveEvent(event){
 		    return this.handleEventWithGenericStory("pointer", event);
