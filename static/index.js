@@ -924,6 +924,8 @@ var Uzbl = (
 		, function handleLoadEvent(event){
 		    if("start" == event.event.loadType)
 			return this.assignValue(event.event.uri);
+		    if("commit" == event.event.loadType)
+			return this.assignValue(event.event.uri);
 		},
 		function handleTitleChangedEvent(event){
 		    this.setTitle(event.event.title);
@@ -1068,6 +1070,8 @@ var Uzbl = (
 		function handleLoadEvent(event){
 		    this.handleEventWithGenericStory("network", event);
 		    if("start" == event.event.loadType)
+			return this.address.handleEvent(event);
+		    if("commit" == event.event.loadType)
 			return this.address.handleEvent(event);
 		},
 		function handleRequestStartingEvent(event){
