@@ -889,6 +889,9 @@ var Uzbl = (
 		result.appendChild(anchor);
 		$(anchor).text(anchor.href = "about:blank");
 		$(anchor).click(bindFrom(this, "click"));
+		var title = document.createElement("div");
+		this.title = title;
+		result.appendChild(title);
 		return result;
 	    },
 	    null,
@@ -910,6 +913,11 @@ var Uzbl = (
 		    this.ensureDom();
 		    this.anchor.title = this.anchor.href = uri;
 		    $(this.anchor).text(uri.split("/").join(" "));
+		    if("" == $(this.title).text())
+			$(this.title).text(uri).split("/").join(" / ");
+		}
+		, function setTitle(title){
+		    $(this.title).text(title);
 		}
 	    ]
 	);
@@ -1027,7 +1035,7 @@ var Uzbl = (
 		function handleLoadEvent(event){
 		    this.handleEventWithGenericStory("network", event);
 		    if("start" == event.event.loadType)
-			this.displayAddress(event.event.uri);
+			return this.displayAddress(event.event.uri);
 		},
 		function handleRequestStartingEvent(event){
 		    return this.handleEventWithGenericStory("network", event);
@@ -1035,8 +1043,13 @@ var Uzbl = (
 		function handleFocusEvent(event){
 		    return this.handleEventWithGenericStory("focus", event);
 		},
+		function displayTitle(title){
+		    this.ensureDom();
+		    this.address.setTitle(title);
+		},
 		function handleTitleChangedEvent(event){
-		    return this.handleEventWithGenericStory("title", event);
+		    this.handleEventWithGenericStory("title", event);
+		    return this.displayTitle(event.event.title);
 		},
 		function handlePtrMoveEvent(event){
 		    return this.handleEventWithGenericStory("pointer", event);
