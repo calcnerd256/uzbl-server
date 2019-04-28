@@ -14,6 +14,7 @@ var Uzbl = uzbl.Uzbl;
 
 
 function StandardErrorLine(source, lineType, line){
+    this.timestamp = new Date();
     this.source = source;
     this.event = {
 	"type": lineType,
@@ -21,12 +22,14 @@ function StandardErrorLine(source, lineType, line){
     };
 }
 function StandardErrorEmptyLine(source){
+    this.timestamp = new Date();
     this.source = source;
 }
 StandardErrorEmptyLine.prototype.event = {
     "type": "empty"
 };
 function StandardErrorUzblCoreLine(source, line){
+    this.timestamp = new Date();
     this.source = source;
     line = line.substring(this.prefix.length);
     var tokens = line.split(")");
@@ -40,6 +43,7 @@ function StandardErrorUzblCoreLine(source, line){
 }
 StandardErrorUzblCoreLine.prototype.prefix = "(uzbl-core:";
 function ConsoleMessage(source, line){
+    this.timestamp = new Date();
     this.source = source;
     line = line.substring(this.prefix.length);
     var tokens = line.split(" @");
