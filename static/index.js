@@ -1016,9 +1016,10 @@ var Uzbl = (
 				return this.dom;
 			    },
 			    "type": storyType
+			    , title: document.createElement("h1")
 			}
 		    );
-		    var titleHeading = document.createElement("h1");
+		    var titleHeading = story.title;
 		    $(titleHeading).text(title);
 		    story.ensureDom().appendChild(titleHeading);
 		    story.events = this.initEvents(story.ensureDom());
@@ -1029,9 +1030,28 @@ var Uzbl = (
 		    event,
 		    tolerate
 		){
-		    if(storyType != this.currentStory["type"])
+		    if(!tolerate) tolerate = [];
+		    tolerate = [storyType].concat(tolerate);
+		    if(-1 == tolerate.indexOf(this.currentStory["type"])){
 			this.makeGenericStory(storyType, storyType);
-		    return this.currentStory.events.appendEvent(event);
+			this.currentStory.tolerate = tolerate;
+		    }
+		    var story = this.currentStory;
+		    if("tolerate" in story){
+			story.tolerate = story.tolerate.filter(
+			    function(t){
+				return -1 != tolerate.indexOf(t);
+			    }
+			);
+			if(story.tolerate.length)
+			    if(
+				    -1 == story.tolerate.indexOf(
+					$(story.title).text()
+				    )
+			    )
+			    $(story.title).text(story.tolerate[0]);
+		    }
+		    return story.events.appendEvent(event);
 		},
 		function handleScrollHorizEvent(event){
 		    return this.handleEventWithGenericStory("scroll", event);
