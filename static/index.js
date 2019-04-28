@@ -882,17 +882,20 @@ var Uzbl = (
 		this.construct(browser);
 	    },
 	    NOP,
-	    function(){
-		var result = document.createElement("a");
-		result.href = "about:blank";
-		$(result).text("about:blank");
-		$(result).click(bindFrom(this, "click"));
+	    function makeDom(){
+		var result = document.createElement("div");
+		var anchor = document.createElement("a");
+		this.anchor = anchor;
+		result.appendChild(anchor);
+		$(anchor).text(anchor.href = "about:blank");
+		$(anchor).click(bindFrom(this, "click"));
 		return result;
 	    },
 	    null,
 	    [
 		function click(){
-		    var uri = this.ensureDom().href;
+		    this.ensureDom();
+		    var uri = this.anchor.href;
 		    $.post(
 			"/send-line",
 			{
@@ -904,10 +907,9 @@ var Uzbl = (
 		    return false;
 		},
 		function assignValue(uri){
-		    var anchor = this.ensureDom();
-		    anchor.href = uri;
-		    anchor.title = uri;
-		    $(anchor).text(uri.split("/").join(" "));
+		    this.ensureDom();
+		    this.anchor.title = this.anchor.href = uri;
+		    $(this.anchor).text(uri.split("/").join(" "));
 		}
 	    ]
 	);
@@ -917,17 +919,16 @@ var Uzbl = (
 	    function Page(browser){
 		this.construct.apply(this, arguments);
 	    },
-	    function(variables, geometry){
+	    function construct(variables, geometry){
 		this.variables = variables.snapshot();
 		this.geometry = geometry.snapshot();
 		this.initialStory();
 	    },
-	    function(){
+	    function makeDom(){
 		var result = document.createElement("li");
 		var browser = this.getBrowser();
 		this.address = new (browser["Page Address"])(browser);
 		result.appendChild(this.address.ensureDom());
-		result.appendChild(document.createTextNode(" "));
 		this.narrative = new ToggleUl();
 		result.appendChild(this.narrative.ensureDom());
 		this.events = this.initEvents(result);
