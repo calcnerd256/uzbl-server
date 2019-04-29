@@ -28,6 +28,37 @@ function pluck(key){
 function bindFrom(object, method){
     return object[method].bind(object);
 }
+function promiseMapSeries(xs, f){
+    return xs.map(bindFrom(Promise, "resolve")).reduce(
+	function(pys, px, i, a){
+	    return Promise.all(
+		[
+		    px,
+		    Promise.resolve(f),
+		    pys // this one needs to be here for sequencing
+		]
+	    ).then(
+		function(xgys){
+		    var x = xgys[0];
+		    var g = xgys[1];
+		    return Promise.all(
+			[
+			    pys,
+			    Promise.resolve(g(x)),
+			]
+		    );
+		}
+	    ).then(
+		function(ysy){
+		    var ys = ysy[0];
+		    var y = ysy[1];
+		    return ys.concat([y]);
+		}
+	    );
+	},
+	Promise.resolve([])
+    );
+}
 
 function evalFromBox(){
     var evalBox = $("#evalBox")[0];
@@ -1225,6 +1256,43 @@ var Uzbl = (
 		    this.ensureDom();
 		    this.popups.handleEvent(event);
 		}
+		, function finalizeEventList(events){
+		    var lastEvent = null;
+		    if(events.length)
+			lastEvent = events.pop();
+		    if("load" != lastEvent["event type"])
+			events.push(lastEvent)
+		    else if("start" != lastEvent.event.loadType)
+			events.push(lastEvent);
+		    var that = this;
+		    return this.getBrowser().handleEvents(
+			events.slice()
+		    ).then(
+			function(){
+			    return new Promise(
+				function(res, rej){
+				    var oldDom = that.ensureDom();
+				    that.dom = that.makeDom();
+				    $(oldDom).text("").after(that.dom);
+				    $(oldDom).remove();
+				    $(oldDom).queue(
+					"fx",
+					function(go){
+					    res(go());
+					}
+				    );
+				}
+			    );
+			}
+		    ).then(
+			function(){
+			    return promiseMapSeries(
+				events,
+				bindFrom(that, "handleEvent")
+			    );
+			}
+		    );
+		}
 	    ],
 	    {
 		VARIABLE_SET: "handleVariableSetEvent",
@@ -1268,9 +1336,6 @@ var Uzbl = (
 		return result;
 	    },
 	    function logEvent(event){
-		if("load" == event["event type"])
-		    if("start" == event.event.loadType)
-			this.newPage();
 		this.currentPage.handleEvent(event);
 	    },
 	    [
@@ -1351,6 +1416,15 @@ var Uzbl = (
 		    );
 		    return result;
 		}
+		, function endPage(events){
+		    this.ensureDom();
+		    var that = this;
+		    return Promise.resolve(events).then(
+			bindFrom(this.currentPage, "finalizeEventList")
+		    ).then(
+			bindFrom(this, "newPage")
+		    );
+		}
 	    ],
 	    {
 		load: "handleLoadEvent",
@@ -1408,35 +1482,38 @@ var Uzbl = (
 	    return this.ensureCookies().handleEvent(event);
 	};
 	_prot.nextEvent = 0;
+	_prot.eventMethodNames = {
+	    INSTANCE_START: "handleInstanceStartEvent",
+	    BUILTINS: "handleBuiltinsEvent",
+	    VARIABLE_SET: "handleVariableSetEvent",
+	    SCROLL_HORIZ: "handleScrollHorizEvent",
+	    SCROLL_VERT: "handleScrollVertEvent",
+	    GEOMETRY_CHANGED: "handleGeometryChangedEvent",
+	    ADD_COOKIE: "forwardEventToCookies",
+	    DELETE_COOKIE: "forwardEventToCookies",
+	    COMMAND_EXECUTED: "forwardEventToPages",
+	    load: "forwardEventToPages",
+	    REQUEST_STARTING: "forwardEventToPages",
+	    focus: "forwardEventToPages",
+	    TITLE_CHANGED: "forwardEventToPages",
+	    PTR_MOVE: "forwardEventToPages",
+	    ROOT_ACTIVE: "forwardEventToPages",
+	    KEY_PRESS: "forwardEventToPages",
+	    KEY_RELEASE: "forwardEventToPages",
+	    MOD_PRESS: "forwardEventToPages",
+	    MOD_RELEASE: "forwardEventToPages",
+	    LINK_HOVER: "forwardEventToPages",
+	    LINK_UNHOVER: "forwardEventToPages",
+	    FORM_ACTIVE: "forwardEventToPages",
+	    NEW_WINDOW: "forwardEventToPages"
+	};
 	_prot.handleEvent = function(e){
 	    if(e["event ID"] != this.nextEvent)
-		return Promise.reject([e["event ID"], this.nextEvent]);
+		return Promise.reject(
+		    ["handleEvent", "wrong line", e["event ID"], this.nextEvent]
+		);
 	    this.nextEvent++;
-	    var methods = {
-		INSTANCE_START: "handleInstanceStartEvent",
-		BUILTINS: "handleBuiltinsEvent",
-		VARIABLE_SET: "handleVariableSetEvent",
-		SCROLL_HORIZ: "handleScrollHorizEvent",
-		SCROLL_VERT: "handleScrollVertEvent",
-		GEOMETRY_CHANGED: "handleGeometryChangedEvent",
-		ADD_COOKIE: "forwardEventToCookies",
-		DELETE_COOKIE: "forwardEventToCookies",
-		COMMAND_EXECUTED: "forwardEventToPages",
-		load: "forwardEventToPages",
-		REQUEST_STARTING: "forwardEventToPages",
-		focus: "forwardEventToPages",
-		TITLE_CHANGED: "forwardEventToPages",
-		PTR_MOVE: "forwardEventToPages",
-		ROOT_ACTIVE: "forwardEventToPages",
-		KEY_PRESS: "forwardEventToPages",
-		KEY_RELEASE: "forwardEventToPages",
-		MOD_PRESS: "forwardEventToPages",
-		MOD_RELEASE: "forwardEventToPages",
-		LINK_HOVER: "forwardEventToPages",
-		LINK_UNHOVER: "forwardEventToPages",
-		FORM_ACTIVE: "forwardEventToPages"
-		, NEW_WINDOW: "forwardEventToPages"
-	    }
+	    var methods = this.eventMethodNames;
 	    var et = e["event type"];
 	    var method = "displayEvent";
 	    if(et in methods)
@@ -1457,21 +1534,11 @@ var Uzbl = (
 	};
 	_prot.handleEvents = function(events){
 	    var that = this;
-	    while(events.length && events[0]["event ID"] < this.nextEvent)
+	    while(events.length && (events[0]["event ID"] < this.nextEvent))
 		events.shift();
-	    return events.reduce(
-		function(p, x, i, a){
-		    return p.then(
-			function(xs){
-			    return that.handleEvent(x).then(
-				function(result){
-				    return xs.concat([result]);
-				}
-			    );
-			}
-		    );
-		},
-		Promise.resolve([])
+	    return promiseMapSeries(
+		events,
+		bindFrom(this, "handleEvent")
 	    );
 	};
 
@@ -1491,14 +1558,22 @@ var Uzbl = (
 		}
 	    );
 	};
+	_prot.finalizeCurrentPage = function(){
+	    var that = this;
+	    return getPage(this.currentPageNumber).then(
+		function(pageEvents){
+		    that.pageEvents = [];
+		    that.currentPageNumber++;
+		    return that.ensurePages().endPage(pageEvents);
+		}
+	    );
+	};
 	_prot.turnPage = function(){
 	    var that = this;
 	    return getPage(this.currentPageNumber + 1).then(
 		function(){
-		    return that.updateCurrentPage().then(
+		    return that.finalizeCurrentPage().then(
 			function(result){
-			    that.currentPageNumber++;
-			    that.pageEvents = [];
 			    return that.updateCurrentPage();
 			}
 		    );
