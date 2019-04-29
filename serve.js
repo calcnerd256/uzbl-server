@@ -517,6 +517,14 @@ function server(port){
 		req.url.substring(ebPrefix.length),
 		res
 	    );
+	var pbPrefix = "/browser/page/";
+	if(pbPrefix == req.url)
+	    return respondNotFound(res);
+	if(testPrefix(req.url, pbPrefix))
+	    return browser.respondPageJson(
+		res,
+		+(req.url.substring(pbPrefix.length))
+	    );
 	var ecPrefix = "/controller/events/";
 	if(controller){
 	    if(ecPrefix == req.url)

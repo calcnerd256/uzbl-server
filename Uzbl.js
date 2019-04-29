@@ -525,7 +525,8 @@ function Uzbl(){
     this.process = this.createProcess();
     this.events = [];
     this.variables = {};
-    this.process.on("exit", this.onProcessExit.bind(this))
+    this.process.on("exit", this.onProcessExit.bind(this));
+    this.pages = [[]];
 }
 Uzbl.prototype.createProcess = function(){
     return child_process.spawn("uzbl-core", ["-c", "-", "-p"]);
@@ -617,12 +618,18 @@ Uzbl.prototype.handleVariableSetEvent = function(event){
 Uzbl.prototype.handleLoadCommitEvent = function(event){
     this.uri = event.event.uri;
 };
+Uzbl.prototype.newPage = function(event){
+    this.pages.push([event]);
+};
 Uzbl.prototype.handleLoadEvent = function(event){
     if("commit" == event.event.loadType)
 	return this.handleLoadCommitEvent(event);
+    if("start" == event.event.loadType)
+	return this.newPage(event);
 };
 Uzbl.prototype.handleEvent = function(eventType, eventLine){
     this.events.push(eventLine);
+    this.pages[this.pages.length - 1].push(eventLine);
     if("INSTANCE_EXIT" == eventType)
 	return this.handleInstanceExitEvent(eventLine);
     if("VARIABLE_SET" == eventType)
@@ -735,6 +742,17 @@ Uzbl.prototype.setIcon = function(iconPath, callback){
 };
 Uzbl.prototype.iconGopo = function(callback){
     return this.setIcon("./chibigopovectors.svg", callback);
+};
+Uzbl.prototype.respondPageJson = function(response, pageNumber){
+    if(this.pages.length <= pageNumber)
+	return respondNotFound(response);
+    if(pageNumber < 0)
+	return respondNotFound(response);
+    if(null == pageNumber)
+	return respondNotFound(response);
+    var page = this.pages[pageNumber];
+    response.setHeader("Content-Type", "application/json");
+    response.end(JSON.stringify(page, null, "\t"));
 };
 
 
