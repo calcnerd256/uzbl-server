@@ -628,6 +628,7 @@ Uzbl.prototype.handleLoadEvent = function(event){
 	return this.newPage(event);
 };
 Uzbl.prototype.handleEvent = function(eventType, eventLine){
+    eventLine["event ID"] = this.events.length;
     this.events.push(eventLine);
     this.pages[this.pages.length - 1].push(eventLine);
     if("INSTANCE_EXIT" == eventType)

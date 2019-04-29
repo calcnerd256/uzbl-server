@@ -82,6 +82,13 @@ function getEvent(n){
 	}
     );
 }
+function getPage(n){
+    return promiseHttpGet(
+	"/browser/page/" + +n,
+	null,
+	"json"
+    );
+}
 
 function echoJson(ob){
     echo(
@@ -249,8 +256,10 @@ var Uzbl = (
 
 	cls = buildDomClass(
 	    constructor,
-	    NOP,
-	    function(){
+	    function construct(){
+		this.pageEvents = [];
+	    },
+	    function makeDom(){
 		var result = document.createElement("div");
 		$("#evalBox").before(result);
 		return result;
@@ -1398,7 +1407,11 @@ var Uzbl = (
 	    this.forwardEventToPages(event);
 	    return this.ensureCookies().handleEvent(event);
 	};
+	_prot.nextEvent = 0;
 	_prot.handleEvent = function(e){
+	    if(e["event ID"] != this.nextEvent)
+		return Promise.reject([e["event ID"], this.nextEvent]);
+	    this.nextEvent++;
 	    var methods = {
 		INSTANCE_START: "handleInstanceStartEvent",
 		BUILTINS: "handleBuiltinsEvent",
@@ -1442,60 +1455,98 @@ var Uzbl = (
 		}
 	    );
 	};
-
-	var nextEventId = 0;
-	_prot.handleNextEvent = function(){
-	    if("currentEvent" in this)
-		return Promise.reject(this.keepGoing = true);
-	    this.currentEvent = nextEventId;
+	_prot.handleEvents = function(events){
 	    var that = this;
-	    return getEvent(nextEventId).then(
-		bindFrom(this, "handleEvent")
-	    ).then(
-		function(x){
-		    nextEventId++;
-		    delete that.currentEvent;
-		    var keepGoing = that.keepGoing;
-		    that.keepGoing = false;
-		    return keepGoing;
-		}
-	    ).then(
-		function(again){
-		    if(again) return that.handleNextEvent();
-		}
-	    ).catch(
-		function(e){
-		    delete that.currentEvent;
-		    that.keepGoing = false;
-		    return Promise.reject(e);
+	    while(events.length && events[0]["event ID"] < this.nextEvent)
+		events.shift();
+	    return events.reduce(
+		function(p, x, i, a){
+		    return p.then(
+			function(xs){
+			    return that.handleEvent(x).then(
+				function(result){
+				    return xs.concat([result]);
+				}
+			    );
+			}
+		    );
+		},
+		Promise.resolve([])
+	    );
+	};
+
+	_prot.currentPageNumber = 0;
+	_prot.updateCurrentPage = function(){
+	    var that = this;
+	    return getPage(this.currentPageNumber).then(
+		function(pageEvents){
+		    var newEvents = pageEvents.slice(that.pageEvents.length);
+		    that.pageEvents = pageEvents;
+		    return that.handleEvents(newEvents)["catch"](
+			function(err){
+			    console.error(err);
+			    return Promise.reject(err);
+			}
+		    );
 		}
 	    );
 	};
-	_prot.checkEventsForever = function(
-	    idleDelayMilliseconds,
-	    whiffs
-	){
-	    return this.handleNextEvent().then(
+	_prot.turnPage = function(){
+	    var that = this;
+	    return getPage(this.currentPageNumber + 1).then(
 		function(){
-		    whiffs = 1;
+		    return that.updateCurrentPage().then(
+			function(result){
+			    that.currentPageNumber++;
+			    that.pageEvents = [];
+			    return that.updateCurrentPage();
+			}
+		    );
 		},
-		function(){
-		    return promiseDelay(
-			idleDelayMilliseconds * (
-			    1 + Math.floor(
-				Math.log1p(
-				    whiffs++
-				)
+		K(false)
+	    );
+	};
+	_prot.turnPageForever = function(idleDelayMilliseconds, whiffs){
+	    var that = this;
+	    function whiff(){
+		return promiseDelay(
+		    idleDelayMilliseconds * (
+			1 + Math.floor(
+			    Math.log1p(
+				whiffs++
 			    )
 			)
 		    )
+		).then(
+		    function(){
+			return that.turnPageForever(
+			    idleDelayMilliseconds,
+			    whiffs
+			);
+		    }
+		);
+	    }
+	    function hit(){
+		return promiseDelay(idleDelayMilliseconds).then(
+		    function(){
+			return that.turnPageForever(idleDelayMilliseconds, 0);
+		    }
+		);
+	    }
+	    return this.turnPage().then(
+		function(turnt){
+		    if(turnt) return hit();
+		    return that.updateCurrentPage().then(
+			function(result){
+			    return (result.length ? hit : whiff)();
+			},
+			whiff
+		    );
+		},
+		function(error){
+		    console.log(error);
+		    return whiff();
 		}
-	    ).then(K()).then(
-		this.checkEventsForever.bind(
-		    this,
-		    idleDelayMilliseconds,
-		    whiffs
-		)
 	    );
 	};
 
@@ -1511,7 +1562,7 @@ var Uzbl = (
 var browser = new Uzbl();
 
 function browserLive(){
-    return browser.checkEventsForever(100, 1);
+    return browser.turnPageForever(500, 1);
 }
 
 
