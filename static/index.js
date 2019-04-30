@@ -775,6 +775,24 @@ var Uzbl = (
 		GEOMETRY_CHANGED: "handleGeometryChangedEvent"
 	    }
 	);
+	var CookieDomain = buildWidgetClass(
+	    "Cookie Domain",
+	    null,
+	    function CookieDomain(browser){
+		this.construct(browser);
+	    },
+	    function construct(){
+		this.events = {};
+	    },
+	    function makeDom(){
+		var result = document.createElement("li");
+		var domain = document.createElement("span");
+		this.domainSpan = domain;
+		result.appendChild(domain);
+		this.events = this.initEvents(result);
+		return result;
+	    }
+	);
 	var Cookies = buildWidgetClass(
 	    "Cookies",
 	    "cookies",
@@ -813,14 +831,11 @@ var Uzbl = (
 		},
 		function makeDomain(domain){
 		    this.ensureDom();
-		    var li = document.createElement("li");
-		    $(li).text(domain);
+		    var browser = this.getBrowser();
+		    var result = new (browser["Cookie Domain"])(browser);
+		    var li = result.ensureDom();
+		    $(result.domainSpan).text(domain);
 		    this.ul.ul.appendChild(li);
-		    var result = {
-			dom: li,
-			cookies: {},
-			events: this.initEvents(li)
-		    };
 		    this.cookiesByDomain[domain] = result;
 		    return result;
 		},
@@ -832,12 +847,12 @@ var Uzbl = (
 		function handleAddCookieEvent(event){
 		    return this.ensureDomain(
 			event.event.domain
-		    ).events.appendEvent(event);
+		    ).handleEvent(event);
 		},
 		function handleDeleteCookieEvent(event){
 		    return this.ensureDomain(
 			event.event.domain
-		    ).events.appendEvent(event);
+		    ).handleEvent(event);
 		}
 	    ],
 	    {
