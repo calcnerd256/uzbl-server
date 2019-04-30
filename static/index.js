@@ -8,6 +8,13 @@ function K(x){
 }
 var NOP = K();
 
+function promiseAnimationFrame(){
+    return new Promise(
+	function(resolve, reject){
+	    return window.requestAnimationFrame(resolve);
+	}
+    );
+}
 function promiseDelay(milliseconds){
     return new Promise(
 	function(res, rej){
@@ -774,12 +781,25 @@ var Uzbl = (
 	    function Cookies(browser){
 		this.construct(browser);
 	    },
-	    function(){
-		this.cookies = {};
+	    function construct(){
+		this.cookiesByDomain = {};
 	    },
-	    function(){
+	    function makeDom(){
 		var result = document.createElement("div");
 		$(result).text("cookie jar: ");
+		var clearAll = document.createElement("div");
+		var anchor = document.createElement("a");
+		clearAll.appendChild(anchor);
+		var that = this;
+		$(anchor).text("clear all");
+		anchor.href = "#";
+		$(anchor).click(
+		    function(){
+			that.clearAll();
+			return false;
+		    }
+		);
+		result.appendChild(clearAll);
 		this.ul = new ToggleUl();
 		result.appendChild(this.ul.ensureDom());
 		this.events = this.initEvents(result);
@@ -788,11 +808,36 @@ var Uzbl = (
 	    },
 	    null,
 	    [
+		function clearAll(){
+		    return this.getBrowser().sendLine("clear_cookies all");
+		},
+		function makeDomain(domain){
+		    this.ensureDom();
+		    var li = document.createElement("li");
+		    $(li).text(domain);
+		    this.ul.ul.appendChild(li);
+		    var result = {
+			dom: li,
+			cookies: {},
+			events: this.initEvents(li)
+		    };
+		    this.cookiesByDomain[domain] = result;
+		    return result;
+		},
+		function ensureDomain(domain){
+		    if(domain in this.cookiesByDomain)
+			return this.cookiesByDomain[domain];
+		    return this.makeDomain(domain);
+		},
 		function handleAddCookieEvent(event){
-		    // TODO
+		    return this.ensureDomain(
+			event.event.domain
+		    ).events.appendEvent(event);
 		},
 		function handleDeleteCookieEvent(event){
-		    // TODO
+		    return this.ensureDomain(
+			event.event.domain
+		    ).events.appendEvent(event);
 		}
 	    ],
 	    {
@@ -1436,16 +1481,22 @@ var Uzbl = (
 	var _prot = cls.prototype;
 	_prot.EventList = EventList;
 
-	_prot.navigate = function(uri){
-	    // TODO: make this a promise
-	    $.post(
-		"/send-line",
-		{
-		    "line": "uri " + uri
-		},
-		function(){
+	_prot.sendLine = function(line){
+	    // TODO: make this handle rejection
+	    return new Promise(
+		function(resolve, reject){
+		    return $.post(
+			"/send-line",
+			{
+			    "line": line
+			},
+			resolve
+		    );
 		}
 	    );
+	};
+	_prot.navigate = function(uri){
+	    return this.sendLine("uri " + uri);
 	};
 	_prot.displayEvent = function(e){
 	    return this.ensureOtherEvents().displayEvent(e);
@@ -1528,7 +1579,7 @@ var Uzbl = (
 		bindFrom(console, "error")
 	    ).then(
 		function(x){
-		    return promiseDelay(1).then(K(x));
+		    return promiseAnimationFrame().then(K(x));
 		}
 	    );
 	};
@@ -1606,7 +1657,7 @@ var Uzbl = (
 		    function(){
 			return that.turnPageForever(idleDelayMilliseconds, 0);
 		    }
-		);
+		).then(promiseAnimationFrame);
 	    }
 	    return this.turnPage().then(
 		function(turnt){
