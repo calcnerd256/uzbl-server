@@ -1384,10 +1384,10 @@ var Uzbl = (
 	    function Pages(browser){
 		this.construct(browser);
 	    },
-	    function(){
+	    function construct(){
 		this.newPage();
 	    },
-	    function(){
+	    function makeDom(){
 		var result = document.createElement("div");
 		$(result).text("pages: ");
 		this.ul = new ToggleUl();
@@ -1400,11 +1400,16 @@ var Uzbl = (
 	    },
 	    [
 		function newPage(){
+		    var pageNumber = 0;
+		    if("currentPage" in this)
+			if("page number" in this.currentPage)
+			    pageNumber = this.currentPage["page number"] + 1;
 		    this.currentPage = new (this.getBrowser().Page)(
 			this.getBrowser(),
 			this.getBrowser().ensureVariables(),
 			this.getBrowser().ensureGeometry()
 		    );
+		    this.currentPage["page number"] = pageNumber;
 		    this.ensureDom();
 		    this.currentPage.ensureDom();
 		    this.ul.ul.appendChild(this.currentPage.dom);
@@ -1658,7 +1663,7 @@ var Uzbl = (
 			    )
 			)
 		    )
-		).then(
+		).then(promiseAnimationFrame).then(
 		    function(){
 			return that.turnPageForever(
 			    idleDelayMilliseconds,
@@ -1668,11 +1673,11 @@ var Uzbl = (
 		);
 	    }
 	    function hit(){
-		return promiseDelay(idleDelayMilliseconds).then(
+		return promiseAnimationFrame().then(
 		    function(){
 			return that.turnPageForever(idleDelayMilliseconds, 0);
 		    }
-		).then(promiseAnimationFrame);
+		);
 	    }
 	    return this.turnPage().then(
 		function(turnt){
