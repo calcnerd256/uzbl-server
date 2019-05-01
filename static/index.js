@@ -781,16 +781,68 @@ var Uzbl = (
 	    function CookieName(browser){
 		this.construct(browser);
 	    },
-	    function construct(){
-		this.events = {};
-	    },
+	    NOP,
 	    function makeDom(){
 		var result = document.createElement("li");
 		var nameSpan = document.createElement("span");
 		this.nameSpan = nameSpan;
 		result.appendChild(nameSpan);
+		this.ul = document.createElement("ul");
+		result.appendChild(this.ul);
 		this.events = this.initEvents(result);
 		return result;
+	    }
+	    , null,
+	    [
+		function setCookie(domain, path, name, value, scheme, expire){
+		    function singleQuoteString(s){
+			return "'" + s.split("\\").join("\\\\").split("'").join(
+			    "\\'"
+			) + "'";
+		    }
+		    return this.getBrowser().sendLine(
+			[
+			    "add_cookie",
+			    singleQuoteString(domain),
+			    singleQuoteString(path),
+			    singleQuoteString(name),
+			    singleQuoteString(value),
+			    scheme,
+			    expire
+			].join(" ")
+		    );
+		},
+		function createValueLink(event){
+		    this.ensureDom();
+		    var li = document.createElement("li");
+		    var anchor = document.createElement("a");
+		    var evt = event.event;
+		    $(anchor).text(evt.value);
+		    anchor.href = "#";
+		    var that = this;
+		    $(anchor).click(
+			function(){
+			    that.setCookie(
+				evt.domain,
+				evt.path,
+				evt.name,
+				evt.value,
+				evt.scheme,
+				evt.expiration
+			    );
+			    return false;
+			}
+		    );
+		    li.appendChild(anchor);
+		    this.ul.appendChild(li);
+		    return li;
+		},
+		function handleAddCookieEvent(event){
+		    return this.createValueLink(event);
+		}
+	    ],
+	    {
+		ADD_COOKIE: "handleAddCookieEvent"
 	    }
 	);
 	var CookiePath = buildWidgetClass(
