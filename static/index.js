@@ -775,10 +775,10 @@ var Uzbl = (
 		GEOMETRY_CHANGED: "handleGeometryChangedEvent"
 	    }
 	);
-	var CookiePath = buildWidgetClass(
-	    "Cookie Path",
+	var CookieName = buildWidgetClass(
+	    "Cookie Name",
 	    null,
-	    function CookiePath(browser){
+	    function CookieName(browser){
 		this.construct(browser);
 	    },
 	    function construct(){
@@ -786,11 +786,63 @@ var Uzbl = (
 	    },
 	    function makeDom(){
 		var result = document.createElement("li");
+		var nameSpan = document.createElement("span");
+		this.nameSpan = nameSpan;
+		result.appendChild(nameSpan);
+		this.events = this.initEvents(result);
+		return result;
+	    }
+	);
+	var CookiePath = buildWidgetClass(
+	    "Cookie Path",
+	    null,
+	    function CookiePath(browser){
+		this.construct(browser);
+	    },
+	    function construct(){
+		this.eventsByName = {};
+	    },
+	    function makeDom(){
+		var result = document.createElement("li");
 		var pathSpan = document.createElement("span");
 		this.pathSpan = pathSpan;
 		result.appendChild(pathSpan);
+		this.ul = document.createElement("ul");
+		result.appendChild(this.ul);
 		this.events = this.initEvents(result);
 		return result;
+	    },
+	    null,
+	    [
+		function makeName(name){
+		    this.ensureDom();
+		    var browser = this.getBrowser();
+		    var result = new (browser["Cookie Name"])(browser);
+		    var li = result.ensureDom();
+		    $(result.nameSpan).text(name);
+		    this.ul.appendChild(li);
+		    this.eventsByName[name] = result;
+		    return result;
+		},
+		function ensureName(name){
+		    if(name in this.eventsByName)
+			return this.eventsByName[name];
+		    return this.makeName(name);
+		},
+		function handleAddCookieEvent(event){
+		    return this.ensureName(
+			event.event.name
+		    ).handleEvent(event);
+		},
+		function handleDeleteCookieEvent(event){
+		    return this.ensureName(
+			event.event.name
+		    ).handleEvent(event);
+		}
+	    ],
+	    {
+		ADD_COOKIE: "handleAddCookieEvent",
+		DELETE_COOKIE: "handleDeleteCookieEvent"
 	    }
 	);
 	var CookieDomain = buildWidgetClass(
