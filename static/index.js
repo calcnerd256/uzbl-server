@@ -90,6 +90,18 @@ function promiseHttpGet(url, data, dataType){
 	}
     );
 }
+function promiseHttpPost(url, data, dataType){
+    return new Promise(
+	function(res, rej){
+	    return $.post(
+		url,
+		data,
+		res,
+		dataType
+	    ).fail(rej);
+	}
+    );
+}
 
 function echo(line){
     var out = $("#debugOutput");
@@ -616,6 +628,21 @@ var Uzbl = (
 		result.appendChild(this.valueType);
 		$(this.valueType).text("unknown");
 		result.appendChild(this.pre);
+		var form = document.createElement("div");
+		var valueBox = document.createElement("input");
+		form.appendChild(valueBox);
+		var button = document.createElement("a");
+		button.href = "#";
+		var that = this;
+		$(button).text("send");
+		$(button).click(
+		    function(){
+			that.sendValue(valueBox.value);
+			return false;
+		    }
+		);
+		form.appendChild(button);
+		result.appendChild(form);
 		this.events = this.initEvents(result);
 		return result;
 	    },
@@ -630,6 +657,14 @@ var Uzbl = (
 		function handleVariableSetEvent(event){
 		    var val = event.event.value;
 		    return this.assignValue(val[0], val[1]);
+		}
+		, function sendValue(value){
+		    // a little dangerous
+		    this.ensureDom();
+		    return this.getBrowser().ensureVariables().sendVariable(
+			$(this.name).text(),
+			value
+		    );
 		}
 	    ],
 	    {
@@ -693,6 +728,17 @@ var Uzbl = (
 			}
 		    );
 		    return result;
+		}
+		, function sendVariable(name, value){
+		    //TODO: quote as needed
+		    return this.getBrowser().sendLine(
+			[
+			    "set",
+			    name,
+			    "=",
+			    value
+			].join(" ")
+		    );
 		}
 	    ],
 	    {
@@ -1658,16 +1704,10 @@ var Uzbl = (
 	_prot.EventList = EventList;
 
 	_prot.sendLine = function(line){
-	    // TODO: make this handle rejection
-	    return new Promise(
-		function(resolve, reject){
-		    return $.post(
-			"/send-line",
-			{
-			    "line": line
-			},
-			resolve
-		    );
+	    return promiseHttpPost(
+		"/send-line",
+		{
+		    "line": line
 		}
 	    );
 	};
