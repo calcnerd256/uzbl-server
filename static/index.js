@@ -8,10 +8,16 @@ function K(x){
 }
 var NOP = K();
 
+var lastDelayTimestamp = new Date();
 function promiseAnimationFrame(){
     return new Promise(
 	function(resolve, reject){
 	    return window.requestAnimationFrame(resolve);
+	}
+    ).then(
+	function(result){
+	    lastDelayTimestamp = new Date();
+	    return result;
 	}
     );
 }
@@ -26,6 +32,11 @@ function asyncDelay(milliseconds){
     return function(){
 	return promiseDelay(milliseconds);
     };
+}
+function promiseMaybeDelay(value){
+    if(new Date() - lastDelayTimestamp <= 16)
+	return Promise.resolve(value);
+    return promiseAnimationFrame().then(K(value));
 }
 function pluck(key){
     return function(object){
@@ -1793,7 +1804,7 @@ var Uzbl = (
 	    ).then(
 		I,
 		bindFrom(console, "error")
-	    );
+	    ).then(promiseMaybeDelay);
 	};
 	_prot.handleEvents = function(events){
 	    var that = this;
