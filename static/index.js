@@ -1793,10 +1793,6 @@ var Uzbl = (
 	    ).then(
 		I,
 		bindFrom(console, "error")
-	    ).then(
-		function(x){
-		    return promiseAnimationFrame().then(K(x));
-		}
 	    );
 	};
 	_prot.handleEvents = function(events){
@@ -1806,13 +1802,21 @@ var Uzbl = (
 	    return promiseMapSeries(
 		events,
 		bindFrom(this, "handleEvent")
+	    ).then(
+		function(x){
+		    return promiseAnimationFrame().then(K(x));
+		}
 	    );
 	};
 
 	_prot.currentPageNumber = 0;
 	_prot.updateCurrentPage = function(){
 	    var that = this;
-	    return getPage(this.currentPageNumber).then(
+	    return getPage(this.currentPageNumber + 1).then(
+		bindFrom(this, "finalizeCurrentPage"),
+		function(){
+		    var pageNumber = that.currentPageNumber;
+		    return getPage(pageNumber).then(
 		function(pageEvents){
 		    var newEvents = pageEvents.slice(that.pageEvents.length);
 		    that.pageEvents = pageEvents;
@@ -1821,6 +1825,8 @@ var Uzbl = (
 			    console.error(err);
 			    return Promise.reject(err);
 			}
+		    );
+		}
 		    );
 		}
 	    );
@@ -1841,7 +1847,9 @@ var Uzbl = (
 		function(){
 		    return that.finalizeCurrentPage().then(
 			function(result){
-			    return that.updateCurrentPage();
+			    return Promise.resolve().then(
+				bindFrom(that, "updateCurrentPage")
+			    );
 			}
 		    );
 		},
