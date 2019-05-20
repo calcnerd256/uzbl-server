@@ -1817,16 +1817,16 @@ var Uzbl = (
 		function(){
 		    var pageNumber = that.currentPageNumber;
 		    return getPage(pageNumber).then(
-		function(pageEvents){
-		    var newEvents = pageEvents.slice(that.pageEvents.length);
-		    that.pageEvents = pageEvents;
-		    return that.handleEvents(newEvents)["catch"](
-			function(err){
-			    console.error(err);
-			    return Promise.reject(err);
+			function(pageEvents){
+			    var newEvents = pageEvents.slice(that.pageEvents.length);
+			    that.pageEvents = pageEvents;
+			    return that.handleEvents(newEvents)["catch"](
+				function(err){
+				    console.error(err);
+				    return Promise.reject(err);
+				}
+			    );
 			}
-		    );
-		}
 		    );
 		}
 	    );
